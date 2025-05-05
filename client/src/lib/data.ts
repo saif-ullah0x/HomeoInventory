@@ -78,6 +78,15 @@ export const DEFAULT_LOCATIONS = [
   "First Aid Kit"
 ];
 
+export const BOTTLE_SIZES = [
+  "10ml",
+  "15ml",
+  "20ml",
+  "30ml",
+  "50ml",
+  "custom"
+];
+
 // Sample data for initial state
 export const SAMPLE_MEDICINES = [
   {

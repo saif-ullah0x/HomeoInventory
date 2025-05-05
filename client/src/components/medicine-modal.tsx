@@ -28,7 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { POTENCIES, DEFAULT_COMPANIES, DEFAULT_LOCATIONS, DEFAULT_MEDICINES } from "@/lib/data";
+import { POTENCIES, DEFAULT_COMPANIES, DEFAULT_LOCATIONS, DEFAULT_MEDICINES, BOTTLE_SIZES } from "@/lib/data";
 import { useStore } from "@/lib/store";
 
 const formSchema = z.object({
@@ -55,6 +55,7 @@ export default function MedicineModal({ isOpen, onClose, medicineId }: MedicineM
   const { toast } = useToast();
   const [showCustomCompany, setShowCustomCompany] = useState(false);
   const [showCustomLocation, setShowCustomLocation] = useState(false);
+  const [showCustomBottleSize, setShowCustomBottleSize] = useState(false);
   const [medicineNameSuggestions, setMedicineNameSuggestions] = useState<string[]>([]);
 
   const addMedicine = useStore((state) => state.addMedicine);
@@ -179,10 +180,15 @@ export default function MedicineModal({ isOpen, onClose, medicineId }: MedicineM
     form.setValue("location", value);
     setShowCustomLocation(value === "other");
   };
+  
+  const handleBottleSizeChange = (value: string) => {
+    form.setValue("bottleSize", value === "custom" ? "" : value);
+    setShowCustomBottleSize(value === "custom");
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{medicineId !== null ? "Edit Medicine" : "Add New Medicine"}</DialogTitle>
           <DialogDescription>
@@ -192,7 +198,7 @@ export default function MedicineModal({ isOpen, onClose, medicineId }: MedicineM
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pb-6">
             {/* Medicine Name with Autocomplete */}
             <FormField
               control={form.control}
