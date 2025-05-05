@@ -619,15 +619,24 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
       case 'mapping':
         return (
           <>
-            <div className="mt-4 space-y-4">
-              <div className="flex items-center justify-between">
+            <div className="mt-4 mb-14 space-y-4">
+              <div className="flex items-center justify-between mb-4">
                 <p className="text-sm font-medium">Selected file: <span className="text-muted-foreground">{fileName}</span></p>
               </div>
               
-              <div className="space-y-3">
+              {/* Scrollable mapping area with a fixed height */}
+              <div className="max-h-[400px] overflow-y-auto pr-2 space-y-5 pb-4" style={{ scrollbarWidth: 'thin' }}>
+                <Alert className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 mb-4">
+                  <AlertDescription className="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2 text-blue-600 dark:text-blue-400"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+                    Map columns from your file to medicine data fields. Required fields are marked with *.
+                  </AlertDescription>
+                </Alert>
+              
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium">
-                    Which column contains medicine name? <span className="text-red-500">*</span>
+                  <label className="text-sm font-medium flex items-center">
+                    Which column contains medicine name? <span className="text-red-500 ml-1">*</span>
+                    <span className="text-xs ml-auto text-muted-foreground">(Required)</span>
                   </label>
                   <Select 
                     value={columnMapping.name || ''} 
@@ -645,11 +654,9 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-medium flex justify-between">
                     <span>Which column contains potency?</span>
-                    {!columnMapping.potency && (
-                      <span className="text-xs text-muted-foreground">
-                        If not selected, will try to extract from name (e.g., "Arnica 30C")
-                      </span>
-                    )}
+                    <span className="text-xs text-muted-foreground">
+                      {!columnMapping.potency ? "Will extract from name if possible" : "Optional"}
+                    </span>
                   </label>
                   <Select 
                     value={columnMapping.potency || NOT_AVAILABLE} 
@@ -659,15 +666,24 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
                       <SelectValue placeholder="Select column" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value={NOT_AVAILABLE}>Not available in file</SelectItem>
+                      <SelectItem value={NOT_AVAILABLE}>
+                        <span className="flex items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+                          Skip - Not in file
+                        </span>
+                      </SelectItem>
                       {renderColumnOptions()}
                     </SelectContent>
                   </Select>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    System will try to extract from name (e.g., "Arnica 30C")
+                  </p>
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium">
-                    Which column contains company?
+                  <label className="text-sm font-medium flex justify-between">
+                    <span>Which column contains company?</span>
+                    <span className="text-xs text-muted-foreground">Optional</span>
                   </label>
                   <Select 
                     value={columnMapping.company || NOT_AVAILABLE} 
@@ -677,15 +693,21 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
                       <SelectValue placeholder="Select column" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value={NOT_AVAILABLE}>Not available in file</SelectItem>
+                      <SelectItem value={NOT_AVAILABLE}>
+                        <span className="flex items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+                          Skip - Not in file
+                        </span>
+                      </SelectItem>
                       {renderColumnOptions()}
                     </SelectContent>
                   </Select>
                 </div>
                 
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium">
-                    Which column contains location/area?
+                  <label className="text-sm font-medium flex justify-between">
+                    <span>Which column contains location/area?</span>
+                    <span className="text-xs text-muted-foreground">Optional</span>
                   </label>
                   <Select 
                     value={columnMapping.location || NOT_AVAILABLE} 
@@ -695,15 +717,21 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
                       <SelectValue placeholder="Select column" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value={NOT_AVAILABLE}>Not available in file</SelectItem>
+                      <SelectItem value={NOT_AVAILABLE}>
+                        <span className="flex items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+                          Skip - Not in file
+                        </span>
+                      </SelectItem>
                       {renderColumnOptions()}
                     </SelectContent>
                   </Select>
                 </div>
                 
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium">
-                    Which column contains sub-location?
+                  <label className="text-sm font-medium flex justify-between">
+                    <span>Which column contains sub-location?</span>
+                    <span className="text-xs text-muted-foreground">Optional</span>
                   </label>
                   <Select 
                     value={columnMapping.subLocation || NOT_AVAILABLE} 
@@ -713,15 +741,21 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
                       <SelectValue placeholder="Select column" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value={NOT_AVAILABLE}>Not available in file</SelectItem>
+                      <SelectItem value={NOT_AVAILABLE}>
+                        <span className="flex items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+                          Skip - Not in file
+                        </span>
+                      </SelectItem>
                       {renderColumnOptions()}
                     </SelectContent>
                   </Select>
                 </div>
                 
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium">
-                    Which column contains bottle size?
+                  <label className="text-sm font-medium flex justify-between">
+                    <span>Which column contains bottle size?</span>
+                    <span className="text-xs text-muted-foreground">Optional</span>
                   </label>
                   <Select 
                     value={columnMapping.bottleSize || NOT_AVAILABLE} 
@@ -731,15 +765,21 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
                       <SelectValue placeholder="Select column" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value={NOT_AVAILABLE}>Not available in file</SelectItem>
+                      <SelectItem value={NOT_AVAILABLE}>
+                        <span className="flex items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+                          Skip - Not in file
+                        </span>
+                      </SelectItem>
                       {renderColumnOptions()}
                     </SelectContent>
                   </Select>
                 </div>
                 
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium">
-                    Which column contains quantity? 
+                  <label className="text-sm font-medium flex justify-between">
+                    <span>Which column contains quantity?</span>
+                    <span className="text-xs text-muted-foreground">Optional</span>
                   </label>
                   <Select 
                     value={columnMapping.quantity || NOT_AVAILABLE} 
@@ -749,15 +789,24 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
                       <SelectValue placeholder="Select column" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value={NOT_AVAILABLE}>Not available in file (will use default quantity of 1)</SelectItem>
+                      <SelectItem value={NOT_AVAILABLE}>
+                        <span className="flex items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+                          Skip - Not in file
+                        </span>
+                      </SelectItem>
                       {renderColumnOptions()}
                     </SelectContent>
                   </Select>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Default quantity of 1 will be used if not mapped
+                  </p>
                 </div>
               </div>
             </div>
             
-            <DialogFooter className="mt-6 gap-2">
+            {/* Fixed footer with action buttons that stays at the bottom */}
+            <DialogFooter className="gap-2 absolute bottom-4 right-6 left-6 flex justify-between">
               <Button variant="outline" onClick={() => setStep('upload')}>
                 <ChevronLeft className="h-4 w-4 mr-1" />
                 Back
@@ -765,6 +814,7 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
               <Button 
                 onClick={generatePreview}
                 disabled={!columnMapping.name}
+                className="bg-primary hover:bg-primary/90"
               >
                 Preview Import
                 <ChevronRight className="h-4 w-4 ml-1" />
@@ -779,8 +829,8 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
         
         return (
           <>
-            <div className="mt-4 space-y-4">
-              <div className="flex flex-wrap gap-2 items-center mb-2">
+            <div className="mt-4 mb-14 space-y-4">
+              <div className="flex flex-wrap gap-2 items-center mb-4">
                 <Badge variant="outline" className="bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400">
                   <Check className="h-3 w-3 mr-1" /> {validCount} valid
                 </Badge>
@@ -798,56 +848,56 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
                 </span>
               </div>
               
-              <div className="border rounded-md overflow-hidden">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-[180px]">Name</TableHead>
-                      <TableHead>Potency</TableHead>
-                      <TableHead>Company</TableHead>
-                      <TableHead>Location</TableHead>
-                      <TableHead className="text-right">Qty</TableHead>
-                      <TableHead className="w-[100px]">Status</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {previewItems.length === 0 ? (
+              {/* Scrollable preview table with fixed height */}
+              <div className="max-h-[400px] overflow-y-auto pr-2" style={{ scrollbarWidth: 'thin' }}>
+                <div className="border rounded-md overflow-hidden">
+                  <Table>
+                    <TableHeader className="sticky top-0 bg-background z-10">
                       <TableRow>
-                        <TableCell colSpan={6} className="text-center py-4">
-                          No data to preview
-                        </TableCell>
+                        <TableHead className="w-[180px]">Name</TableHead>
+                        <TableHead>Potency</TableHead>
+                        <TableHead>Company</TableHead>
+                        <TableHead>Location</TableHead>
+                        <TableHead className="text-right">Qty</TableHead>
+                        <TableHead className="w-[100px]">Status</TableHead>
                       </TableRow>
-                    ) : (
-                      previewItems.slice(0, 10).map((item, index) => (
-                        <TableRow key={index} className={!item.valid ? "bg-red-50/50 dark:bg-red-900/10" : ""}>
-                          <TableCell className="font-medium">{item.name || '-'}</TableCell>
-                          <TableCell>{item.potency || '-'}</TableCell>
-                          <TableCell>{item.company || '-'}</TableCell>
-                          <TableCell>{item.location || '-'}</TableCell>
-                          <TableCell className="text-right">{item.quantity}</TableCell>
-                          <TableCell>
-                            {item.valid ? (
-                              <Badge variant="outline" className="bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400">
-                                <Check className="h-3 w-3 mr-1" /> Valid
-                              </Badge>
-                            ) : (
-                              <Badge variant="outline" className="bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400" title={item.error}>
-                                <X className="h-3 w-3 mr-1" /> Error
-                              </Badge>
-                            )}
+                    </TableHeader>
+                    <TableBody>
+                      {previewItems.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={6} className="text-center py-4">
+                            No data to preview
                           </TableCell>
                         </TableRow>
-                      ))
-                    )}
-                    {previewItems.length > 10 && (
-                      <TableRow>
-                        <TableCell colSpan={6} className="text-center text-sm text-muted-foreground py-2">
-                          ... and {previewItems.length - 10} more rows
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
+                      ) : (
+                        previewItems.map((item, index) => (
+                          <TableRow key={index} className={!item.valid ? "bg-red-50/50 dark:bg-red-900/10" : ""}>
+                            <TableCell className="font-medium">{item.name || '-'}</TableCell>
+                            <TableCell>{item.potency || '-'}</TableCell>
+                            <TableCell>{item.company || '-'}</TableCell>
+                            <TableCell>{item.location || '-'}</TableCell>
+                            <TableCell className="text-right">{item.quantity}</TableCell>
+                            <TableCell>
+                              {item.valid ? (
+                                <Badge variant="outline" className="bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400">
+                                  <Check className="h-3 w-3 mr-1" /> Valid
+                                </Badge>
+                              ) : (
+                                <Badge 
+                                  variant="outline" 
+                                  className="bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400 cursor-help"
+                                  title={item.error}
+                                >
+                                  <X className="h-3 w-3 mr-1" /> Error
+                                </Badge>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
               </div>
               
               {validCount === 0 && (
@@ -859,9 +909,19 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
                   </AlertDescription>
                 </Alert>
               )}
+              
+              {validCount > 0 && (
+                <Alert className="bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800">
+                  <AlertDescription className="flex items-center text-green-800 dark:text-green-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    Ready to import {validCount} valid medicines
+                  </AlertDescription>
+                </Alert>
+              )}
             </div>
             
-            <DialogFooter className="mt-6 gap-2">
+            {/* Fixed footer with action buttons that stays at the bottom */}
+            <DialogFooter className="gap-2 absolute bottom-4 right-6 left-6 flex justify-between">
               <Button variant="outline" onClick={() => setStep('mapping')}>
                 <ChevronLeft className="h-4 w-4 mr-1" />
                 Back to Mapping
@@ -869,6 +929,7 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
               <Button 
                 onClick={importMedicines}
                 disabled={validCount === 0}
+                className="bg-primary hover:bg-primary/90"
               >
                 Import {validCount} Medicines
               </Button>
@@ -880,7 +941,7 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className={`${step === 'preview' ? 'sm:max-w-[700px]' : 'sm:max-w-[450px]'}`}>
+      <DialogContent className={`${step === 'preview' ? 'sm:max-w-[700px]' : 'sm:max-w-[520px]'} max-h-[90vh]`}>
         <DialogHeader>
           <DialogTitle>
             {step === 'upload' && "Import Your Medicine Inventory"}
