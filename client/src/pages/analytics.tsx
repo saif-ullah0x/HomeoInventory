@@ -21,6 +21,7 @@ import {
 
 export default function Analytics() {
   const medicines = useStore((state) => state.medicines);
+  const { toast } = useToast();
 
   // Count medicines by company
   const companyData = medicines.reduce<{ name: string; value: number }[]>((acc, medicine) => {
@@ -62,10 +63,114 @@ export default function Analytics() {
 
   // COLORS for charts (colorblind-friendly)
   const COLORS = ["hsl(var(--chart-1))", "hsl(var(--chart-2))", "hsl(var(--chart-3))", "hsl(var(--chart-4))", "hsl(var(--chart-5))"];
+  
+  // Function to export analytics report to PDF
+  const exportAnalyticsToPDF = () => {
+    try {
+      // Create a new PDF document
+      const doc = new jsPDF();
+      
+      // Add title
+      doc.setFontSize(18);
+      doc.text("Homeopathic Medicine Inventory - Analytics Report", 14, 22);
+      
+      // Add export date
+      doc.setFontSize(10);
+      doc.text(`Exported on: ${new Date().toLocaleDateString()}`, 14, 30);
+      
+      // Add summary information
+      doc.setFontSize(14);
+      doc.text("Inventory Summary", 14, 40);
+      
+      doc.setFontSize(10);
+      doc.text(`Total Medicines: ${medicines.length}`, 14, 50);
+      doc.text(`Companies: ${new Set(medicines.map(m => m.company)).size}`, 14, 55);
+      doc.text(`Locations: ${new Set(medicines.map(m => m.location)).size}`, 14, 60);
+      
+      // Add company distribution table
+      doc.setFontSize(14);
+      doc.text("Distribution by Company", 14, 70);
+      
+      autoTable(doc, {
+        startY: 75,
+        head: [['Company', 'Count', 'Percentage']],
+        body: companyData.map(item => [
+          item.name,
+          item.value,
+          `${((item.value / medicines.length) * 100).toFixed(1)}%`
+        ]),
+        theme: 'grid',
+        styles: { fontSize: 9 },
+        headStyles: { fillColor: [66, 139, 202] }
+      });
+      
+      // Add location distribution table on a new page
+      doc.addPage();
+      doc.setFontSize(14);
+      doc.text("Distribution by Location", 14, 20);
+      
+      autoTable(doc, {
+        startY: 25,
+        head: [['Location', 'Count', 'Percentage']],
+        body: locationData.map(item => [
+          item.name,
+          item.value,
+          `${((item.value / medicines.length) * 100).toFixed(1)}%`
+        ]),
+        theme: 'grid',
+        styles: { fontSize: 9 },
+        headStyles: { fillColor: [66, 139, 202] }
+      });
+      
+      // Add status distribution table
+      // Use fixed value for simplicity
+      const statusTableY = 120;
+      doc.setFontSize(14);
+      doc.text("Inventory Status Distribution", 14, statusTableY);
+      
+      autoTable(doc, {
+        startY: statusTableY + 5,
+        head: [['Status', 'Count', 'Percentage']],
+        body: statusData.map(item => [
+          item.name,
+          item.value,
+          `${((item.value / medicines.length) * 100).toFixed(1)}%`
+        ]),
+        theme: 'grid',
+        styles: { fontSize: 9 },
+        headStyles: { fillColor: [66, 139, 202] }
+      });
+      
+      // Save the PDF
+      doc.save("homeo-inventory-analytics.pdf");
+      
+      toast({
+        title: "Export successful",
+        description: "Your analytics report has been exported as PDF."
+      });
+    } catch (error) {
+      console.error("PDF export error:", error);
+      toast({
+        title: "Export failed",
+        description: "There was an error exporting your analytics report.",
+        variant: "destructive"
+      });
+    }
+  };
 
   return (
     <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      <Tabs />
+      <div className="flex justify-between items-center mb-6">
+        <Tabs />
+        <Button
+          onClick={exportAnalyticsToPDF}
+          variant="outline"
+          className="gap-2"
+        >
+          <FileDown className="h-4 w-4" />
+          Export Report
+        </Button>
+      </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <Card>

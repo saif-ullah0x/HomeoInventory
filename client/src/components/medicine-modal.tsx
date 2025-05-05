@@ -39,6 +39,7 @@ const formSchema = z.object({
   location: z.string().min(1, "Location is required."),
   customLocation: z.string().optional(),
   subLocation: z.string().optional(),
+  bottleSize: z.string().optional(),
   quantity: z.coerce.number().min(0, "Quantity must be 0 or greater."),
 });
 
@@ -70,6 +71,7 @@ export default function MedicineModal({ isOpen, onClose, medicineId }: MedicineM
       location: "Home",
       customLocation: "",
       subLocation: "",
+      bottleSize: "",
       quantity: 1,
     },
   });
@@ -112,6 +114,7 @@ export default function MedicineModal({ isOpen, onClose, medicineId }: MedicineM
         location: "Home",
         customLocation: "",
         subLocation: "",
+        bottleSize: "",
         quantity: 1,
       });
       setShowCustomCompany(false);
@@ -127,6 +130,7 @@ export default function MedicineModal({ isOpen, onClose, medicineId }: MedicineM
         company: data.company === "other" ? data.customCompany! : data.company,
         location: data.location === "other" ? data.customLocation! : data.location,
         subLocation: data.subLocation || "",
+        bottleSize: data.bottleSize || "",
         quantity: data.quantity,
       };
 
@@ -341,6 +345,21 @@ export default function MedicineModal({ isOpen, onClose, medicineId }: MedicineM
                   <FormLabel>Sub-location (Optional)</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder="e.g., Medicine Cabinet, Drawer" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Bottle Size */}
+            <FormField
+              control={form.control}
+              name="bottleSize"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Bottle Size (Optional)</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="e.g., 10ml, 20ml, 30ml" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
