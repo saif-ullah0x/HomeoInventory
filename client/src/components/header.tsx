@@ -1,10 +1,9 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Hammer } from "lucide-react";
+import { Pill, PillBottle, Download, Sun, Moon } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "@/components/theme-provider";
-import { Download, Sun, Moon } from "lucide-react";
 
 export default function Header() {
   const { toast } = useToast();
@@ -47,7 +46,7 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
           <div className="flex items-center">
-            <Hammer className="text-primary text-2xl mr-2 h-6 w-6" />
+            <PillBottle className="text-primary text-2xl mr-2 h-6 w-6" />
             <Link href="/">
               <h1 className="text-xl font-semibold cursor-pointer">HomeoInvent</h1>
             </Link>
