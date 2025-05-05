@@ -45,12 +45,9 @@ export default function Analytics() {
     return acc;
   }, []);
 
-  // Count medicines by status
+  // Count medicines by status - only show as "Out of Stock" when quantity = 0, otherwise "In Stock"
   const statusData = medicines.reduce<{ name: string; value: number }[]>((acc, medicine) => {
-    let status = "Out of Stock";
-    if (medicine.quantity > 0) {
-      status = medicine.quantity <= 1 ? "Low Stock" : "In Stock";
-    }
+    const status = medicine.quantity === 0 ? "Out of Stock" : "In Stock";
     
     const existingStatus = acc.find((item) => item.name === status);
     if (existingStatus) {
