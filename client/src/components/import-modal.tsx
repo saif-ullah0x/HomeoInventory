@@ -9,7 +9,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { FileSpreadsheet, AlertCircle, ChevronLeft, ChevronRight, Check, X } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
-import { useStore } from "@/lib/store";
+import { useStore, Medicine } from "@/lib/store";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import * as XLSX from 'xlsx';
 import { 
@@ -65,6 +67,15 @@ interface PreviewItem {
 }
 
 // Special value to use instead of empty string
+// Enum for duplicate handling strategy
+type DuplicateHandlingStrategy = 'merge' | 'keep-both' | 'skip';
+
+interface DuplicateItem {
+  importItem: PreviewItem;
+  existingItem: Medicine;
+  strategy: DuplicateHandlingStrategy;
+}
+
 const NOT_AVAILABLE = "__NONE__";
 
 export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
@@ -93,7 +104,14 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
   // Preview data
   const [previewItems, setPreviewItems] = useState<PreviewItem[]>([]);
   
+  // Duplicate detection state
+  const [duplicates, setDuplicates] = useState<DuplicateItem[]>([]);
+  const [showDuplicatesModal, setShowDuplicatesModal] = useState(false);
+  const [globalDuplicateStrategy, setGlobalDuplicateStrategy] = useState<DuplicateHandlingStrategy>('merge');
+  
   const addMedicine = useStore((state) => state.addMedicine);
+  const getMedicineById = useStore((state) => state.getMedicineById);
+  const medicines = useStore((state) => state.medicines);
 
   // Reset when modal closes
   useEffect(() => {
@@ -452,6 +470,66 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
     setStep('preview');
   };
 
+  // Function to check for duplicates in existing medicines
+  const findDuplicates = (items: PreviewItem[]): DuplicateItem[] => {
+    const foundDuplicates: DuplicateItem[] = [];
+    
+    // Only check valid items
+    const validItems = items.filter(item => item.valid);
+    
+    validItems.forEach(item => {
+      // Look for exact matches in the existing medicines
+      const matches = medicines.filter(med => 
+        med.name.toLowerCase() === item.name.toLowerCase() &&
+        med.potency.toLowerCase() === (item.potency || "Unknown").toLowerCase() &&
+        med.company.toLowerCase() === (item.company || "Unknown").toLowerCase() &&
+        med.location.toLowerCase() === (item.location || "Unknown").toLowerCase()
+      );
+      
+      if (matches.length > 0) {
+        // Add each duplicate with default strategy
+        matches.forEach(existingMed => {
+          foundDuplicates.push({
+            importItem: item,
+            existingItem: existingMed,
+            strategy: globalDuplicateStrategy
+          });
+        });
+      }
+    });
+    
+    return foundDuplicates;
+  };
+  
+  // Function to handle setting strategy for a specific duplicate
+  const setDuplicateStrategy = (index: number, strategy: DuplicateHandlingStrategy) => {
+    setDuplicates(prev => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], strategy };
+      return updated;
+    });
+  };
+  
+  // Function to handle setting the global strategy for all duplicates
+  const applyStrategyToAll = (strategy: DuplicateHandlingStrategy) => {
+    setGlobalDuplicateStrategy(strategy);
+    setDuplicates(prev => prev.map(dup => ({ ...dup, strategy })));
+  };
+  
+  const checkForDuplicatesAndImport = () => {
+    // First, check for duplicates
+    const newDuplicates = findDuplicates(previewItems);
+    
+    if (newDuplicates.length > 0) {
+      // If duplicates found, show duplicate handling dialog
+      setDuplicates(newDuplicates);
+      setShowDuplicatesModal(true);
+    } else {
+      // No duplicates, proceed with import
+      importMedicines();
+    }
+  };
+
   const importMedicines = () => {
     // Count valid items
     const validCount = previewItems.filter(item => item.valid).length;
@@ -464,6 +542,18 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
     // Process all data rows (not just preview ones)
     let importCount = 0;
     let errorCount = 0;
+    let duplicateCount = 0;
+    
+    // Track which items are duplicates for special handling
+    const duplicateItems = duplicates.length > 0 
+      ? duplicates.map(d => ({ 
+          name: d.importItem.name, 
+          potency: d.importItem.potency || "Unknown", 
+          strategy: d.strategy,
+          existingItemId: d.existingItem.id,
+          totalQty: d.importItem.quantity + d.existingItem.quantity
+        }))
+      : [];
     
     jsonData.forEach(row => {
       try {
@@ -539,18 +629,60 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
           item.location = "Unknown"; // Default location if not provided
         }
         
-        // Add to store
-        addMedicine({
-          name: item.name,
-          potency: item.potency,
-          company: item.company,
-          location: item.location,
-          subLocation: item.subLocation || "",
-          bottleSize: item.bottleSize || "",
-          quantity: item.quantity
-        });
+        // Check if this is a duplicate by looking in our duplicates map
+        const duplicate = duplicateItems.find(d => 
+          d.name.toLowerCase() === item.name.toLowerCase() && 
+          d.potency.toLowerCase() === item.potency.toLowerCase()
+        );
         
-        importCount++;
+        if (duplicate) {
+          // This is a duplicate - handle according to strategy
+          switch (duplicate.strategy) {
+            case 'merge':
+              // Update existing medicine with combined quantity
+              // We'll need to update the medicine with the given ID
+              const existingMedicine = getMedicineById(duplicate.existingItemId);
+              if (existingMedicine) {
+                addMedicine({
+                  ...existingMedicine,
+                  quantity: duplicate.totalQty
+                });
+                duplicateCount++;
+              }
+              break;
+              
+            case 'keep-both':
+              // Add as a new item, even though it's a duplicate
+              addMedicine({
+                name: item.name,
+                potency: item.potency,
+                company: item.company || "Unknown",
+                location: item.location || "Unknown",
+                subLocation: item.subLocation || "",
+                bottleSize: item.bottleSize || "",
+                quantity: item.quantity
+              });
+              importCount++;
+              break;
+              
+            case 'skip':
+              // Don't import this item
+              break;
+          }
+        } else {
+          // Not a duplicate, add normally
+          addMedicine({
+            name: item.name,
+            potency: item.potency,
+            company: item.company,
+            location: item.location,
+            subLocation: item.subLocation || "",
+            bottleSize: item.bottleSize || "",
+            quantity: item.quantity
+          });
+          
+          importCount++;
+        }
       } catch (err) {
         console.error("Error processing row:", err);
         errorCount++;
@@ -558,10 +690,10 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
     });
     
     // Show result toast
-    if (importCount > 0) {
+    if (importCount > 0 || duplicateCount > 0) {
       toast({
         title: "Import successful",
-        description: `Successfully imported ${importCount} medicines${errorCount > 0 ? ` (${errorCount} failed)` : ''}.`
+        description: `Successfully imported ${importCount} medicines${duplicateCount > 0 ? ` (and merged ${duplicateCount} duplicates)` : ''}${errorCount > 0 ? ` (${errorCount} failed)` : ''}.`
       });
       onClose();
     } else {
@@ -838,7 +970,7 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
               </div>
               
               {/* Scrollable preview table with fixed height */}
-              <div className="max-h-[400px] overflow-y-auto pr-2" style={{ scrollbarWidth: 'thin' }}>
+              <div className="max-h-[380px] overflow-y-auto overflow-x-hidden pr-1" style={{ scrollbarWidth: 'thin' }}>
                 <div className="border rounded-md overflow-hidden">
                   <Table>
                     <TableHeader className="sticky top-0 bg-background z-10">
@@ -848,7 +980,7 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
                         <TableHead>Company</TableHead>
                         <TableHead>Location</TableHead>
                         <TableHead className="text-right">Qty</TableHead>
-                        <TableHead className="w-[100px]">Status</TableHead>
+                        <TableHead className="w-[80px]">Status</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -928,7 +1060,7 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
                 Back to Mapping
               </Button>
               <Button 
-                onClick={importMedicines}
+                onClick={checkForDuplicatesAndImport}
                 disabled={validCount === 0}
                 className="bg-primary hover:bg-primary/90"
               >
@@ -940,32 +1072,155 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
     }
   };
 
+  const renderDuplicatesModal = () => {
+    if (!showDuplicatesModal) return null;
+    
+    return (
+      <Dialog open={showDuplicatesModal} onOpenChange={(open) => !open && setShowDuplicatesModal(false)}>
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-hidden">
+          <DialogHeader>
+            <DialogTitle>Duplicate Medicines Found</DialogTitle>
+            <DialogDescription>
+              We found {duplicates.length} duplicate medicines. Please choose how to handle them.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 my-4">
+            <div className="space-y-2 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-md border border-blue-200 dark:border-blue-800">
+              <h4 className="font-medium text-blue-800 dark:text-blue-300">Apply to all duplicates:</h4>
+              <div className="flex flex-wrap gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => applyStrategyToAll('merge')}
+                  className={globalDuplicateStrategy === 'merge' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30' : ''}
+                >
+                  Merge quantities
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => applyStrategyToAll('keep-both')}
+                  className={globalDuplicateStrategy === 'keep-both' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30' : ''}
+                >
+                  Keep both
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => applyStrategyToAll('skip')}
+                  className={globalDuplicateStrategy === 'skip' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30' : ''}
+                >
+                  Skip duplicates
+                </Button>
+              </div>
+            </div>
+            
+            <div className="max-h-[300px] overflow-y-auto pr-2" style={{ scrollbarWidth: 'thin' }}>
+              <div className="space-y-3">
+                {duplicates.map((duplicate, index) => (
+                  <div 
+                    key={index} 
+                    className="p-3 border rounded-md bg-background"
+                  >
+                    <div className="grid grid-cols-2 gap-2 mb-2">
+                      <div>
+                        <h4 className="text-sm font-medium">Existing Medicine:</h4>
+                        <p className="text-sm">{duplicate.existingItem.name} ({duplicate.existingItem.potency})</p>
+                        <p className="text-xs text-muted-foreground">
+                          Qty: {duplicate.existingItem.quantity} | {duplicate.existingItem.company}, {duplicate.existingItem.location}
+                        </p>
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-medium">Import Medicine:</h4>
+                        <p className="text-sm">{duplicate.importItem.name} ({duplicate.importItem.potency})</p>
+                        <p className="text-xs text-muted-foreground">
+                          Qty: {duplicate.importItem.quantity} | {duplicate.importItem.company}, {duplicate.importItem.location}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <RadioGroup
+                      value={duplicate.strategy}
+                      onValueChange={(value) => setDuplicateStrategy(index, value as DuplicateHandlingStrategy)}
+                      className="grid grid-cols-3 gap-2"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="merge" id={`merge-${index}`} />
+                        <Label htmlFor={`merge-${index}`} className="text-sm">
+                          Merge quantities
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="keep-both" id={`keep-${index}`} />
+                        <Label htmlFor={`keep-${index}`} className="text-sm">
+                          Keep both
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="skip" id={`skip-${index}`} />
+                        <Label htmlFor={`skip-${index}`} className="text-sm">
+                          Skip
+                        </Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setShowDuplicatesModal(false)}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={() => {
+                setShowDuplicatesModal(false);
+                importMedicines();
+              }}
+            >
+              Proceed with Import
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className={`${step === 'preview' ? 'sm:max-w-[700px]' : 'sm:max-w-[520px]'} max-h-[90vh]`}>
-        <DialogHeader>
-          <DialogTitle>
-            {step === 'upload' && "Import Your Medicine Inventory"}
-            {step === 'mapping' && "Map Your Excel Columns"}
-            {step === 'preview' && "Preview Import Data"}
-          </DialogTitle>
-          <DialogDescription>
-            {step === 'upload' && "Upload your Excel (.xlsx/.xls) or CSV (.csv) file with medicine details."}
-            {step === 'mapping' && "Select which columns contain which medicine information."}
-            {step === 'preview' && "Review your data before finalizing the import."}
-          </DialogDescription>
-        </DialogHeader>
-        
-        {error && (
-          <Alert variant="destructive" className="mt-4">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-        
-        {renderContent()}
-      </DialogContent>
-    </Dialog>
+    <>
+      <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+        <DialogContent className={`${step === 'preview' ? 'sm:max-w-[700px]' : 'sm:max-w-[520px]'} max-h-[90vh] overflow-hidden`} style={{ maxHeight: "calc(100vh - 80px)" }}>
+          <DialogHeader>
+            <DialogTitle>
+              {step === 'upload' && "Import Your Medicine Inventory"}
+              {step === 'mapping' && "Map Your Excel Columns"}
+              {step === 'preview' && "Preview Import Data"}
+            </DialogTitle>
+            <DialogDescription>
+              {step === 'upload' && "Upload your Excel (.xlsx/.xls) or CSV (.csv) file with medicine details."}
+              {step === 'mapping' && "Select which columns contain which medicine information."}
+              {step === 'preview' && "Review your data before finalizing the import."}
+            </DialogDescription>
+          </DialogHeader>
+          
+          {error && (
+            <Alert variant="destructive" className="mt-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          
+          {renderContent()}
+        </DialogContent>
+      </Dialog>
+      
+      {renderDuplicatesModal()}
+    </>
   );
 }
