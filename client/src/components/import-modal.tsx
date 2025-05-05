@@ -338,6 +338,22 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
       [field]: value === "" ? null : value
     }));
   };
+  
+  // Helper function to render column options consistently and safely
+  const renderColumnOptions = () => {
+    return (
+      <>
+        {headers.map((header, index) => {
+          const colValue = String.fromCharCode(65 + index);
+          return (
+            <SelectItem key={index} value={colValue}>
+              {header || `Column ${colValue}`}
+            </SelectItem>
+          );
+        })}
+      </>
+    );
+  };
 
   const generatePreview = () => {
     const preview: PreviewItem[] = [];
@@ -401,21 +417,40 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
         }
       }
       
-      // Validate required fields
+      // Validate required fields - only name is absolutely required
+      // The other fields can be optionally required based on configuration
       if (!item.name) {
         item.valid = false;
         item.error = "Missing medicine name";
-      } else if (!item.potency) {
-        item.valid = false;
-        item.error = "Missing potency";
-      } else if (!item.company) {
-        item.valid = false;
-        item.error = "Missing company";
-      } else if (!item.location) {
-        item.valid = false;
-        item.error = "Missing location";
       } else {
-        item.valid = true;
+        // Validation warnings for other fields
+        if (!item.potency) {
+          // If we have a column mapping for potency but it's empty, that's an error
+          // If we don't have a column mapping, it's ok to be missing
+          if (columnMapping.potency) {
+            item.valid = false;
+            item.error = "Missing potency";
+          }
+        }
+        
+        if (!item.company) {
+          if (columnMapping.company) {
+            item.valid = false;
+            item.error = "Missing company";
+          }
+        }
+        
+        if (!item.location) {
+          if (columnMapping.location) {
+            item.valid = false;
+            item.error = "Missing location";
+          }
+        }
+        
+        // If we haven't set valid to false by now, it's valid
+        if (item.valid !== false) {
+          item.valid = true;
+        }
       }
       
       preview.push(item);
@@ -493,10 +528,23 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
           }
         }
         
-        // Validate required fields
-        if (!item.name || !item.potency || !item.company || !item.location) {
+        // Only medicine name is absolutely required
+        if (!item.name) {
           errorCount++;
           return; // Skip this row
+        }
+        
+        // Set default values for optional fields
+        if (!item.potency) {
+          item.potency = "Unknown"; // Default potency if not provided
+        }
+        
+        if (!item.company) {
+          item.company = "Unknown"; // Default company if not provided
+        }
+        
+        if (!item.location) {
+          item.location = "Unknown"; // Default location if not provided
         }
         
         // Add to store
@@ -586,21 +634,14 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
                       <SelectValue placeholder="Select column" />
                     </SelectTrigger>
                     <SelectContent>
-                      {headers.map((header, index) => {
-                        const colValue = String.fromCharCode(65 + index);
-                        return (
-                          <SelectItem key={index} value={colValue}>
-                            {header || `Column ${colValue}`}
-                          </SelectItem>
-                        );
-                      })}
+                      {renderColumnOptions()}
                     </SelectContent>
                   </Select>
                 </div>
                 
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-medium flex justify-between">
-                    <span>Which column contains potency? <span className="text-red-500">*</span></span>
+                    <span>Which column contains potency?</span>
                     {!columnMapping.potency && (
                       <span className="text-xs text-muted-foreground">
                         If not selected, will try to extract from name (e.g., "Arnica 30C")
@@ -616,18 +657,14 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="">Not available in file</SelectItem>
-                      {headers.map((header, index) => (
-                        <SelectItem key={index} value={String.fromCharCode(65 + index)}>
-                          {header || `Column ${String.fromCharCode(65 + index)}`}
-                        </SelectItem>
-                      ))}
+                      {renderColumnOptions()}
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-medium">
-                    Which column contains company? <span className="text-red-500">*</span>
+                    Which column contains company?
                   </label>
                   <Select 
                     value={columnMapping.company || ''} 
@@ -638,18 +675,14 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="">Not available in file</SelectItem>
-                      {headers.map((header, index) => (
-                        <SelectItem key={index} value={String.fromCharCode(65 + index)}>
-                          {header || `Column ${String.fromCharCode(65 + index)}`}
-                        </SelectItem>
-                      ))}
+                      {renderColumnOptions()}
                     </SelectContent>
                   </Select>
                 </div>
                 
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-medium">
-                    Which column contains location/area? <span className="text-red-500">*</span>
+                    Which column contains location/area?
                   </label>
                   <Select 
                     value={columnMapping.location || ''} 
@@ -660,11 +693,7 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="">Not available in file</SelectItem>
-                      {headers.map((header, index) => (
-                        <SelectItem key={index} value={String.fromCharCode(65 + index)}>
-                          {header || `Column ${String.fromCharCode(65 + index)}`}
-                        </SelectItem>
-                      ))}
+                      {renderColumnOptions()}
                     </SelectContent>
                   </Select>
                 </div>
@@ -682,11 +711,7 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="">Not available in file</SelectItem>
-                      {headers.map((header, index) => (
-                        <SelectItem key={index} value={String.fromCharCode(65 + index)}>
-                          {header || `Column ${String.fromCharCode(65 + index)}`}
-                        </SelectItem>
-                      ))}
+                      {renderColumnOptions()}
                     </SelectContent>
                   </Select>
                 </div>
@@ -704,11 +729,7 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="">Not available in file</SelectItem>
-                      {headers.map((header, index) => (
-                        <SelectItem key={index} value={String.fromCharCode(65 + index)}>
-                          {header || `Column ${String.fromCharCode(65 + index)}`}
-                        </SelectItem>
-                      ))}
+                      {renderColumnOptions()}
                     </SelectContent>
                   </Select>
                 </div>
@@ -726,11 +747,7 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="">Not available in file (will use default quantity of 1)</SelectItem>
-                      {headers.map((header, index) => (
-                        <SelectItem key={index} value={String.fromCharCode(65 + index)}>
-                          {header || `Column ${String.fromCharCode(65 + index)}`}
-                        </SelectItem>
-                      ))}
+                      {renderColumnOptions()}
                     </SelectContent>
                   </Select>
                 </div>
