@@ -1,0 +1,57 @@
+Here’s a **detailed and clear prompt** you can give to the Replit developer or system to explain the **import issue completely** — including both Excel and CSV problems, and the required fix:
+
+---
+
+🚨 **Final Fix: Excel/CSV Import Problem**
+**Description**: I'm facing a critical issue when uploading Excel or CSV files in my medicine inventory app. This is the only thing left to fix.
+
+### ❌ Current Errors:
+
+1. **Excel File Error**:
+
+   > “The uploaded file is empty or contains only headers”
+   > Even though the file has proper data, it throws this error just because some columns are missing or headers aren’t exactly matching.
+
+2. **CSV File Error**:
+
+   > `[plugin:runtime-error-plugin] A <Select.Item /> must have a value prop that is not an empty string.`
+   > This happens when the dropdown for column mapping doesn’t handle empty values correctly.
+
+---
+
+### ✅ Expected Behavior:
+
+* The system should **read all rows**, even if column headers don’t match the database fields exactly.
+* Show a **column mapping screen** like MySQL import:
+
+  * Let the user manually map columns from the file to internal fields (e.g., "Name", "Quantity", etc.).
+  * Show dropdowns with available file columns.
+  * Allow skipping unrecognized fields without crashing.
+* If a user doesn’t assign a mapping to one field, **just ignore that column**, don’t block the whole import.
+* Avoid runtime crashes by ensuring no `<Select.Item>` has an empty `value`.
+
+---
+
+### 📎 Example File:
+
+My Excel file has these columns:
+
+```
+Medicine Name | Current Quantity | Company | Area
+```
+
+But some columns like potency or category are missing. Still, the app should be able to:
+
+* Detect and allow manual mapping of these available fields.
+* Import whatever data is provided.
+* Skip or leave empty anything not included.
+
+---
+
+💡 Please update the import system to handle partial data gracefully and use dynamic mapping to match columns.
+
+This is urgent and my final credit. Thank you.
+
+---
+
+Let me know if you want the same prompt translated in Urdu too.

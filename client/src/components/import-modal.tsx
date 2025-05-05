@@ -64,6 +64,9 @@ interface PreviewItem {
   error?: string;
 }
 
+// Special value to use instead of empty string
+const NOT_AVAILABLE = "__NONE__";
+
 export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -335,7 +338,7 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
   const handleColumnMappingChange = (field: keyof ColumnMapping, value: string | null) => {
     setColumnMapping(prev => ({
       ...prev,
-      [field]: value === "" ? null : value
+      [field]: value === NOT_AVAILABLE ? null : value
     }));
   };
   
@@ -649,14 +652,14 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
                     )}
                   </label>
                   <Select 
-                    value={columnMapping.potency || ''} 
+                    value={columnMapping.potency || NOT_AVAILABLE} 
                     onValueChange={(value) => handleColumnMappingChange('potency', value)}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select column" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Not available in file</SelectItem>
+                      <SelectItem value={NOT_AVAILABLE}>Not available in file</SelectItem>
                       {renderColumnOptions()}
                     </SelectContent>
                   </Select>
@@ -667,14 +670,14 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
                     Which column contains company?
                   </label>
                   <Select 
-                    value={columnMapping.company || ''} 
+                    value={columnMapping.company || NOT_AVAILABLE} 
                     onValueChange={(value) => handleColumnMappingChange('company', value)}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select column" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Not available in file</SelectItem>
+                      <SelectItem value={NOT_AVAILABLE}>Not available in file</SelectItem>
                       {renderColumnOptions()}
                     </SelectContent>
                   </Select>
@@ -685,14 +688,14 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
                     Which column contains location/area?
                   </label>
                   <Select 
-                    value={columnMapping.location || ''} 
+                    value={columnMapping.location || NOT_AVAILABLE} 
                     onValueChange={(value) => handleColumnMappingChange('location', value)}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select column" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Not available in file</SelectItem>
+                      <SelectItem value={NOT_AVAILABLE}>Not available in file</SelectItem>
                       {renderColumnOptions()}
                     </SelectContent>
                   </Select>
@@ -703,14 +706,14 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
                     Which column contains sub-location?
                   </label>
                   <Select 
-                    value={columnMapping.subLocation || ''} 
+                    value={columnMapping.subLocation || NOT_AVAILABLE} 
                     onValueChange={(value) => handleColumnMappingChange('subLocation', value)}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select column" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Not available in file</SelectItem>
+                      <SelectItem value={NOT_AVAILABLE}>Not available in file</SelectItem>
                       {renderColumnOptions()}
                     </SelectContent>
                   </Select>
@@ -721,14 +724,14 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
                     Which column contains bottle size?
                   </label>
                   <Select 
-                    value={columnMapping.bottleSize || ''} 
+                    value={columnMapping.bottleSize || NOT_AVAILABLE} 
                     onValueChange={(value) => handleColumnMappingChange('bottleSize', value)}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select column" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Not available in file</SelectItem>
+                      <SelectItem value={NOT_AVAILABLE}>Not available in file</SelectItem>
                       {renderColumnOptions()}
                     </SelectContent>
                   </Select>
@@ -739,14 +742,14 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
                     Which column contains quantity? 
                   </label>
                   <Select 
-                    value={columnMapping.quantity || ''} 
+                    value={columnMapping.quantity || NOT_AVAILABLE} 
                     onValueChange={(value) => handleColumnMappingChange('quantity', value)}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select column" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Not available in file (will use default quantity of 1)</SelectItem>
+                      <SelectItem value={NOT_AVAILABLE}>Not available in file (will use default quantity of 1)</SelectItem>
                       {renderColumnOptions()}
                     </SelectContent>
                   </Select>
