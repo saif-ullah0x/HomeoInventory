@@ -7,8 +7,8 @@ class HomeoDatabase extends Dexie {
 
   constructor() {
     super('homeoInventoryDB');
-    this.version(1).stores({
-      medicines: '++id, name, company, location'
+    this.version(2).stores({
+      medicines: '++id, name, company, location, bottleSize'
     });
   }
 }

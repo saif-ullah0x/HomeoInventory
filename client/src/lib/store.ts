@@ -10,6 +10,7 @@ export interface Medicine {
   location: string;
   subLocation?: string;
   quantity: number;
+  bottleSize?: string;
 }
 
 interface MedicineInput {
@@ -19,6 +20,7 @@ interface MedicineInput {
   location: string;
   subLocation?: string;
   quantity: number;
+  bottleSize?: string;
 }
 
 interface MedicineState {

@@ -12,6 +12,7 @@ export const medicines = pgTable("medicines", {
   location: text("location").notNull(),
   subLocation: text("sub_location"),
   quantity: integer("quantity").notNull().default(0),
+  bottleSize: text("bottle_size"),
 });
 
 // Schema for inserting and validating medicine data

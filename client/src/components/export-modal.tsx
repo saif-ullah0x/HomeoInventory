@@ -7,9 +7,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { FileJson, FileSpreadsheet } from "lucide-react";
+import { FileJson, FileSpreadsheet, File, FileText } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { useToast } from "@/hooks/use-toast";
+import { Medicine } from "@/lib/store";
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 interface ExportModalProps {
   isOpen: boolean;
@@ -49,7 +53,7 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
       // Create CSV header row
       const headers = [
         "Name", "Potency", "Company", "Location", 
-        "SubLocation", "Quantity"
+        "SubLocation", "Bottle Size", "Quantity"
       ];
       
       // Convert each medicine to CSV row
@@ -59,6 +63,7 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
         `"${medicine.company}"`,
         `"${medicine.location}"`,
         `"${medicine.subLocation || ''}"`,
+        `"${medicine.bottleSize || ''}"`,
         medicine.quantity
       ]);
       
@@ -80,6 +85,110 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
       toast({
         title: "Export failed",
         description: "There was an error exporting your data.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleExportExcel = () => {
+    try {
+      const data = exportData();
+      
+      // Convert medicines to rows for Excel
+      const worksheet = XLSX.utils.json_to_sheet(
+        data.medicines.map(medicine => ({
+          "Medicine Name": medicine.name,
+          "Potency": medicine.potency,
+          "Company": medicine.company,
+          "Location": medicine.location,
+          "Sub Location": medicine.subLocation || "",
+          "Bottle Size": medicine.bottleSize || "",
+          "Quantity": medicine.quantity
+        }))
+      );
+      
+      // Create a workbook with our worksheet
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Inventory");
+      
+      // Convert to binary and create blob
+      const excelData = XLSX.write(workbook, { bookType: 'xlsx', type: 'binary' });
+      
+      // Convert binary string to ArrayBuffer
+      const buffer = new ArrayBuffer(excelData.length);
+      const view = new Uint8Array(buffer);
+      for (let i = 0; i < excelData.length; i++) {
+        view[i] = excelData.charCodeAt(i) & 0xFF;
+      }
+      
+      // Create blob and download
+      const blob = new Blob([buffer], { type: 'application/octet-stream' });
+      downloadFile(blob, "homeo-inventory.xlsx");
+      
+      toast({
+        title: "Export successful",
+        description: "Your inventory data has been exported as Excel."
+      });
+      onClose();
+    } catch (error) {
+      console.error("Excel export error:", error);
+      toast({
+        title: "Export failed",
+        description: "There was an error exporting your data to Excel.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleExportPDF = () => {
+    try {
+      const data = exportData();
+      
+      // Create a new PDF document
+      const doc = new jsPDF();
+      
+      // Add title
+      doc.setFontSize(18);
+      doc.text("Homeopathic Medicine Inventory", 14, 22);
+      
+      // Add export date
+      doc.setFontSize(10);
+      doc.text(`Exported on: ${new Date().toLocaleDateString()}`, 14, 30);
+      
+      // Prepare data for the table
+      const tableRows = data.medicines.map(medicine => [
+        medicine.name,
+        medicine.potency,
+        medicine.company,
+        medicine.location,
+        medicine.subLocation || "",
+        medicine.bottleSize || "",
+        medicine.quantity.toString()
+      ]);
+      
+      // Create the table
+      autoTable(doc, {
+        startY: 35,
+        head: [['Medicine Name', 'Potency', 'Company', 'Location', 'Sub-Location', 'Bottle Size', 'Quantity']],
+        body: tableRows,
+        theme: 'grid',
+        styles: { fontSize: 9 },
+        headStyles: { fillColor: [66, 139, 202] }
+      });
+      
+      // Save the PDF
+      doc.save("homeo-inventory.pdf");
+      
+      toast({
+        title: "Export successful",
+        description: "Your inventory data has been exported as PDF."
+      });
+      onClose();
+    } catch (error) {
+      console.error("PDF export error:", error);
+      toast({
+        title: "Export failed",
+        description: "There was an error exporting your data to PDF.",
         variant: "destructive"
       });
     }
@@ -109,10 +218,26 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
           <Button
             variant="outline"
             className="w-full flex justify-between items-center h-16"
+            onClick={handleExportExcel}
+          >
+            <span className="font-medium">Excel File</span>
+            <FileSpreadsheet className="h-5 w-5 text-green-600" />
+          </Button>
+          <Button
+            variant="outline"
+            className="w-full flex justify-between items-center h-16"
+            onClick={handleExportPDF}
+          >
+            <span className="font-medium">PDF File</span>
+            <File className="h-5 w-5 text-red-600" />
+          </Button>
+          <Button
+            variant="outline"
+            className="w-full flex justify-between items-center h-16"
             onClick={handleExportCSV}
           >
             <span className="font-medium">CSV File</span>
-            <FileSpreadsheet className="h-5 w-5 text-green-600" />
+            <FileText className="h-5 w-5 text-blue-600" />
           </Button>
           <Button
             variant="outline"
