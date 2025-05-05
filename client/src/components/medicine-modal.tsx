@@ -57,10 +57,12 @@ export default function MedicineModal({ isOpen, onClose, medicineId }: MedicineM
   const [showCustomLocation, setShowCustomLocation] = useState(false);
   const [showCustomBottleSize, setShowCustomBottleSize] = useState(false);
   const [medicineNameSuggestions, setMedicineNameSuggestions] = useState<string[]>([]);
-
+  const [subLocationSuggestions, setSubLocationSuggestions] = useState<string[]>([]);
+  
   const addMedicine = useStore((state) => state.addMedicine);
   const updateMedicine = useStore((state) => state.updateMedicine);
   const getMedicineById = useStore((state) => state.getMedicineById);
+  const medicines = useStore((state) => state.medicines);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -77,6 +79,21 @@ export default function MedicineModal({ isOpen, onClose, medicineId }: MedicineM
     },
   });
 
+  // Gather unique existing sub-locations for autocomplete
+  useEffect(() => {
+    // Get all non-empty sub-locations from existing medicines
+    const existingSubLocations = medicines
+      .map(m => m.subLocation)
+      .filter((subLocation): subLocation is string => 
+        subLocation !== undefined && subLocation !== null && subLocation !== "");
+    
+    // Save unique values for autocomplete
+    const uniqueSubLocations = Array.from(new Set(existingSubLocations));
+    
+    // Update state for autocomplete suggestions
+    setSubLocationSuggestions(uniqueSubLocations);
+  }, [medicines]);
+  
   useEffect(() => {
     if (medicineId !== null) {
       const medicine = getMedicineById(medicineId);
@@ -352,7 +369,7 @@ export default function MedicineModal({ isOpen, onClose, medicineId }: MedicineM
               />
             )}
 
-            {/* Sub-location */}
+            {/* Sub-location with Autocomplete */}
             <FormField
               control={form.control}
               name="subLocation"
@@ -360,7 +377,18 @@ export default function MedicineModal({ isOpen, onClose, medicineId }: MedicineM
                 <FormItem>
                   <FormLabel>Sub-location (Optional)</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="e.g., Medicine Cabinet, Drawer" />
+                    <div className="relative">
+                      <Input 
+                        {...field} 
+                        placeholder="e.g., Medicine Cabinet, Drawer" 
+                        list="sublocation-suggestions"
+                      />
+                      <datalist id="sublocation-suggestions">
+                        {subLocationSuggestions.map((suggestion, index) => (
+                          <option key={index} value={suggestion} />
+                        ))}
+                      </datalist>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
