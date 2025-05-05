@@ -63,7 +63,11 @@ export default function Inventory() {
           onDelete={handleDeleteMedicine} 
         />
       ) : (
-        <EmptyState onAddClick={() => setIsAddMedicineModalOpen(true)} />
+        <EmptyState 
+          onAddClick={() => setIsAddMedicineModalOpen(true)} 
+          isSearching={searchTerm !== "" || locationFilter !== "all_locations" || companyFilter !== "all_companies"}
+          searchTerm={searchTerm}
+        />
       )}
 
       <MedicineModal 

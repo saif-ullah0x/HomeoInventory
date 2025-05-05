@@ -100,11 +100,19 @@ export default function MedicineModal({ isOpen, onClose, medicineId }: MedicineM
           form.setValue("location", medicine.location);
           setShowCustomLocation(false);
         }
+        
+        // Check if bottle size is in default list
+        if (medicine.bottleSize && !BOTTLE_SIZES.includes(medicine.bottleSize)) {
+          form.setValue("bottleSize", medicine.bottleSize);
+          setShowCustomBottleSize(true);
+        } else {
+          form.setValue("bottleSize", medicine.bottleSize || "");
+          setShowCustomBottleSize(false);
+        }
 
         form.setValue("name", medicine.name);
         form.setValue("potency", medicine.potency);
         form.setValue("subLocation", medicine.subLocation || "");
-        form.setValue("bottleSize", medicine.bottleSize || "");
         form.setValue("quantity", medicine.quantity);
       }
     } else {
@@ -121,6 +129,7 @@ export default function MedicineModal({ isOpen, onClose, medicineId }: MedicineM
       });
       setShowCustomCompany(false);
       setShowCustomLocation(false);
+      setShowCustomBottleSize(false);
     }
   }, [medicineId, getMedicineById, form]);
 
@@ -365,13 +374,43 @@ export default function MedicineModal({ isOpen, onClose, medicineId }: MedicineM
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Bottle Size (Optional)</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="e.g., 10ml, 20ml, 30ml" />
-                  </FormControl>
+                  <Select onValueChange={handleBottleSizeChange} defaultValue={field.value || ""}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select bottle size" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="">None</SelectItem>
+                      {BOTTLE_SIZES.filter(size => size !== "custom").map((size) => (
+                        <SelectItem key={size} value={size}>
+                          {size}
+                        </SelectItem>
+                      ))}
+                      <SelectItem value="custom">Custom Size</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
             />
+            
+            {/* Custom Bottle Size */}
+            {showCustomBottleSize && (
+              <FormField
+                control={form.control}
+                name="bottleSize"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Custom Bottle Size</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="e.g., 25ml, 100ml" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             {/* Quantity */}
             <FormField
