@@ -110,12 +110,19 @@ export default function InventoryControls({
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <Button onClick={onImportClick} variant="outline" className="gap-2">
+        <Button 
+          onClick={onImportClick} 
+          variant="outline" 
+          className="gap-2 button-hover-effect glow-effect border-green-500/30"
+        >
           <FileSpreadsheet className="h-4 w-4 text-green-600" />
           Import
         </Button>
 
-        <Button onClick={onAddClick} className="gap-2">
+        <Button 
+          onClick={onAddClick} 
+          className="gap-2 button-hover-effect glow-effect"
+        >
           <Plus className="h-4 w-4" />
           Add
         </Button>

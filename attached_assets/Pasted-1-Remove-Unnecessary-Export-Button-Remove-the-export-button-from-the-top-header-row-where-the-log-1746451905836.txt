@@ -1,0 +1,77 @@
+1. Remove Unnecessary Export Button
+Remove the export button from the top header row (where the logo appears).
+
+It is not required anymore since export is already handled elsewhere.
+
+
+2. Fix Incorrect Low Stock Display in Pie Chart
+In the analytics pie chart, when 1 bottle is in stock, it should not be shown as low stock.
+
+Low stock should only trigger when quantity = 0.
+
+3. Improve UI/UX and Interactions
+Enhance the color scheme
+
+Add glow/hover animations
+
+Use modern fonts and smooth transitions
+
+Overall design should feel premium and intuitive
+
+4. Excel File Import – What’s the Issue?
+Problem:
+Most users (including you) are not uploading the Excel file in a strict predefined format like:
+
+Name
+Potency
+Company
+Quantity
+Location
+Bottle Size
+But the app expects exact column headers and structure. If it doesn’t match, the app fails to read and import the data properly.
+
+Fix Suggestion:
+
+Use smart detection: Auto-detect column headers based on keywords like:
+
+“Arnica 30” → split into Name = Arnica, Potency = 30
+“Masood” or “Kent” → detect as Company
+Add a preview step after upload to let user map fields manually (like Google Forms does).
+Allow import from both .xlsx and .csv files.
+
+5. Family Access to Medicine Stock
+Problem:
+Your family installs the app but they don’t automatically see the shared inventory. Right now, there's no system for sharing access between devices or users.
+
+Fix Suggestion:
+
+Add an “Add Family Member” button in settings.
+You (owner) can:
+
+Share access by generating a unique access code or link
+Set permissions: View-only / Edit
+On the family member’s app:
+
+They paste the code or open the shared link → access granted
+No login system needed; just link-based sync with your local data or simple Firebase DB.
+
+
+Feature Fix & Enhancement Request
+
+Fix Excel Import Logic:
+
+Right now the app expects a strict Excel format.
+Instead, enable smart column detection or a manual mapping screen after upload.
+Example: split “Arnica 30” into name and potency automatically.
+Support both .xlsx and .csv formats.
+Show a preview before final import.
+Family Member Access System:
+
+Add an “Add Family Member” option in settings.
+Generate a unique access link or code that can be:
+
+Shared with others
+Used to sync the same medicine stock on other devices
+Allow owner to set permissions (view or edit).
+No login system; use lightweight link-based sync.
+
