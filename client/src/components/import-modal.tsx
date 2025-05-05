@@ -361,8 +361,8 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
   const generatePreview = () => {
     const preview: PreviewItem[] = [];
     
-    // Process up to first 100 rows for preview
-    const rowsToProcess = Math.min(jsonData.length, 100);
+    // Process all rows for data extraction, but limit the preview display for performance
+    const rowsToProcess = jsonData.length;
     
     for (let i = 0; i < rowsToProcess; i++) {
       const row = jsonData[i];
@@ -829,12 +829,12 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
                     <X className="h-3 w-3 mr-1" /> {invalidCount} invalid
                   </Badge>
                 )}
-                
-                <span className="text-xs text-muted-foreground ml-auto">
-                  {previewItems.length < jsonData.length 
-                    ? `Showing preview of first ${previewItems.length} rows (of ${jsonData.length} total)` 
-                    : `Showing all ${previewItems.length} rows`}
-                </span>
+              </div>
+
+              <div className="text-xs text-muted-foreground mb-2">
+                {previewItems.length <= 100 
+                  ? `Showing all ${previewItems.length} rows` 
+                  : `Showing preview of first 100 rows (of ${jsonData.length} total rows to be imported)`}
               </div>
               
               {/* Scrollable preview table with fixed height */}
@@ -859,7 +859,7 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
                           </TableCell>
                         </TableRow>
                       ) : (
-                        previewItems.map((item, index) => (
+                        previewItems.slice(0, 100).map((item, index) => (
                           <TableRow 
                           key={index} 
                           className={!item.name ? "bg-red-50/50 dark:bg-red-900/10" : 
