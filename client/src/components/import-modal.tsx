@@ -381,12 +381,13 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
       if (columnMapping.name) {
         let nameValue = row[columnMapping.name]?.toString()?.trim() || '';
         
-        // Check if name has potency embedded (e.g., "Arnica 30C")
-        const potencyMatch = nameValue.match(/\s+(\d+[cxCX]?|[qQcCxX]|LM\d+|MM?|CM)$/);
+        // Check if name has potency embedded (e.g., "Arnica 30C", "Arnica 1M")
+        const potencyMatch = nameValue.match(/\s+(\d+[cxCXmM]?|[qQcCxXmM]|LM\d+|MM?|CM)$/);
         if (potencyMatch && !columnMapping.potency) {
           // Split name and potency if potency column isn't mapped
           item.potency = potencyMatch[1];
           item.name = nameValue.substring(0, nameValue.length - potencyMatch[0].length).trim();
+          console.log("Extracted potency:", item.potency, "from name:", nameValue);
         } else {
           item.name = nameValue;
         }
@@ -421,38 +422,26 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
       }
       
       // Validate required fields - only name is absolutely required
-      // The other fields can be optionally required based on configuration
+      // Everything else is optional for better user experience with csv imports
       if (!item.name) {
         item.valid = false;
         item.error = "Missing medicine name";
       } else {
-        // Validation warnings for other fields
-        if (!item.potency) {
-          // If we have a column mapping for potency but it's empty, that's an error
-          // If we don't have a column mapping, it's ok to be missing
-          if (columnMapping.potency) {
-            item.valid = false;
-            item.error = "Missing potency";
-          }
-        }
+        // All items with a name are considered valid
+        item.valid = true;
         
-        if (!item.company) {
-          if (columnMapping.company) {
-            item.valid = false;
-            item.error = "Missing company";
-          }
-        }
+        // We're making all other fields optional for better import experience
+        // If a field is mapped but empty in a specific row, we'll still accept it
         
-        if (!item.location) {
-          if (columnMapping.location) {
-            item.valid = false;
-            item.error = "Missing location";
-          }
-        }
+        // Let the user know what's missing as informational, not an error
+        const missingFields = [];
+        if (!item.potency && columnMapping.potency) missingFields.push("potency");
+        if (!item.company && columnMapping.company) missingFields.push("company");
+        if (!item.location && columnMapping.location) missingFields.push("location");
         
-        // If we haven't set valid to false by now, it's valid
-        if (item.valid !== false) {
-          item.valid = true;
+        // This is just for tooltips - we'll still import the item
+        if (missingFields.length > 0) {
+          item.error = `Missing: ${missingFields.join(", ")}`;
         }
       }
       
@@ -494,7 +483,7 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
           let nameValue = row[columnMapping.name]?.toString()?.trim() || '';
           
           // Check if name has potency embedded
-          const potencyMatch = nameValue.match(/\s+(\d+[cxCX]?|[qQcCxX]|LM\d+|MM?|CM)$/);
+          const potencyMatch = nameValue.match(/\s+(\d+[cxCXmM]?|[qQcCxXmM]|LM\d+|MM?|CM)$/);
           if (potencyMatch && !columnMapping.potency) {
             item.potency = potencyMatch[1];
             item.name = nameValue.substring(0, nameValue.length - potencyMatch[0].length).trim();
@@ -871,24 +860,36 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
                         </TableRow>
                       ) : (
                         previewItems.map((item, index) => (
-                          <TableRow key={index} className={!item.valid ? "bg-red-50/50 dark:bg-red-900/10" : ""}>
+                          <TableRow 
+                          key={index} 
+                          className={!item.name ? "bg-red-50/50 dark:bg-red-900/10" : 
+                                    item.error ? "bg-yellow-50/50 dark:bg-yellow-900/10" : ""}
+                        >
                             <TableCell className="font-medium">{item.name || '-'}</TableCell>
                             <TableCell>{item.potency || '-'}</TableCell>
                             <TableCell>{item.company || '-'}</TableCell>
                             <TableCell>{item.location || '-'}</TableCell>
                             <TableCell className="text-right">{item.quantity}</TableCell>
                             <TableCell>
-                              {item.valid ? (
-                                <Badge variant="outline" className="bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400">
-                                  <Check className="h-3 w-3 mr-1" /> Valid
-                                </Badge>
-                              ) : (
+                              {!item.name ? (
                                 <Badge 
                                   variant="outline" 
                                   className="bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400 cursor-help"
                                   title={item.error}
                                 >
                                   <X className="h-3 w-3 mr-1" /> Error
+                                </Badge>
+                              ) : item.error ? (
+                                <Badge 
+                                  variant="outline" 
+                                  className="bg-yellow-50 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400 cursor-help"
+                                  title={item.error}
+                                >
+                                  <Check className="h-3 w-3 mr-1" /> Warning
+                                </Badge>
+                              ) : (
+                                <Badge variant="outline" className="bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400">
+                                  <Check className="h-3 w-3 mr-1" /> Valid
                                 </Badge>
                               )}
                             </TableCell>
