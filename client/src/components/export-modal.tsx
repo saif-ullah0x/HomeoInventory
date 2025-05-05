@@ -209,44 +209,55 @@ export default function ExportModal({ isOpen, onClose }: ExportModalProps) {
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Export Inventory</DialogTitle>
+          <DialogTitle>Export Medicine Inventory</DialogTitle>
           <DialogDescription>
-            Choose a format to export your inventory data.
+            Choose a format to export your complete medicine inventory list.
           </DialogDescription>
         </DialogHeader>
-        <div className="mt-4 space-y-3">
-          <Button
-            variant="outline"
-            className="w-full flex justify-between items-center h-16"
-            onClick={handleExportExcel}
-          >
-            <span className="font-medium">Excel File</span>
-            <FileSpreadsheet className="h-5 w-5 text-green-600" />
-          </Button>
-          <Button
-            variant="outline"
-            className="w-full flex justify-between items-center h-16"
-            onClick={handleExportPDF}
-          >
-            <span className="font-medium">PDF File</span>
-            <File className="h-5 w-5 text-red-600" />
-          </Button>
-          <Button
-            variant="outline"
-            className="w-full flex justify-between items-center h-16"
-            onClick={handleExportCSV}
-          >
-            <span className="font-medium">CSV File</span>
-            <FileText className="h-5 w-5 text-blue-600" />
-          </Button>
-          <Button
-            variant="outline"
-            className="w-full flex justify-between items-center h-16"
-            onClick={handleExportJSON}
-          >
-            <span className="font-medium">JSON File</span>
-            <FileJson className="h-5 w-5 text-amber-600" />
-          </Button>
+        <div className="mt-4 space-y-4">
+          <div className="mb-2">
+            <h3 className="text-sm font-medium mb-2">Recommended Export Formats:</h3>
+            <div className="grid grid-cols-2 gap-3">
+              <Button
+                variant="default"
+                className="w-full flex justify-between items-center h-16 bg-primary-100 hover:bg-primary/90"
+                onClick={handleExportPDF}
+              >
+                <span className="font-medium">PDF File</span>
+                <File className="h-5 w-5 text-red-600" />
+              </Button>
+              <Button
+                variant="default"
+                className="w-full flex justify-between items-center h-16 bg-primary-100 hover:bg-primary/90"
+                onClick={handleExportExcel}
+              >
+                <span className="font-medium">Excel File</span>
+                <FileSpreadsheet className="h-5 w-5 text-green-600" />
+              </Button>
+            </div>
+          </div>
+          
+          <div className="pt-3 border-t">
+            <h3 className="text-xs text-muted-foreground mb-2">Other Formats:</h3>
+            <div className="grid grid-cols-2 gap-3">
+              <Button
+                variant="outline"
+                className="w-full flex justify-between items-center h-12"
+                onClick={handleExportCSV}
+              >
+                <span className="font-medium">CSV File</span>
+                <FileText className="h-4 w-4 text-blue-600" />
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full flex justify-between items-center h-12"
+                onClick={handleExportJSON}
+              >
+                <span className="font-medium">JSON File</span>
+                <FileJson className="h-4 w-4 text-amber-600" />
+              </Button>
+            </div>
+          </div>
         </div>
         <DialogFooter>
           <Button variant="secondary" onClick={onClose}>

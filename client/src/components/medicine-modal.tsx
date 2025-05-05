@@ -191,7 +191,7 @@ export default function MedicineModal({ isOpen, onClose, medicineId }: MedicineM
   };
   
   const handleBottleSizeChange = (value: string) => {
-    form.setValue("bottleSize", value === "custom" ? "" : value);
+    form.setValue("bottleSize", value === "custom" ? "" : (value === "none" ? "" : value));
     setShowCustomBottleSize(value === "custom");
   };
 
@@ -374,14 +374,14 @@ export default function MedicineModal({ isOpen, onClose, medicineId }: MedicineM
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Bottle Size (Optional)</FormLabel>
-                  <Select onValueChange={handleBottleSizeChange} defaultValue={field.value || ""}>
+                  <Select onValueChange={handleBottleSizeChange} defaultValue={field.value || "none"}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select bottle size" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="">None</SelectItem>
+                      <SelectItem value="none">None</SelectItem>
                       {BOTTLE_SIZES.filter(size => size !== "custom").map((size) => (
                         <SelectItem key={size} value={size}>
                           {size}
