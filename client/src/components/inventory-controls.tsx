@@ -31,6 +31,7 @@ interface InventoryControlsProps {
 
 export default function InventoryControls({
   onAddClick,
+  onImportClick,
   onExportToPDF,
   onExportToExcel,
   onSearchChange,
@@ -108,6 +109,11 @@ export default function InventoryControls({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+
+        <Button onClick={onImportClick} variant="outline" className="gap-2">
+          <FileSpreadsheet className="h-4 w-4 text-green-600" />
+          Import
+        </Button>
 
         <Button onClick={onAddClick} className="gap-2">
           <Plus className="h-4 w-4" />

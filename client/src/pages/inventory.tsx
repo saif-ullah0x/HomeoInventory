@@ -166,6 +166,7 @@ export default function Inventory() {
       
       <InventoryControls 
         onAddClick={() => setIsAddMedicineModalOpen(true)}
+        onImportClick={() => setIsImportModalOpen(true)}
         onExportToPDF={exportToPDF}
         onExportToExcel={exportToExcel}
         onSearchChange={setSearchTerm}
