@@ -6,17 +6,21 @@ import EmptyState from "@/components/empty-state";
 import MedicineModal from "@/components/medicine-modal";
 import DeleteModal from "@/components/delete-modal";
 import ImportModal from "@/components/import-modal";
+import ShareModal from "@/components/share-modal";
 import { useStore } from "@/lib/store";
 import { useToast } from "@/hooks/use-toast";
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { Users } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function Inventory() {
   const [isAddMedicineModalOpen, setIsAddMedicineModalOpen] = useState(false);
   const [isEditMedicineModalOpen, setIsEditMedicineModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [medicineToEdit, setMedicineToEdit] = useState<number | null>(null);
   const [medicineToDelete, setMedicineToDelete] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -219,6 +223,22 @@ export default function Inventory() {
         isOpen={isImportModalOpen}
         onClose={() => setIsImportModalOpen(false)}
       />
+      
+      <ShareModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+      />
+      
+      {/* Family Share Button */}
+      <div className="fixed bottom-6 right-6">
+        <Button 
+          size="lg" 
+          onClick={() => setIsShareModalOpen(true)}
+          className="rounded-full h-14 w-14 shadow-lg button-hover-effect glow-effect"
+        >
+          <Users className="h-6 w-6" />
+        </Button>
+      </div>
     </main>
   );
 }
