@@ -192,21 +192,28 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
         // Convert to JSON with header option to get column letters as keys
         data = XLSX.utils.sheet_to_json<any>(worksheet, { header: 'A' });
         
-        if (!data || data.length <= 1) { // 1 because the first row is the header
-          setError("The uploaded file is empty or contains only headers");
+        if (!data || data.length === 0) {
+          setError("The uploaded file appears to be empty");
           return;
         }
         
         // Extract headers (first row)
         const headerRow = data[0];
-        const fileHeaders = Object.values(headerRow).map(h => h?.toString() || '');
+        const fileHeaders = Object.values(headerRow || {}).map(h => h?.toString() || '');
+        
+        // If no valid headers found, try to use the first row as data instead
+        if (fileHeaders.length === 0 || fileHeaders.every(h => !h)) {
+          setError("Could not detect column headers in your file. Please make sure the first row contains column names.");
+          return;
+        }
         
         // Remove header row from data
         const rowData = data.slice(1);
         
+        // Show warning but allow proceeding if there's no data rows
         if (rowData.length === 0) {
-          setError("The uploaded file does not contain any data rows");
-          return;
+          console.warn("The file appears to only contain headers without data rows");
+          // We'll still proceed to mapping screen, but without preview data
         }
         
         setHeaders(fileHeaders);
@@ -579,11 +586,14 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
                       <SelectValue placeholder="Select column" />
                     </SelectTrigger>
                     <SelectContent>
-                      {headers.map((header, index) => (
-                        <SelectItem key={index} value={String.fromCharCode(65 + index)}>
-                          {header || `Column ${String.fromCharCode(65 + index)}`}
-                        </SelectItem>
-                      ))}
+                      {headers.map((header, index) => {
+                        const colValue = String.fromCharCode(65 + index);
+                        return (
+                          <SelectItem key={index} value={colValue}>
+                            {header || `Column ${colValue}`}
+                          </SelectItem>
+                        );
+                      })}
                     </SelectContent>
                   </Select>
                 </div>
