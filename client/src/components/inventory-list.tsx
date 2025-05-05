@@ -21,8 +21,6 @@ export default function InventoryList({ medicines, onEdit, onDelete }: Inventory
   const getStatusBadge = (quantity: number) => {
     if (quantity === 0) {
       return <Badge variant="destructive">Out of Stock</Badge>;
-    } else if (quantity <= 1) {
-      return <Badge variant="outline" className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">Low Stock</Badge>;
     } else {
       return <Badge variant="outline" className="bg-green-100 text-green-800 hover:bg-green-100">In Stock</Badge>;
     }
@@ -47,6 +45,9 @@ export default function InventoryList({ medicines, onEdit, onDelete }: Inventory
               <TableCell>
                 <div className="font-medium">{medicine.name}</div>
                 <div className="text-sm text-muted-foreground">{medicine.potency}</div>
+                {medicine.bottleSize && (
+                  <div className="text-xs text-muted-foreground">{medicine.bottleSize}</div>
+                )}
               </TableCell>
               <TableCell>{medicine.company}</TableCell>
               <TableCell>

@@ -103,6 +103,7 @@ export default function MedicineModal({ isOpen, onClose, medicineId }: MedicineM
         form.setValue("name", medicine.name);
         form.setValue("potency", medicine.potency);
         form.setValue("subLocation", medicine.subLocation || "");
+        form.setValue("bottleSize", medicine.bottleSize || "");
         form.setValue("quantity", medicine.quantity);
       }
     } else {
