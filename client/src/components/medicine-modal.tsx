@@ -276,262 +276,275 @@ export default function MedicineModal({ isOpen, onClose, medicineId }: MedicineM
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>{medicineId !== null ? "Edit Medicine" : "Add New Medicine"}</DialogTitle>
-          <DialogDescription>
-            {medicineId !== null 
-              ? "Update the details of your medicine." 
-              : "Add a new medicine to your inventory."}
-          </DialogDescription>
-        </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pb-6">
-            {/* Medicine Name with Autocomplete */}
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Medicine Name</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Input
-                        {...field}
-                        placeholder="Start typing..."
-                        list="medicine-suggestions"
-                        onChange={(e) => {
-                          field.onChange(e);
-                          handleNameInput(e.target.value);
-                        }}
-                      />
-                      <datalist id="medicine-suggestions">
-                        {medicineNameSuggestions.map((suggestion, index) => (
-                          <option key={index} value={suggestion} />
-                        ))}
-                      </datalist>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Potency */}
-            <FormField
-              control={form.control}
-              name="potency"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Potency</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select potency" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {POTENCIES.map((potency) => (
-                        <SelectItem key={potency} value={potency}>
-                          {potency}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Company */}
-            <FormField
-              control={form.control}
-              name="company"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Company</FormLabel>
-                  <Select onValueChange={handleCompanyChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select company" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {DEFAULT_COMPANIES.map((company) => (
-                        <SelectItem key={company} value={company}>
-                          {company}
-                        </SelectItem>
-                      ))}
-                      <SelectItem value="other">Other (specify)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Custom Company */}
-            {showCustomCompany && (
+    <>
+      <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+        <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{medicineId !== null ? "Edit Medicine" : "Add New Medicine"}</DialogTitle>
+            <DialogDescription>
+              {medicineId !== null 
+                ? "Update the details of your medicine." 
+                : "Add a new medicine to your inventory."}
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pb-6">
+              {/* Medicine Name with Autocomplete */}
               <FormField
                 control={form.control}
-                name="customCompany"
+                name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Custom Company</FormLabel>
+                    <FormLabel>Medicine Name</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Enter company name" />
+                      <div className="relative">
+                        <Input
+                          {...field}
+                          placeholder="Start typing..."
+                          list="medicine-suggestions"
+                          onChange={(e) => {
+                            field.onChange(e);
+                            handleNameInput(e.target.value);
+                          }}
+                        />
+                        <datalist id="medicine-suggestions">
+                          {medicineNameSuggestions.map((suggestion, index) => (
+                            <option key={index} value={suggestion} />
+                          ))}
+                        </datalist>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            )}
 
-            {/* Storage Location */}
-            <FormField
-              control={form.control}
-              name="location"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Storage Location</FormLabel>
-                  <Select onValueChange={handleLocationChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select location" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {DEFAULT_LOCATIONS.map((location) => (
-                        <SelectItem key={location} value={location}>
-                          {location}
-                        </SelectItem>
-                      ))}
-                      <SelectItem value="other">Other (specify)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Custom Location */}
-            {showCustomLocation && (
+              {/* Potency */}
               <FormField
                 control={form.control}
-                name="customLocation"
+                name="potency"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Custom Location</FormLabel>
+                    <FormLabel>Potency</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select potency" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {POTENCIES.map((potency) => (
+                          <SelectItem key={potency} value={potency}>
+                            {potency}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Company */}
+              <FormField
+                control={form.control}
+                name="company"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Company</FormLabel>
+                    <Select onValueChange={handleCompanyChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select company" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {DEFAULT_COMPANIES.map((company) => (
+                          <SelectItem key={company} value={company}>
+                            {company}
+                          </SelectItem>
+                        ))}
+                        <SelectItem value="other">Other (specify)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Custom Company */}
+              {showCustomCompany && (
+                <FormField
+                  control={form.control}
+                  name="customCompany"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Custom Company</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="Enter company name" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {/* Storage Location */}
+              <FormField
+                control={form.control}
+                name="location"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Storage Location</FormLabel>
+                    <Select onValueChange={handleLocationChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select location" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {DEFAULT_LOCATIONS.map((location) => (
+                          <SelectItem key={location} value={location}>
+                            {location}
+                          </SelectItem>
+                        ))}
+                        <SelectItem value="other">Other (specify)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Custom Location */}
+              {showCustomLocation && (
+                <FormField
+                  control={form.control}
+                  name="customLocation"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Custom Location</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="Enter location" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {/* Sub-location with Autocomplete */}
+              <FormField
+                control={form.control}
+                name="subLocation"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Sub-location (Optional)</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Enter location" />
+                      <div className="relative">
+                        <Input 
+                          {...field} 
+                          placeholder="e.g., Medicine Cabinet, Drawer" 
+                          list="sublocation-suggestions"
+                        />
+                        <datalist id="sublocation-suggestions">
+                          {subLocationSuggestions.map((suggestion, index) => (
+                            <option key={index} value={suggestion} />
+                          ))}
+                        </datalist>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            )}
 
-            {/* Sub-location with Autocomplete */}
-            <FormField
-              control={form.control}
-              name="subLocation"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Sub-location (Optional)</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Input 
-                        {...field} 
-                        placeholder="e.g., Medicine Cabinet, Drawer" 
-                        list="sublocation-suggestions"
-                      />
-                      <datalist id="sublocation-suggestions">
-                        {subLocationSuggestions.map((suggestion, index) => (
-                          <option key={index} value={suggestion} />
-                        ))}
-                      </datalist>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Bottle Size */}
-            <FormField
-              control={form.control}
-              name="bottleSize"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Bottle Size (Optional)</FormLabel>
-                  <Select onValueChange={handleBottleSizeChange} defaultValue={field.value || "none"}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select bottle size" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="none">None</SelectItem>
-                      {BOTTLE_SIZES.filter(size => size !== "custom").map((size) => (
-                        <SelectItem key={size} value={size}>
-                          {size}
-                        </SelectItem>
-                      ))}
-                      <SelectItem value="custom">Custom Size</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            {/* Custom Bottle Size */}
-            {showCustomBottleSize && (
+              {/* Bottle Size */}
               <FormField
                 control={form.control}
                 name="bottleSize"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Custom Bottle Size</FormLabel>
+                    <FormLabel>Bottle Size (Optional)</FormLabel>
+                    <Select onValueChange={handleBottleSizeChange} defaultValue={field.value || "none"}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select bottle size" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="none">None</SelectItem>
+                        {BOTTLE_SIZES.filter(size => size !== "custom").map((size) => (
+                          <SelectItem key={size} value={size}>
+                            {size}
+                          </SelectItem>
+                        ))}
+                        <SelectItem value="custom">Custom Size</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              {/* Custom Bottle Size */}
+              {showCustomBottleSize && (
+                <FormField
+                  control={form.control}
+                  name="bottleSize"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Custom Bottle Size</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="e.g., 25ml, 100ml" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {/* Quantity */}
+              <FormField
+                control={form.control}
+                name="quantity"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Quantity</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="e.g., 25ml, 100ml" />
+                      <Input
+                        type="number"
+                        min="0"
+                        {...field}
+                        onChange={(e) => {
+                          const value = e.target.value === "" ? "0" : e.target.value;
+                          field.onChange(value);
+                        }}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            )}
 
-            {/* Quantity */}
-            <FormField
-              control={form.control}
-              name="quantity"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Quantity</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      min="0"
-                      {...field}
-                      onChange={(e) => {
-                        const value = e.target.value === "" ? "0" : e.target.value;
-                        field.onChange(value);
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <DialogFooter>
-              <Button type="submit">{medicineId !== null ? "Update" : "Save"}</Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+              <DialogFooter>
+                <Button type="submit">{medicineId !== null ? "Update" : "Save"}</Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Duplicate Medicine Dialog */}
+      {duplicateMedicine && pendingMedicineData && (
+        <DuplicateMedicineDialog
+          isOpen={showDuplicateDialog}
+          onClose={() => setShowDuplicateDialog(false)}
+          existingMedicine={duplicateMedicine}
+          newMedicine={pendingMedicineData}
+          onAction={handleDuplicateAction}
+        />
+      )}
+    </>
   );
 }
