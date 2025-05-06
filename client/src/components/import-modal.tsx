@@ -240,12 +240,49 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
           return;
         }
         
-        // Convert to JSON with header option to get column letters as keys
-        data = XLSX.utils.sheet_to_json<any>(worksheet, { header: 'A' });
+        // Log the worksheet data to debug
+        console.log("Worksheet content:", worksheet);
+        
+        // Check if the worksheet has cells with data
+        const range = XLSX.utils.decode_range(worksheet['!ref'] || 'A1:A1');
+        console.log("Excel range:", worksheet['!ref'], "Rows:", range.e.r - range.s.r + 1);
+        
+        // Try different approaches to parse the data
+        try {
+          // First approach - with 'A' header
+          data = XLSX.utils.sheet_to_json<any>(worksheet, { 
+            header: 'A', 
+            raw: false,
+            defval: ''
+          });
+        } catch (e) {
+          console.error("Error with first parsing approach:", e);
+          // Nothing to do here, we'll try other approaches below
+        }
+        console.log("Converted data length:", data?.length, "First row:", data?.[0]);
         
         if (!data || data.length === 0) {
-          setError("The uploaded file appears to be empty");
-          return;
+          // Try alternative sheet_to_json formats
+          console.log("Trying alternative parsing method");
+          try {
+            // Try parsing with different options
+            data = XLSX.utils.sheet_to_json<any>(worksheet, { header: 1, raw: false, defval: '' });
+            
+            if (!data || data.length === 0) {
+              // Last attempt with more flexible options
+              data = XLSX.utils.sheet_to_json<any>(worksheet, { blankrows: true, defval: '' });
+            }
+            
+            if (!data || data.length === 0) {
+              console.log("All parsing methods failed");
+              setError("The uploaded file appears to be empty or in an unsupported format");
+              return;
+            }
+          } catch (parseError) {
+            console.error("Alternative parsing failed:", parseError);
+            setError("Could not extract data from the file. Please verify the file content.");
+            return;
+          }
         }
         
         // Extract headers (first row)
@@ -352,7 +389,13 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
       setError("Error reading the file. Please try again.");
     };
     
-    reader.readAsArrayBuffer(file);
+    // For older Excel formats (.xls), we may need to use readAsBinaryString instead
+    if (file.name.toLowerCase().endsWith('.xls')) {
+      console.log("Using binary string reader for .xls file");
+      reader.readAsBinaryString(file);
+    } else {
+      reader.readAsArrayBuffer(file);
+    }
   };
   
   const handleDragOver = (e: React.DragEvent) => {
