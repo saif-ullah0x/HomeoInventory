@@ -138,11 +138,9 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
     setError(null);
     setFileName(file.name);
     
-    // Check if it's an Excel or CSV file
-    if (!file.name.toLowerCase().endsWith('.xlsx') && 
-        !file.name.toLowerCase().endsWith('.xls') && 
-        !file.name.toLowerCase().endsWith('.csv')) {
-      setError("Please upload an Excel file (.xlsx or .xls) or CSV file (.csv)");
+    // Check if it's a CSV file
+    if (!file.name.toLowerCase().endsWith('.csv')) {
+      setError("Please upload a CSV file (.csv)");
       return;
     }
     
@@ -155,76 +153,28 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
         }
         
         // Parse file
-        let workbook, worksheet, data;
+        let workbook, worksheet;
+        let data: any[] = [];
         
         try {
-          // Handle file based on extension
-          const isCSV = file.name.toLowerCase().endsWith('.csv');
-          const isExcel = file.name.toLowerCase().endsWith('.xlsx') || file.name.toLowerCase().endsWith('.xls');
-          
           console.log("Processing file:", file.name, "Size:", file.size, "Type:", file.type);
           console.log("Result type:", typeof e.target.result);
           
-          if (isCSV) {
-            console.log("Processing as CSV");
-            // For CSV files, we need to read as string
-            if (typeof e.target.result !== 'string') {
-              // If we got an ArrayBuffer for a CSV file, convert it to string
-              const buffer = e.target.result as ArrayBuffer;
-              const decoder = new TextDecoder('utf-8');
-              const csvData = decoder.decode(buffer);
-              workbook = XLSX.read(csvData, { type: 'string' });
-            } else {
-              // If we already have a string
-              workbook = XLSX.read(e.target.result, { type: 'string' });
-            }
-          } else if (isExcel) {
-            console.log("Processing as Excel");
-            // Parse Excel data
-            if (typeof e.target.result === 'string') {
-              // If we somehow got a string for an Excel file, try to parse it anyway
-              console.log("Warning: Got string data for Excel file, attempting to parse");
-              workbook = XLSX.read(e.target.result, { type: 'binary' });
-            } else {
-              // Normal case: ArrayBuffer for Excel
-              const buffer = e.target.result as ArrayBuffer;
-              const data = new Uint8Array(buffer);
-              workbook = XLSX.read(data, { type: 'array' });
-            }
+          // Process CSV data
+          if (typeof e.target.result !== 'string') {
+            // If we got an ArrayBuffer for a CSV file, convert it to string
+            const buffer = e.target.result as ArrayBuffer;
+            const decoder = new TextDecoder('utf-8');
+            const csvData = decoder.decode(buffer);
+            workbook = XLSX.read(csvData, { type: 'string' });
           } else {
-            throw new Error("Unsupported file type");
+            // If we already have a string
+            workbook = XLSX.read(e.target.result, { type: 'string' });
           }
         } catch (readError) {
-          console.error("Error reading file:", readError);
-          
-          // Try an alternative method with more robust handling
-          try {
-            console.log("Trying fallback method");
-            const data = e.target.result;
-            
-            if (typeof data === 'string') {
-              console.log("Fallback: Processing string data");
-              // For strings, try both string and binary types
-              try {
-                workbook = XLSX.read(data, { type: 'string' });
-              } catch (e) {
-                workbook = XLSX.read(data, { type: 'binary' });
-              }
-            } else {
-              console.log("Fallback: Processing binary data");
-              // For binary data, try both array and buffer types
-              try {
-                const buffer = new Uint8Array(data as ArrayBuffer);
-                workbook = XLSX.read(buffer, { type: 'array' });
-              } catch (e) {
-                workbook = XLSX.read(data, { type: 'buffer' });
-              }
-            }
-          } catch (fallbackError) {
-            console.error("Fallback reading failed:", fallbackError);
-            setError("Could not read the file format. Please ensure it's a valid Excel or CSV file.");
-            return;
-          }
+          console.error("Error reading CSV file:", readError);
+          setError("Could not read the CSV file. Please check the file format and try again.");
+          return;
         }
         
         // Get first sheet
@@ -389,13 +339,8 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
       setError("Error reading the file. Please try again.");
     };
     
-    // For older Excel formats (.xls), we may need to use readAsBinaryString instead
-    if (file.name.toLowerCase().endsWith('.xls')) {
-      console.log("Using binary string reader for .xls file");
-      reader.readAsBinaryString(file);
-    } else {
-      reader.readAsArrayBuffer(file);
-    }
+    // Read the CSV file data
+    reader.readAsArrayBuffer(file);
   };
   
   const handleDragOver = (e: React.DragEvent) => {
@@ -792,12 +737,12 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
                 type="file" 
                 ref={fileInputRef} 
                 className="hidden" 
-                accept=".xlsx,.xls,.csv" 
+                accept=".csv" 
                 onChange={handleFileInputChange}
               />
               <FileSpreadsheet className="h-12 w-12 text-muted-foreground mb-3" />
               <p className="text-center font-medium">
-                Drop your Excel or CSV file here or click to browse
+                Drop your CSV file here or click to browse
               </p>
               <p className="text-center text-sm text-muted-foreground mt-1">
                 We'll help you match columns to the required medicine information.
