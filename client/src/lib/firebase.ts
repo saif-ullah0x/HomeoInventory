@@ -5,9 +5,10 @@ import { useEffect, useState } from "react";
 // Firebase configuration
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.appspot.com`,
+  // Use direct auth domain without dynamic construction
+  authDomain: "homeomedicine-inventory.firebaseapp.com",
+  projectId: "homeomedicine-inventory", // Hardcoded project ID for consistency
+  storageBucket: "homeomedicine-inventory.appspot.com",
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
