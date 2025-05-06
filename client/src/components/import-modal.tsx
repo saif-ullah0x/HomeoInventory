@@ -195,7 +195,7 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
         
         // Check if the worksheet has cells with data
         const range = XLSX.utils.decode_range(worksheet['!ref'] || 'A1:A1');
-        console.log("Excel range:", worksheet['!ref'], "Rows:", range.e.r - range.s.r + 1);
+        console.log("CSV range:", worksheet['!ref'], "Rows:", range.e.r - range.s.r + 1);
         
         // Try different approaches to parse the data
         try {
@@ -1216,11 +1216,11 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
           <DialogHeader>
             <DialogTitle>
               {step === 'upload' && "Import Your Medicine Inventory"}
-              {step === 'mapping' && "Map Your Excel Columns"}
+              {step === 'mapping' && "Map Your CSV Columns"}
               {step === 'preview' && "Preview Import Data"}
             </DialogTitle>
             <DialogDescription>
-              {step === 'upload' && "Upload your Excel (.xlsx/.xls) or CSV (.csv) file with medicine details."}
+              {step === 'upload' && "Upload your CSV (.csv) file with medicine details."}
               {step === 'mapping' && "Select which columns contain which medicine information."}
               {step === 'preview' && "Review your data before finalizing the import."}
             </DialogDescription>
