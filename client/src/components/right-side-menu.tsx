@@ -9,12 +9,15 @@ import LoginModal from "@/components/login-modal";
 import { useAuth } from "@/lib/firebase";
 
 export default function RightSideMenu() {
+  // All useState calls must come before other hooks
   const [showExportModal, setShowExportModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const { user } = useAuth();
+  
+  // Keep useAuth after all useState hooks
+  const { user, isEnabled } = useAuth();
 
   return (
     <>
@@ -79,7 +82,7 @@ export default function RightSideMenu() {
               ) : (
                 <>
                   <LogIn className="h-4 w-4 mr-2 text-primary" />
-                  Login / Sync
+                  {isEnabled ? "Login / Sync" : "Cloud Sync (Coming Soon)"}
                 </>
               )}
             </Button>
