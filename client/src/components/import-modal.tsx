@@ -139,7 +139,9 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
     setFileName(file.name);
     
     // Check if it's an Excel or CSV file
-    if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls') && !file.name.endsWith('.csv')) {
+    if (!file.name.toLowerCase().endsWith('.xlsx') && 
+        !file.name.toLowerCase().endsWith('.xls') && 
+        !file.name.toLowerCase().endsWith('.csv')) {
       setError("Please upload an Excel file (.xlsx or .xls) or CSV file (.csv)");
       return;
     }
@@ -156,7 +158,15 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
         let workbook, worksheet, data;
         
         try {
-          if (file.name.endsWith('.csv')) {
+          // Handle file based on extension
+          const isCSV = file.name.toLowerCase().endsWith('.csv');
+          const isExcel = file.name.toLowerCase().endsWith('.xlsx') || file.name.toLowerCase().endsWith('.xls');
+          
+          console.log("Processing file:", file.name, "Size:", file.size, "Type:", file.type);
+          console.log("Result type:", typeof e.target.result);
+          
+          if (isCSV) {
+            console.log("Processing as CSV");
             // For CSV files, we need to read as string
             if (typeof e.target.result !== 'string') {
               // If we got an ArrayBuffer for a CSV file, convert it to string
@@ -168,27 +178,47 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
               // If we already have a string
               workbook = XLSX.read(e.target.result, { type: 'string' });
             }
-          } else {
-            // Parse Excel data - this needs ArrayBuffer
+          } else if (isExcel) {
+            console.log("Processing as Excel");
+            // Parse Excel data
             if (typeof e.target.result === 'string') {
-              setError("Could not process Excel file correctly. Please try again.");
-              return;
+              // If we somehow got a string for an Excel file, try to parse it anyway
+              console.log("Warning: Got string data for Excel file, attempting to parse");
+              workbook = XLSX.read(e.target.result, { type: 'binary' });
             } else {
-              const data = new Uint8Array(e.target.result as ArrayBuffer);
+              // Normal case: ArrayBuffer for Excel
+              const buffer = e.target.result as ArrayBuffer;
+              const data = new Uint8Array(buffer);
               workbook = XLSX.read(data, { type: 'array' });
             }
+          } else {
+            throw new Error("Unsupported file type");
           }
         } catch (readError) {
           console.error("Error reading file:", readError);
           
-          // Try an alternative method
+          // Try an alternative method with more robust handling
           try {
+            console.log("Trying fallback method");
             const data = e.target.result;
+            
             if (typeof data === 'string') {
-              workbook = XLSX.read(data, { type: 'string' });
+              console.log("Fallback: Processing string data");
+              // For strings, try both string and binary types
+              try {
+                workbook = XLSX.read(data, { type: 'string' });
+              } catch (e) {
+                workbook = XLSX.read(data, { type: 'binary' });
+              }
             } else {
-              const buffer = new Uint8Array(data as ArrayBuffer);
-              workbook = XLSX.read(buffer, { type: 'array' });
+              console.log("Fallback: Processing binary data");
+              // For binary data, try both array and buffer types
+              try {
+                const buffer = new Uint8Array(data as ArrayBuffer);
+                workbook = XLSX.read(buffer, { type: 'array' });
+              } catch (e) {
+                workbook = XLSX.read(data, { type: 'buffer' });
+              }
             }
           } catch (fallbackError) {
             console.error("Fallback reading failed:", fallbackError);
