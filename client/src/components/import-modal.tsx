@@ -1104,33 +1104,49 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
           </DialogHeader>
           
           <div className="space-y-4 my-4">
-            <div className="space-y-2 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-md border border-blue-200 dark:border-blue-800">
-              <h4 className="font-medium text-blue-800 dark:text-blue-300">Apply to all duplicates:</h4>
-              <div className="flex flex-wrap gap-2">
+            <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-md border border-blue-200 dark:border-blue-800">
+              <div>
+                <h4 className="font-medium text-blue-800 dark:text-blue-300 mb-2">Apply to all duplicates:</h4>
+                <div className="flex flex-wrap gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => applyStrategyToAll('merge')}
+                    className={globalDuplicateStrategy === 'merge' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30' : ''}
+                  >
+                    Merge quantities
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => applyStrategyToAll('keep-both')}
+                    className={globalDuplicateStrategy === 'keep-both' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30' : ''}
+                  >
+                    Keep both
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => applyStrategyToAll('skip')}
+                    className={globalDuplicateStrategy === 'skip' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30' : ''}
+                  >
+                    Skip duplicates
+                  </Button>
+                </div>
+              </div>
+              <div className="pt-2 border-t border-blue-200 dark:border-blue-800">
                 <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => applyStrategyToAll('merge')}
-                  className={globalDuplicateStrategy === 'merge' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30' : ''}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                  onClick={() => {
+                    setShowDuplicatesModal(false);
+                    importMedicines();
+                  }}
                 >
-                  Merge quantities
+                  Proceed with Selected Strategy
                 </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => applyStrategyToAll('keep-both')}
-                  className={globalDuplicateStrategy === 'keep-both' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30' : ''}
-                >
-                  Keep both
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => applyStrategyToAll('skip')}
-                  className={globalDuplicateStrategy === 'skip' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30' : ''}
-                >
-                  Skip duplicates
-                </Button>
+                <p className="text-xs text-blue-700 dark:text-blue-300 mt-2 text-center">
+                  This will apply the selected strategy to all {duplicates.length} duplicates
+                </p>
               </div>
             </div>
             
