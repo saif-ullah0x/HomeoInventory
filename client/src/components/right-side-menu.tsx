@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, LogIn, UserCircle } from "lucide-react";
+import { Menu, LogIn, UserCircle, Heart } from "lucide-react";
 import ExportModal from "@/components/export-modal";
 import ImportModal from "@/components/import-modal";
 import ShareModal from "@/components/share-modal";
 import LoginModal from "@/components/login-modal";
+import DonationModal from "@/components/donation-modal";
 import { useAuth } from "@/lib/firebase";
 
 export default function RightSideMenu() {
@@ -14,6 +15,7 @@ export default function RightSideMenu() {
   const [showImportModal, setShowImportModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showDonationModal, setShowDonationModal] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   
   // Keep useAuth after all useState hooks
@@ -91,10 +93,12 @@ export default function RightSideMenu() {
               variant="outline" 
               className="justify-start mt-4"
               onClick={() => {
-                window.open('https://www.buymeacoffee.com', '_blank');
+                setShowDonationModal(true);
+                setIsOpen(false);
               }}
             >
-              <span className="mr-2">❤️</span> Donate to Support Our Work
+              <Heart className="h-4 w-4 mr-2 text-red-500" />
+              Donate to Support Our Work
             </Button>
             
             <div className="mt-auto pt-6">
@@ -110,6 +114,7 @@ export default function RightSideMenu() {
       <ImportModal isOpen={showImportModal} onClose={() => setShowImportModal(false)} />
       <ShareModal isOpen={showShareModal} onClose={() => setShowShareModal(false)} />
       <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
+      <DonationModal isOpen={showDonationModal} onClose={() => setShowDonationModal(false)} />
     </>
   );
 }

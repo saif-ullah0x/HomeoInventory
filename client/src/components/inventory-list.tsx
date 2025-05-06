@@ -186,11 +186,9 @@ export default function InventoryList({ medicines, onEdit, onDelete }: Inventory
                       }}
                       className="text-primary h-8 w-8 p-0 lg:hidden"
                     >
-                      <Checkbox
-                        className="pointer-events-none"
-                        checked={false}
-                        aria-label={`Select ${medicine.name}`}
-                      />
+                      <span className="h-4 w-4 rounded-sm border border-primary flex items-center justify-center">
+                        <span className="sr-only">Select {medicine.name}</span>
+                      </span>
                     </Button>
                   )}
                 </TableCell>
@@ -208,7 +206,9 @@ export default function InventoryList({ medicines, onEdit, onDelete }: Inventory
           size="sm"
         >
           <span className="mr-2">Select Items</span>
-          <Checkbox className="pointer-events-none" />
+          <span className="h-4 w-4 rounded-sm border border-white flex items-center justify-center">
+            <span className="sr-only">Enable selection mode</span>
+          </span>
         </Button>
       )}
       
