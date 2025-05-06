@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { PillBottle, Sun, Moon } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
+import RightSideMenu from "@/components/right-side-menu";
 
 export default function Header() {
   const { theme, setTheme } = useTheme();
@@ -47,6 +48,7 @@ export default function Header() {
               )}
               <span className="hidden sm:inline font-medium">Theme</span>
             </Button>
+            <RightSideMenu />
           </div>
         </div>
       </div>

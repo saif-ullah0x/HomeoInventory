@@ -7,13 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Search, Plus, FileDown, FileSpreadsheet, File } from "lucide-react";
+import { Search, Plus } from "lucide-react";
 import { useStore } from "@/lib/store";
 
 interface InventoryControlsProps {
@@ -90,34 +84,6 @@ export default function InventoryControls({
             ))}
           </SelectContent>
         </Select>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="gap-2">
-              <FileDown className="h-4 w-4" />
-              Export
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem onClick={onExportToPDF} className="gap-2 cursor-pointer">
-              <File className="h-4 w-4 text-red-600" />
-              <span>Export as PDF</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={onExportToExcel} className="gap-2 cursor-pointer">
-              <FileSpreadsheet className="h-4 w-4 text-green-600" />
-              <span>Export as Excel</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        <Button 
-          onClick={onImportClick} 
-          variant="outline" 
-          className="gap-2 button-hover-effect glow-effect border-green-500/30"
-        >
-          <FileSpreadsheet className="h-4 w-4 text-green-600" />
-          Import
-        </Button>
 
         <Button 
           onClick={onAddClick} 
