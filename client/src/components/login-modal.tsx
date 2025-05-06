@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -8,7 +8,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { signInWithGoogle, useAuth, logOut } from "@/lib/firebase";
+import { signInWithGoogle, useAuth, logOut, checkRedirectResult } from "@/lib/firebase";
 import { FcGoogle } from "react-icons/fc";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -23,15 +23,42 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const { user } = useAuth();
   const { toast } = useToast();
 
+  // Check for auth redirect result when component mounts
+  useEffect(() => {
+    async function checkAuthRedirect() {
+      try {
+        setLoading(true);
+        const redirectUser = await checkRedirectResult();
+        if (redirectUser) {
+          // User has been redirected back after successful login
+          toast({
+            title: "Successfully logged in",
+            description: "Your account has been connected.",
+          });
+          onClose();
+        }
+      } catch (error) {
+        console.error("Redirect result error:", error);
+        toast({
+          title: "Login failed",
+          description: "There was a problem with authentication. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    checkAuthRedirect();
+  }, [onClose, toast]);
+
   const handleGoogleSignIn = async () => {
     try {
       setLoading(true);
+      // This will redirect the user to Google's authentication page
+      // When they return, the useEffect above will handle the result
       await signInWithGoogle();
-      toast({
-        title: "Successfully logged in",
-        description: "Your account has been connected.",
-      });
-      onClose();
+      // No need for toast or further processing here as the page will redirect
     } catch (error) {
       console.error("Login error:", error);
       toast({
@@ -39,9 +66,9 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         description: "There was a problem logging in. Please try again.",
         variant: "destructive",
       });
-    } finally {
       setLoading(false);
     }
+    // No finally block needed as the page will redirect and reload
   };
 
   const handleSignOut = async () => {

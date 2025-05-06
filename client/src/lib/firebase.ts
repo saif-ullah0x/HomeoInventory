@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, User } from "firebase/auth";
+import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider, onAuthStateChanged, signOut, User } from "firebase/auth";
 import { useEffect, useState } from "react";
 
 // Firebase configuration
@@ -31,11 +31,26 @@ try {
   if (!auth) auth = {} as any;
 }
 
-// Sign in with Google
+// Check for redirect result on page load
+export const checkRedirectResult = async () => {
+  try {
+    const result = await getRedirectResult(auth);
+    if (result) {
+      return result.user;
+    }
+    return null;
+  } catch (error) {
+    console.error("Error checking redirect result: ", error);
+    throw error;
+  }
+};
+
+// Sign in with Google using redirect (better for Replit environment)
 export const signInWithGoogle = async () => {
   try {
-    const result = await signInWithPopup(auth, googleProvider);
-    return result.user;
+    await signInWithRedirect(auth, googleProvider);
+    // The page will redirect to Google and then back to the app
+    // No need to return anything here as the redirect will happen
   } catch (error) {
     console.error("Error signing in with Google: ", error);
     throw error;
