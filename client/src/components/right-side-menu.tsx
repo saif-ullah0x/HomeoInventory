@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, LogIn, UserCircle, Heart } from "lucide-react";
+import { Menu, LogIn, UserCircle, Heart, Shield } from "lucide-react";
 import ExportModal from "@/components/export-modal";
 import ImportModal from "@/components/import-modal";
 import ShareModal from "@/components/share-modal";
 import LoginModal from "@/components/login-modal";
 import DonationModal from "@/components/donation-modal";
+import PrivacyInfoModal from "@/components/privacy-info-modal";
 import { useAuth } from "@/lib/firebase";
 
 export default function RightSideMenu() {
@@ -16,6 +17,7 @@ export default function RightSideMenu() {
   const [showShareModal, setShowShareModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showDonationModal, setShowDonationModal] = useState(false);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   
   // Keep useAuth after all useState hooks
@@ -101,6 +103,18 @@ export default function RightSideMenu() {
               Donate to Support Our Work
             </Button>
             
+            <Button 
+              variant="outline" 
+              className="justify-start"
+              onClick={() => {
+                setShowPrivacyModal(true);
+                setIsOpen(false);
+              }}
+            >
+              <Shield className="h-4 w-4 mr-2 text-blue-500" />
+              Privacy & Data Security
+            </Button>
+            
             <div className="mt-auto pt-6">
               <p className="text-xs text-muted-foreground">
                 Application version: 1.0.0
@@ -115,6 +129,7 @@ export default function RightSideMenu() {
       <ShareModal isOpen={showShareModal} onClose={() => setShowShareModal(false)} />
       <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
       <DonationModal isOpen={showDonationModal} onClose={() => setShowDonationModal(false)} />
+      <PrivacyInfoModal isOpen={showPrivacyModal} onClose={() => setShowPrivacyModal(false)} />
     </>
   );
 }

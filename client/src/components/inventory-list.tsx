@@ -45,10 +45,11 @@ export default function InventoryList({ medicines, onEdit, onDelete }: Inventory
     }
   };
   
-  const handleBulkSelectionChange = (selected: boolean, medicines: Medicine[]) => {
-    // For now, just showing all medicines as selected when "Select All" is clicked
+  const handleBulkSelectionChange = (selected: boolean, medicinesToSelect: Medicine[]) => {
+    // This function will be called from BulkActions component
     if (selected) {
-      setSelectedMedicines(medicines);
+      // When "Select All" is clicked, select ALL medicines from the main list
+      setSelectedMedicines([...medicines]);
     }
   };
   
