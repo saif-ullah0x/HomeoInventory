@@ -175,8 +175,7 @@ export default function Analytics() {
                     data={companyData}
                     cx="50%"
                     cy="50%"
-                    labelLine={true}
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    labelLine={false}
                     outerRadius={80}
                     fill="#8884d8"
                     dataKey="value"
@@ -207,15 +206,16 @@ export default function Analytics() {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={locationData}
+                  layout="vertical"
                   margin={{
                     top: 5,
                     right: 30,
-                    left: 20,
+                    left: 100,
                     bottom: 5,
                   }}
                 >
-                  <XAxis dataKey="name" />
-                  <YAxis />
+                  <XAxis type="number" />
+                  <YAxis type="category" dataKey="name" width={100} />
                   <Tooltip />
                   <Legend />
                   <Bar dataKey="value" name="Count" fill="hsl(var(--primary))" />
@@ -243,8 +243,7 @@ export default function Analytics() {
                   data={statusData}
                   cx="50%"
                   cy="50%"
-                  labelLine={true}
-                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                  labelLine={false}
                   outerRadius={80}
                   fill="#8884d8"
                   dataKey="value"

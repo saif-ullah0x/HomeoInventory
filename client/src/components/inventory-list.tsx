@@ -203,13 +203,13 @@ export default function InventoryList({ medicines, onEdit, onDelete }: Inventory
       {!selectMode && medicines.length > 0 && (
         <Button
           onClick={() => setSelectMode(true)}
-          className="fixed bottom-4 right-4 z-10 rounded-full shadow-lg hidden lg:flex"
+          className="fixed bottom-4 right-4 z-10 rounded-lg shadow-lg hidden lg:flex bg-primary text-white hover:bg-primary/90"
           size="sm"
         >
           <span className="mr-2">Select Items</span>
-          <span className="h-4 w-4 rounded-sm border border-white flex items-center justify-center">
-            <span className="sr-only">Enable selection mode</span>
-          </span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="3" width="10" height="10" rx="2" stroke="currentColor" strokeWidth="2" fill="none"/>
+          </svg>
         </Button>
       )}
       

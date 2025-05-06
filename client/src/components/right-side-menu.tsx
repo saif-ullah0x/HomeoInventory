@@ -61,17 +61,6 @@ export default function RightSideMenu() {
             
             <Button 
               variant="outline" 
-              className="justify-start" 
-              onClick={() => {
-                setShowShareModal(true);
-                setIsOpen(false);
-              }}
-            >
-              <span className="mr-2">📱</span> Share Inventory
-            </Button>
-            
-            <Button 
-              variant="outline" 
               className="justify-start"
               onClick={() => {
                 setShowLoginModal(true);
@@ -89,30 +78,6 @@ export default function RightSideMenu() {
                   {isEnabled ? "Login / Sync" : "Cloud Sync (Coming Soon)"}
                 </>
               )}
-            </Button>
-            
-            <Button 
-              variant="outline" 
-              className="justify-start mt-4"
-              onClick={() => {
-                setShowDonationModal(true);
-                setIsOpen(false);
-              }}
-            >
-              <Heart className="h-4 w-4 mr-2 text-red-500" />
-              Donate to Support Our Work
-            </Button>
-            
-            <Button 
-              variant="outline" 
-              className="justify-start"
-              onClick={() => {
-                setShowPrivacyModal(true);
-                setIsOpen(false);
-              }}
-            >
-              <Shield className="h-4 w-4 mr-2 text-blue-500" />
-              Privacy & Data Security
             </Button>
             
             <div className="mt-auto pt-6">
