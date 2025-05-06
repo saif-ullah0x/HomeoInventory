@@ -82,20 +82,19 @@ export default function InventoryList({ medicines, onEdit, onDelete }: Inventory
           <TableHeader>
             <TableRow>
               <TableHead className="w-[50px]">
-                {/* Show checkbox header when in select mode */}
-                {selectMode && (
-                  <Checkbox
-                    checked={selectedMedicines.length === medicines.length && medicines.length > 0}
-                    onCheckedChange={(checked) => {
-                      if (checked) {
-                        setSelectedMedicines([...medicines]);
-                      } else {
-                        setSelectedMedicines([]);
-                      }
-                    }}
-                    aria-label="Select all"
-                  />
-                )}
+                {/* Always show checkbox header (Gmail-style) */}
+                <Checkbox
+                  checked={selectedMedicines.length === medicines.length && medicines.length > 0}
+                  onCheckedChange={(checked) => {
+                    setSelectMode(true);
+                    if (checked) {
+                      setSelectedMedicines([...medicines]);
+                    } else {
+                      setSelectedMedicines([]);
+                    }
+                  }}
+                  aria-label="Select all"
+                />
               </TableHead>
               <TableHead>Medicine Name</TableHead>
               <TableHead>Company</TableHead>
@@ -118,20 +117,19 @@ export default function InventoryList({ medicines, onEdit, onDelete }: Inventory
                 data-state={selectedMedicines.some(m => m.id === medicine.id) ? "selected" : ""}
               >
                 <TableCell className="w-[50px]">
-                  {selectMode && (
-                    <Checkbox
-                      checked={selectedMedicines.some(m => m.id === medicine.id)}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          setSelectedMedicines([...selectedMedicines, medicine]);
-                        } else {
-                          setSelectedMedicines(selectedMedicines.filter(m => m.id !== medicine.id));
-                        }
-                      }}
-                      onClick={(e) => e.stopPropagation()}
-                      aria-label={`Select ${medicine.name}`}
-                    />
-                  )}
+                  <Checkbox
+                    checked={selectedMedicines.some(m => m.id === medicine.id)}
+                    onCheckedChange={(checked) => {
+                      setSelectMode(true);
+                      if (checked) {
+                        setSelectedMedicines([...selectedMedicines, medicine]);
+                      } else {
+                        setSelectedMedicines(selectedMedicines.filter(m => m.id !== medicine.id));
+                      }
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                    aria-label={`Select ${medicine.name}`}
+                  />
                 </TableCell>
                 <TableCell>
                   <div className="font-medium">{medicine.name}</div>
@@ -176,22 +174,7 @@ export default function InventoryList({ medicines, onEdit, onDelete }: Inventory
                       </Button>
                     </>
                   )}
-                  {!selectMode && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectMode(true);
-                        toggleMedicineSelection(medicine);
-                      }}
-                      className="text-primary h-8 w-8 p-0 lg:hidden"
-                    >
-                      <span className="h-4 w-4 rounded-sm border border-primary flex items-center justify-center">
-                        <span className="sr-only">Select {medicine.name}</span>
-                      </span>
-                    </Button>
-                  )}
+
                 </TableCell>
               </TableRow>
             ))}
@@ -199,19 +182,7 @@ export default function InventoryList({ medicines, onEdit, onDelete }: Inventory
         </Table>
       </div>
       
-      {/* Floating button to enter select mode */}
-      {!selectMode && medicines.length > 0 && (
-        <Button
-          onClick={() => setSelectMode(true)}
-          className="fixed bottom-4 right-4 z-10 rounded-lg shadow-lg hidden lg:flex bg-primary text-white hover:bg-primary/90"
-          size="sm"
-        >
-          <span className="mr-2">Select Items</span>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="3" y="3" width="10" height="10" rx="2" stroke="currentColor" strokeWidth="2" fill="none"/>
-          </svg>
-        </Button>
-      )}
+      {/* No floating button, checkboxes will be used instead */}
       
       {/* Bulk Actions component */}
       {selectedMedicines.length > 0 && (

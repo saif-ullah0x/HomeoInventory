@@ -23,7 +23,7 @@ export default function Analytics() {
   const medicines = useStore((state) => state.medicines);
   const { toast } = useToast();
 
-  // Count medicines by company
+  // Count medicines by company - group minor companies into Others category
   const companyData = medicines.reduce<{ name: string; value: number }[]>((acc, medicine) => {
     const existingCompany = acc.find((item) => item.name === medicine.company);
     if (existingCompany) {
@@ -33,6 +33,29 @@ export default function Analytics() {
     }
     return acc;
   }, []);
+  
+  // Define major companies that should remain separate
+  const MAJOR_COMPANIES = ["Masood", "Kamal", "BM", "Kent", "WS"];
+  
+  // Group data - keep major companies separate, group others
+  const groupedCompanyData = companyData.reduce<{ name: string; value: number }[]>((acc, company) => {
+    // Check if this is a major company we want to show individually
+    if (MAJOR_COMPANIES.includes(company.name)) {
+      acc.push(company);
+    } else {
+      // For minor companies, add to "Others" category
+      const others = acc.find(item => item.name === "Others");
+      if (others) {
+        others.value += company.value;
+      } else {
+        acc.push({ name: "Others", value: company.value });
+      }
+    }
+    return acc;
+  }, []);
+  
+  // Sort by value (descending)
+  const sortedCompanyData = [...groupedCompanyData].sort((a, b) => b.value - a.value);
 
   // Count medicines by location
   const locationData = medicines.reduce<{ name: string; value: number }[]>((acc, medicine) => {
@@ -91,7 +114,7 @@ export default function Analytics() {
       autoTable(doc, {
         startY: 75,
         head: [['Company', 'Count', 'Percentage']],
-        body: companyData.map(item => [
+        body: sortedCompanyData.map(item => [
           item.name,
           item.value,
           `${((item.value / medicines.length) * 100).toFixed(1)}%`
@@ -168,11 +191,11 @@ export default function Analytics() {
             <CardDescription>Distribution of medicines by company</CardDescription>
           </CardHeader>
           <CardContent className="h-[300px]">
-            {companyData.length > 0 ? (
+            {sortedCompanyData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
-                    data={companyData}
+                    data={sortedCompanyData}
                     cx="50%"
                     cy="50%"
                     labelLine={false}
@@ -180,9 +203,13 @@ export default function Analytics() {
                     fill="#8884d8"
                     dataKey="value"
                   >
-                    {companyData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
+                    {sortedCompanyData.map((entry, index) => {
+                      // Special color for "Others" category
+                      if (entry.name === "Others") {
+                        return <Cell key={`cell-${index}`} fill="#B0B0B0" />;
+                      }
+                      return <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />;
+                    })}
                   </Pie>
                   <Tooltip />
                   <Legend />
