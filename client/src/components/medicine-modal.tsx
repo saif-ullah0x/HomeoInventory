@@ -29,7 +29,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { POTENCIES, DEFAULT_COMPANIES, DEFAULT_LOCATIONS, DEFAULT_MEDICINES, BOTTLE_SIZES } from "@/lib/data";
-import { useStore } from "@/lib/store";
+import { useStore, Medicine } from "@/lib/store";
+import DuplicateMedicineDialog from "@/components/duplicate-medicine-dialog";
 
 const formSchema = z.object({
   name: z.string().min(2, "Medicine name must be at least 2 characters."),
@@ -150,7 +151,11 @@ export default function MedicineModal({ isOpen, onClose, medicineId }: MedicineM
     }
   }, [medicineId, getMedicineById, form]);
 
-  const onSubmit = (data: FormValues) => {
+  const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
+  const [duplicateMedicine, setDuplicateMedicine] = useState<Medicine | null>(null);
+  const [pendingMedicineData, setPendingMedicineData] = useState<any>(null);
+
+  const onSubmit = async (data: FormValues) => {
     try {
       const medicineData = {
         name: data.name,
@@ -168,19 +173,77 @@ export default function MedicineModal({ isOpen, onClose, medicineId }: MedicineM
           title: "Medicine updated",
           description: "The medicine has been updated successfully.",
         });
+        onClose();
       } else {
-        addMedicine(medicineData);
-        toast({
-          title: "Medicine added",
-          description: "The medicine has been added to your inventory.",
-        });
+        // Check for duplicates before adding
+        const result = await addMedicine(medicineData);
+        
+        if (result.success) {
+          toast({
+            title: "Medicine added",
+            description: "The medicine has been added to your inventory.",
+          });
+          onClose();
+        } else if (result.duplicate) {
+          // Show duplicate dialog
+          setDuplicateMedicine(result.duplicate);
+          setPendingMedicineData(medicineData);
+          setShowDuplicateDialog(true);
+        }
       }
-      
-      onClose();
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to save medicine. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+  
+  const handleDuplicateAction = async (action: 'merge' | 'keep-both' | 'skip') => {
+    if (!pendingMedicineData || !duplicateMedicine) return;
+    
+    try {
+      switch (action) {
+        case 'merge':
+          // Merge quantities
+          updateMedicine(duplicateMedicine.id, {
+            ...duplicateMedicine,
+            quantity: duplicateMedicine.quantity + pendingMedicineData.quantity
+          });
+          toast({
+            title: "Quantities merged",
+            description: `Added ${pendingMedicineData.quantity} to existing medicine. New total: ${duplicateMedicine.quantity + pendingMedicineData.quantity}.`,
+          });
+          break;
+          
+        case 'keep-both':
+          // Force add as new
+          const forceResult = await addMedicine(pendingMedicineData);
+          if (forceResult.success) {
+            toast({
+              title: "Duplicate medicine added",
+              description: "A duplicate medicine has been added to your inventory.",
+            });
+          }
+          break;
+          
+        case 'skip':
+          // Do nothing
+          toast({
+            title: "Addition canceled",
+            description: "No changes were made to your inventory.",
+          });
+          break;
+      }
+      
+      // Close both dialogs
+      setShowDuplicateDialog(false);
+      onClose();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to process the duplicate medicine.",
         variant: "destructive",
       });
     }

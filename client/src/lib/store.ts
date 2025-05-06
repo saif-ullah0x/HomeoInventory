@@ -29,10 +29,11 @@ interface MedicineState {
   lastUpdated: string;
   
   // Actions
-  addMedicine: (medicine: MedicineInput) => void;
+  addMedicine: (medicine: MedicineInput) => Promise<{ success: boolean; duplicate?: Medicine }>;
   updateMedicine: (id: number, medicine: MedicineInput) => void;
   deleteMedicine: (id: number) => void;
   getMedicineById: (id: number) => Medicine | undefined;
+  findDuplicateMedicine: (medicine: MedicineInput) => Medicine | undefined;
   getUniqueLocations: () => string[];
   getUniqueCompanies: () => string[];
   exportData: () => { medicines: Medicine[], exportDate: string };
@@ -46,7 +47,23 @@ export const useStore = create<MedicineState>()(
       syncStatus: 'synced',
       lastUpdated: new Date().toISOString(),
       
-      addMedicine: (medicine) => {
+      findDuplicateMedicine: (medicine) => {
+        // Check if there's a duplicate medicine (same name, potency, company)
+        return get().medicines.find(m => 
+          m.name.toLowerCase() === medicine.name.toLowerCase() &&
+          m.potency === medicine.potency &&
+          m.company.toLowerCase() === medicine.company.toLowerCase()
+        );
+      },
+      
+      addMedicine: async (medicine) => {
+        // Check for duplicates first
+        const duplicate = get().findDuplicateMedicine(medicine);
+        
+        if (duplicate) {
+          return { success: false, duplicate };
+        }
+        
         const newId = get().medicines.length > 0 
           ? Math.max(...get().medicines.map(m => m.id)) + 1 
           : 1;
@@ -63,7 +80,9 @@ export const useStore = create<MedicineState>()(
         }));
         
         // Save to IndexedDB
-        db.medicines.add(newMedicine);
+        await db.medicines.add(newMedicine);
+        
+        return { success: true };
       },
       
       updateMedicine: (id, medicine) => {
