@@ -111,6 +111,7 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
   
   const addMedicine = useStore((state) => state.addMedicine);
   const getMedicineById = useStore((state) => state.getMedicineById);
+  const findDuplicateMedicine = useStore((state) => state.findDuplicateMedicine);
   const medicines = useStore((state) => state.medicines);
 
   // Reset when modal closes
