@@ -561,6 +561,7 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
     let importCount = 0;
     let errorCount = 0;
     let duplicateCount = 0;
+    let skippedDuplicateCount = 0;
     
     // Track which items are duplicates for special handling
     const duplicateItems = duplicates.length > 0 
@@ -648,10 +649,29 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
         }
         
         // Check if this is a duplicate by looking in our duplicates map
-        const duplicate = duplicateItems.find(d => 
+        let duplicate = duplicateItems.find(d => 
           d.name.toLowerCase() === item.name.toLowerCase() && 
           d.potency.toLowerCase() === item.potency.toLowerCase()
         );
+        
+        // If not found in our duplicates map, check if it's a new duplicate in the database
+        if (!duplicate) {
+          const existingMedicine = findDuplicateMedicine({
+            name: item.name,
+            potency: item.potency,
+            company: item.company,
+            location: item.location,
+            subLocation: item.subLocation || "",
+            bottleSize: item.bottleSize || "",
+            quantity: item.quantity
+          });
+          
+          if (existingMedicine) {
+            // This is a duplicate by default, set strategy to skip
+            skippedDuplicateCount++;
+            return; // Skip this item
+          }
+        }
         
         if (duplicate) {
           // This is a duplicate - handle according to strategy
@@ -685,6 +705,7 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
               
             case 'skip':
               // Don't import this item
+              skippedDuplicateCount++;
               break;
           }
         } else {
@@ -714,8 +735,16 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
         description: `Successfully imported ${importCount} medicines${duplicateCount > 0 ? ` (and merged ${duplicateCount} duplicates)` : ''}${errorCount > 0 ? ` (${errorCount} failed)` : ''}.`
       });
       onClose();
+    } else if (skippedDuplicateCount > 0) {
+      toast({
+        title: "Import completed with skipped duplicates",
+        description: `${skippedDuplicateCount} duplicate medicines were skipped. You can change the duplicate handling strategy to either merge quantities or keep both entries.`,
+        variant: "default"
+      });
+      // Go back to the preview step where they can adjust duplicate settings
+      setStep('preview');
     } else {
-      setError("Failed to import any medicines. Please check your file and mapping.");
+      setError("Failed to import any medicines. Please check your file and mapping to ensure it contains valid data.");
     }
   };
 
