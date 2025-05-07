@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Plus } from "lucide-react";
+import { Search, Plus, FileDown, FileUp } from "lucide-react";
 import { useStore } from "@/lib/store";
 
 interface InventoryControlsProps {
@@ -84,6 +84,24 @@ export default function InventoryControls({
             ))}
           </SelectContent>
         </Select>
+
+        <Button 
+          variant="outline"
+          onClick={onExportToPDF} 
+          className="gap-2"
+        >
+          <FileDown className="h-4 w-4" />
+          Export
+        </Button>
+
+        <Button 
+          variant="outline"
+          onClick={onImportClick} 
+          className="gap-2"
+        >
+          <FileUp className="h-4 w-4" />
+          Import
+        </Button>
 
         <Button 
           onClick={onAddClick} 
