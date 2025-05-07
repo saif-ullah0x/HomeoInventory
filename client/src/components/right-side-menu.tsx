@@ -1,27 +1,16 @@
 import { useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, LogIn, UserCircle, Heart, Shield } from "lucide-react";
+import { Menu } from "lucide-react";
 import ExportModal from "@/components/export-modal";
 import ImportModal from "@/components/import-modal";
 import ShareModal from "@/components/share-modal";
-import LoginModal from "@/components/login-modal";
-import DonationModal from "@/components/donation-modal";
-import PrivacyInfoModal from "@/components/privacy-info-modal";
-import { useAuth } from "@/lib/firebase";
 
 export default function RightSideMenu() {
-  // All useState calls must come before other hooks
   const [showExportModal, setShowExportModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showDonationModal, setShowDonationModal] = useState(false);
-  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  
-  // Keep useAuth after all useState hooks
-  const { user, isEnabled } = useAuth();
 
   return (
     <>
@@ -59,27 +48,6 @@ export default function RightSideMenu() {
               <span className="mr-2">📤</span> Export Data
             </Button>
             
-            <Button 
-              variant="outline" 
-              className="justify-start"
-              onClick={() => {
-                setShowLoginModal(true);
-                setIsOpen(false);
-              }}
-            >
-              {user ? (
-                <>
-                  <UserCircle className="h-4 w-4 mr-2 text-primary" />
-                  {user.displayName || user.email || "Manage Account"}
-                </>
-              ) : (
-                <>
-                  <LogIn className="h-4 w-4 mr-2 text-primary" />
-                  {isEnabled ? "Login / Sync" : "Cloud Sync (Coming Soon)"}
-                </>
-              )}
-            </Button>
-            
             <div className="mt-auto pt-6">
               <p className="text-xs text-muted-foreground">
                 Application version: 1.0.0
@@ -92,9 +60,6 @@ export default function RightSideMenu() {
       <ExportModal isOpen={showExportModal} onClose={() => setShowExportModal(false)} />
       <ImportModal isOpen={showImportModal} onClose={() => setShowImportModal(false)} />
       <ShareModal isOpen={showShareModal} onClose={() => setShowShareModal(false)} />
-      <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
-      <DonationModal isOpen={showDonationModal} onClose={() => setShowDonationModal(false)} />
-      <PrivacyInfoModal isOpen={showPrivacyModal} onClose={() => setShowPrivacyModal(false)} />
     </>
   );
 }
