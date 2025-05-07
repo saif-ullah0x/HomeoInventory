@@ -10,7 +10,7 @@
   html.theme-transition *,
   html.theme-transition *:before,
   html.theme-transition *:after {
-    transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease, fill 0.5s ease, stroke 0.5s ease !important;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, fill 0.2s ease, stroke 0.2s ease !important;
     transition-delay: 0 !important;
   }
   
@@ -182,11 +182,11 @@
   }
   
   .theme-icon-light {
-    animation: rotate-light 1s ease;
+    animation: rotate-light 0.3s ease;
   }
   
   .theme-icon-dark {
-    animation: rotate-dark 1s ease;
+    animation: rotate-dark 0.3s ease;
   }
   
   @keyframes rotate-light {

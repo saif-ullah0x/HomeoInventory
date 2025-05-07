@@ -1,8 +1,9 @@
 import * as React from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { PillBottle, Sun, Moon } from "lucide-react";
+import { Sun, Moon } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
+import { AppLogo } from "@/components/app-logo";
 
 export default function Header() {
   const { theme, setTheme } = useTheme();
@@ -22,7 +23,9 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
           <div className="flex items-center slide-up-fade-in">
-            <PillBottle className="text-primary text-2xl mr-2 h-7 w-7 animate-pulse" />
+            <div className="mr-2 animate-pulse">
+              <AppLogo />
+            </div>
             <Link href="/">
               <h1 className="font-display text-2xl font-bold cursor-pointer gradient-text">
                 HomeoInvent

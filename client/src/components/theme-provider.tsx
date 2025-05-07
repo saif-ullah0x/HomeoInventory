@@ -50,7 +50,7 @@ export function ThemeProvider({
       // Remove the transition class after the change is complete
       setTimeout(() => {
         root.classList.remove("theme-transition");
-      }, 500); // Match this with the CSS transition duration
+      }, 200); // Reduced transition time for faster theme switching
     }, 10);
   }, [theme]);
 
