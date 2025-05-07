@@ -39,19 +39,9 @@ export function ThemeProvider({
           : "light"
         : theme;
     
-    // Apply a transition class before changing the theme
-    root.classList.add("theme-transition");
-    
-    // Use setTimeout to ensure smooth transition
-    setTimeout(() => {
-      root.classList.remove("light", "dark");
-      root.classList.add(resolvedTheme);
-      
-      // Remove the transition class after the change is complete
-      setTimeout(() => {
-        root.classList.remove("theme-transition");
-      }, 200); // Reduced transition time for faster theme switching
-    }, 10);
+    // Direct theme change without transitions to avoid delays
+    root.classList.remove("light", "dark");
+    root.classList.add(resolvedTheme);
   }, [theme]);
 
   const value = {

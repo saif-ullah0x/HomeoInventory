@@ -8,13 +8,8 @@ import { AppLogo } from "@/components/app-logo";
 export default function Header() {
   const { theme, setTheme } = useTheme();
 
-  const [iconClass, setIconClass] = React.useState<string>("");
-  
   const toggleTheme = () => {
-    // Set the appropriate animation class based on the current theme
-    setIconClass(theme === "dark" ? "theme-icon-light" : "theme-icon-dark");
-    
-    // Toggle the theme
+    // Simply toggle the theme - no animation needed
     setTheme(theme === "dark" ? "light" : "dark");
   };
 
@@ -23,7 +18,7 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
           <div className="flex items-center slide-up-fade-in">
-            <div className="mr-2 animate-pulse">
+            <div className="mr-2">
               <AppLogo />
             </div>
             <Link href="/">
@@ -44,9 +39,9 @@ export default function Header() {
             >
               <div className="absolute inset-0 opacity-0 dark:opacity-10 bg-primary group-hover:opacity-20 transition-opacity duration-200 rounded-sm"></div>
               {theme === "dark" ? (
-                <Sun className={`h-5 w-5 mr-1 text-yellow-500 drop-shadow-md ${iconClass}`} />
+                <Sun className="h-5 w-5 mr-1 text-yellow-500 drop-shadow-md" />
               ) : (
-                <Moon className={`h-5 w-5 mr-1 text-indigo-600 drop-shadow-md ${iconClass}`} />
+                <Moon className="h-5 w-5 mr-1 text-indigo-600 drop-shadow-md" />
               )}
               <span className="hidden sm:inline font-medium">Theme</span>
             </Button>
