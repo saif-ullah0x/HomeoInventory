@@ -5,7 +5,17 @@
 @tailwind utilities;
 
 @layer base {
+  /* Add smooth transitions for theme changes */
+  html.theme-transition,
+  html.theme-transition *,
+  html.theme-transition *:before,
+  html.theme-transition *:after {
+    transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease, fill 0.5s ease, stroke 0.5s ease !important;
+    transition-delay: 0 !important;
+  }
+  
   :root {
+  
     --background: 210 40% 98%;
     --foreground: 222.2 84% 4.9%;
 

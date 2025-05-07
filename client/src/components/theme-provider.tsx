@@ -32,20 +32,26 @@ export function ThemeProvider({
 
   useEffect(() => {
     const root = window.document.documentElement;
-
-    root.classList.remove("light", "dark");
-
-    if (theme === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-        .matches
-        ? "dark"
-        : "light";
-
-      root.classList.add(systemTheme);
-      return;
-    }
-
-    root.classList.add(theme);
+    const resolvedTheme = 
+      theme === "system"
+        ? window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light"
+        : theme;
+    
+    // Apply a transition class before changing the theme
+    root.classList.add("theme-transition");
+    
+    // Use setTimeout to ensure smooth transition
+    setTimeout(() => {
+      root.classList.remove("light", "dark");
+      root.classList.add(resolvedTheme);
+      
+      // Remove the transition class after the change is complete
+      setTimeout(() => {
+        root.classList.remove("theme-transition");
+      }, 500); // Match this with the CSS transition duration
+    }, 10);
   }, [theme]);
 
   const value = {

@@ -1,3 +1,4 @@
+import * as React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -41,6 +42,25 @@ export default function InventoryControls({
   
   const locations = getUniqueLocations();
   const companies = getUniqueCompanies();
+  
+  // Add global click handler to close dropdown when clicking outside
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const dropdown = document.getElementById('export-dropdown');
+      const exportButton = document.getElementById('export-button');
+      
+      if (dropdown && !dropdown.classList.contains('hidden') && 
+          !dropdown.contains(event.target as Node) && 
+          exportButton && !exportButton.contains(event.target as Node)) {
+        dropdown.classList.add('hidden');
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
@@ -85,14 +105,46 @@ export default function InventoryControls({
           </SelectContent>
         </Select>
 
-        <Button 
-          variant="outline"
-          onClick={onExportToPDF} 
-          className="gap-2"
-        >
-          <FileDown className="h-4 w-4" />
-          Export
-        </Button>
+        <div className="relative">
+          <Button 
+            variant="outline"
+            onClick={() => {
+              const dropdown = document.getElementById('export-dropdown');
+              if (dropdown) {
+                dropdown.classList.toggle('hidden');
+              }
+            }}
+            className="gap-2"
+          >
+            <FileDown className="h-4 w-4" />
+            Export
+          </Button>
+          <div 
+            id="export-dropdown" 
+            className="hidden absolute top-full mt-1 right-0 bg-background border border-border rounded-md shadow-lg z-10 min-w-[120px] py-1"
+          >
+            <div 
+              onClick={(e) => {
+                e.stopPropagation();
+                document.getElementById('export-dropdown')?.classList.add('hidden');
+                onExportToPDF();
+              }} 
+              className="block w-full text-left px-4 py-2 text-sm hover:bg-muted cursor-pointer"
+            >
+              PDF
+            </div>
+            <div 
+              onClick={(e) => {
+                e.stopPropagation();
+                document.getElementById('export-dropdown')?.classList.add('hidden');
+                onExportToExcel();
+              }} 
+              className="block w-full text-left px-4 py-2 text-sm hover:bg-muted cursor-pointer"
+            >
+              Excel
+            </div>
+          </div>
+        </div>
 
         <Button 
           variant="outline"
