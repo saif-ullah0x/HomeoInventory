@@ -4,64 +4,81 @@ import { useTheme } from "@/components/theme-provider";
 export function AppLogo() {
   const { theme } = useTheme();
   
-  // Choose color based on theme - match the purple gradient color
+  // Choose color based on theme - match the purple gradient
   const primaryColor = theme === "dark" ? "hsl(252 95% 70%)" : "hsl(250 95% 64%)";
   const secondaryColor = "hsl(262 83% 58%)";
   
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 96 96"
+      width="32"
+      height="32"
+      viewBox="0 0 100 120"
       fill="none"
-      className="h-7 w-7"
+      className="h-8 w-8"
     >
-      {/* Stylized medicine container icon with gradient fill */}
       <defs>
         <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor={primaryColor} />
-          <stop offset="100%" stopColor={secondaryColor} />
+          <stop offset="10%" stopColor={primaryColor} />
+          <stop offset="90%" stopColor={secondaryColor} />
         </linearGradient>
+        
+        {/* Glow effect for the plus sign */}
+        <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="2" result="blur" />
+          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        </filter>
       </defs>
       
-      {/* Top cap */}
+      {/* Handle/Cap for the bottle */}
       <path
-        d="M68 20H28v12h40V20z"
-        fill="url(#logoGradient)"
-        stroke={theme === "dark" ? "#ffffff30" : "#00000020"}
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        d="M40 14h20a3 3 0 0 1 3 3v8H37v-8a3 3 0 0 1 3-3z"
+        fill={theme === "dark" ? "#664de5" : "#7c4dff"}
+        stroke={theme === "dark" ? "#ffffff20" : "#00000010"}
+        strokeWidth="1"
       />
       
-      {/* Bottle body */}
-      <path
-        d="M68 32v44c0 2.2-1.8 4-4 4H32c-2.2 0-4-1.8-4-4V32"
+      {/* Main bottle body with rounded corners */}
+      <rect
+        x="25"
+        y="25"
+        width="50"
+        height="85"
+        rx="6"
+        ry="6"
         fill="url(#logoGradient)"
-        stroke={theme === "dark" ? "#ffffff30" : "#00000020"}
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        stroke={theme === "dark" ? "#ffffff20" : "#00000010"}
+        strokeWidth="1"
       />
       
-      {/* Medicine cross */}
+      {/* Plus sign in the center with glow effect */}
+      <g filter="url(#glow)">
+        <path
+          d="M50 50v35M32.5 67.5h35"
+          stroke="white"
+          strokeWidth="8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </g>
+      
+      {/* Highlight on the bottle for dimension */}
       <path
-        d="M44 48v12M38 54h12"
+        d="M30 30a48 90 0 0 1 20 70"
         stroke="white"
-        strokeWidth="3"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        strokeWidth="1"
+        strokeOpacity="0.3"
+        fill="none"
       />
       
-      {/* Bottle neck */}
-      <path
-        d="M36 20v-4c0-2.2 1.8-4 4-4h16c2.2 0 4 1.8 4 4v4"
-        fill="none"
-        stroke={theme === "dark" ? "#ffffff30" : "#00000020"}
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+      {/* Small details on bottle cap */}
+      <rect
+        x="42"
+        y="17"
+        width="16"
+        height="3"
+        rx="1"
+        fill={theme === "dark" ? "#ffffff30" : "#00000020"}
       />
     </svg>
   );
