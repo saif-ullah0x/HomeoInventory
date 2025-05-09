@@ -17,7 +17,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
-import { SAMPLE_MEDICINES } from "@/lib/data";
 
 interface ShareModalProps {
   isOpen: boolean;
@@ -88,26 +87,72 @@ export default function ShareModal({ isOpen, onClose }: ShareModalProps) {
     
     setCodeWarning(false);
     
-    // Import sample medicines to demonstrate functionality
-    // In a real implementation, this would fetch shared medicines based on the code
+    // In a real app, this would verify the share code against a database
+    // For now, we'll simulate by sharing the existing inventory
     const importSharedMedicines = async () => {
-      // Use the sample medicines as shared medicines for demonstration
-      for (const medicine of SAMPLE_MEDICINES) {
+      // Get saved medicines from the store 
+      if (medicines.length > 0) {
+        toast({
+          title: "Using your current inventory",
+          description: "Since this is a demo, we'll use your existing inventory as the shared data."
+        });
+        
+        // In a real implementation, this is where we would fetch 
+        // medicines shared by another user based on the shareCode
+        return;
+      } else {
+        // If no medicines exist, add some samples
         try {
-          // Skip already existing medicines to avoid duplicates
-          const medicineData = {
-            name: medicine.name,
-            potency: medicine.potency,
-            company: medicine.company,
-            location: medicine.location,
-            subLocation: medicine.subLocation,
-            bottleSize: medicine.bottleSize,
-            quantity: medicine.quantity
-          };
+          // Add several medicines with realistic data
+          const sampleMedicines = [
+            {
+              name: "Acid Carbolicum",
+              potency: "200",
+              company: "Masood",
+              location: "D1_DT",
+              quantity: 2
+            },
+            {
+              name: "Acid Nitricum",
+              potency: "200",
+              company: "Masood/Schwabe",
+              location: "D1_DT_MB",
+              quantity: 3
+            },
+            {
+              name: "Acid Phos",
+              potency: "200",
+              company: "Masood",
+              location: "D1_DT",
+              quantity: 2
+            },
+            {
+              name: "Aconite Napellus",
+              potency: "30",
+              company: "Masood",
+              location: "MB",
+              quantity: 2
+            },
+            {
+              name: "Aethusa",
+              potency: "200",
+              company: "Masood",
+              location: "TN",
+              quantity: 1
+            }
+          ];
           
-          await addMedicine(medicineData);
+          for (const medicine of sampleMedicines) {
+            await addMedicine({
+              name: medicine.name,
+              potency: medicine.potency,
+              company: medicine.company,
+              location: medicine.location,
+              quantity: medicine.quantity
+            });
+          }
         } catch (error) {
-          console.error("Error importing shared medicine:", error);
+          console.error("Error importing medicines:", error);
         }
       }
     };
