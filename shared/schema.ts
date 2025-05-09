@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, jsonb, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 import { relations } from "drizzle-orm";
@@ -44,3 +44,30 @@ export const insertUserSchema = createInsertSchema(users).pick({
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
+
+// Shared inventory table for cloud-based family sharing
+export const sharedInventories = pgTable("shared_inventories", {
+  id: serial("id").primaryKey(),
+  inventory_id: text("inventory_id").notNull().unique(),
+  inventory_data: jsonb("inventory_data").notNull(), // Store medicine list as JSON
+  owner_id: text("owner_id"), // Optional owner ID
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  updated_at: timestamp("updated_at").defaultNow().notNull(),
+  name: text("name"), // Optional inventory name
+  is_view_only: boolean("is_view_only").default(false),
+});
+
+// Schema for inserting and validating shared inventory data
+export const insertSharedInventorySchema = createInsertSchema(sharedInventories, {
+  inventory_id: (schema) => schema.min(5, "Inventory ID must be at least 5 characters"),
+  inventory_data: (schema) => schema.refine(data => 
+    Array.isArray(data) && data.length > 0, 
+    { message: "Inventory data must be a non-empty array" }
+  ),
+});
+
+export const selectSharedInventorySchema = createSelectSchema(sharedInventories);
+
+// Export types for use in the application
+export type InsertSharedInventory = z.infer<typeof insertSharedInventorySchema>;
+export type SharedInventory = z.infer<typeof selectSharedInventorySchema>;
