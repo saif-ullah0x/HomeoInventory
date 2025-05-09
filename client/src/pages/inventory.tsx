@@ -18,6 +18,7 @@ export default function Inventory() {
   const [isEditMedicineModalOpen, setIsEditMedicineModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [medicineToEdit, setMedicineToEdit] = useState<number | null>(null);
   const [medicineToDelete, setMedicineToDelete] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -170,6 +171,7 @@ export default function Inventory() {
         onImportClick={() => setIsImportModalOpen(true)}
         onExportToPDF={exportToPDF}
         onExportToExcel={exportToExcel}
+        onShareClick={() => setIsShareModalOpen(true)}
         onSearchChange={setSearchTerm}
         onLocationFilterChange={setLocationFilter}
         onCompanyFilterChange={setCompanyFilter}
@@ -220,6 +222,25 @@ export default function Inventory() {
         isOpen={isImportModalOpen}
         onClose={() => setIsImportModalOpen(false)}
       />
+      
+      <ShareModal 
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+      />
+      
+      {/* Fixed share button positioned at bottom right */}
+      <button 
+        onClick={() => setIsShareModalOpen(true)}
+        className="fixed right-6 bottom-6 bg-primary hover:bg-primary/90 text-white rounded-full p-4 shadow-lg transition-all duration-200 ease-in-out z-10"
+        aria-label="Family Access Sharing"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-users">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        </svg>
+      </button>
     </main>
   );
 }

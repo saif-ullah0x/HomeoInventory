@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Plus, FileDown, FileUp } from "lucide-react";
+import { Search, Plus, FileDown, FileUp, Users } from "lucide-react";
 import { useStore } from "@/lib/store";
 
 interface InventoryControlsProps {
@@ -16,6 +16,7 @@ interface InventoryControlsProps {
   onImportClick: () => void;
   onExportToPDF: () => void;
   onExportToExcel: () => void;
+  onShareClick?: () => void;
   onSearchChange: (value: string) => void;
   onLocationFilterChange: (value: string) => void;
   onCompanyFilterChange: (value: string) => void;
@@ -29,6 +30,7 @@ export default function InventoryControls({
   onImportClick,
   onExportToPDF,
   onExportToExcel,
+  onShareClick,
   onSearchChange,
   onLocationFilterChange,
   onCompanyFilterChange,
@@ -154,6 +156,17 @@ export default function InventoryControls({
           <FileUp className="h-4 w-4" />
           Import
         </Button>
+
+        {onShareClick && (
+          <Button 
+            variant="outline"
+            onClick={onShareClick} 
+            className="gap-2"
+          >
+            <Users className="h-4 w-4" />
+            Family Share
+          </Button>
+        )}
 
         <Button 
           onClick={onAddClick} 
