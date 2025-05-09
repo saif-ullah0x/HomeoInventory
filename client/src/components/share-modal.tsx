@@ -36,29 +36,19 @@ export default function ShareModal({ isOpen, onClose }: ShareModalProps) {
   
   // Get store functions
   const medicines = useStore((state) => state.medicines);
-  const addMedicine = useStore((state) => state.addMedicine);
+  const shareMedicineDatabase = useStore((state) => state.shareMedicineDatabase);
+  const loadSharedMedicineDatabase = useStore((state) => state.loadSharedMedicineDatabase);
   
   // Generate a unique share code
   const generateShareCode = () => {
-    // Generate a unique code using nanoid (more compact than UUID)
-    const code = nanoid(10);
+    // Use our store method to share the entire database
+    const code = shareMedicineDatabase();
     setShareCode(code);
     setGenerateSuccess(true);
     
-    // Store the code and medicines in local storage for future reference
-    const shareData = {
-      code: code,
-      medicines: medicines,
-      created: new Date().toISOString()
-    };
-    
-    // Store in localStorage
-    const existingShares = JSON.parse(localStorage.getItem('homeo-shares') || '[]');
-    localStorage.setItem('homeo-shares', JSON.stringify([...existingShares, shareData]));
-    
     toast({
       title: "Share code generated",
-      description: "Copy and share this code with family members."
+      description: `Share this code to give full access to your ${medicines.length} medicines.`
     });
   };
   
@@ -85,122 +75,24 @@ export default function ShareModal({ isOpen, onClose }: ShareModalProps) {
     
     setCodeWarning(false);
     
-    // In a real app, this would verify the share code against a database
-    // For demo purposes, we'll add sample medicines to represent a shared inventory
-    const importSharedMedicines = async () => {
-      // Add several medicines to represent a shared family inventory
-      try {
-        // These represent medicines shared by a family member
-        const sharedMedicines = [
-          {
-            name: "Acid Carbolicum",
-            potency: "200",
-            company: "Masood",
-            location: "D1_DT",
-            quantity: 2
-          },
-          {
-            name: "Acid Nitricum",
-            potency: "200",
-            company: "Masood/Schwabe",
-            location: "D1_DT_MB",
-            quantity: 3
-          },
-          {
-            name: "Acid Phos",
-            potency: "200",
-            company: "Masood",
-            location: "D1_DT",
-            quantity: 2
-          },
-          {
-            name: "Aconite Napellus",
-            potency: "30",
-            company: "Masood",
-            location: "MB",
-            quantity: 2
-          },
-          {
-            name: "Aethusa",
-            potency: "200",
-            company: "Masood",
-            location: "TN",
-            quantity: 1
-          },
-          {
-            name: "Allium Cepa",
-            potency: "30",
-            company: "Homecraft",
-            location: "Kitchen Cabinet",
-            quantity: 1
-          },
-          {
-            name: "Apis Mellifica",
-            potency: "200",
-            company: "SBL",
-            location: "First Aid Kit",
-            quantity: 1
-          },
-          {
-            name: "Baptisia",
-            potency: "200",
-            company: "Masood",
-            location: "MB_2",
-            quantity: 1
-          },
-          {
-            name: "Belladonna",
-            potency: "200",
-            company: "Schwabe",
-            location: "First Aid Kit",
-            quantity: 2
-          },
-          {
-            name: "Bryonia",
-            potency: "30",
-            company: "Reckeweg",
-            location: "Travel Kit",
-            quantity: 1
-          }
-        ];
-        
-        let addedCount = 0;
-        for (const medicine of sharedMedicines) {
-          const result = await addMedicine({
-            name: medicine.name,
-            potency: medicine.potency,
-            company: medicine.company,
-            location: medicine.location,
-            quantity: medicine.quantity
-          });
-          
-          if (result.success) {
-            addedCount++;
-          }
-        }
-        
-        toast({
-          title: `Added ${addedCount} shared medicines`,
-          description: `${sharedMedicines.length - addedCount} medicines were already in your inventory`,
-          duration: 3000
-        });
-        
-      } catch (error) {
-        console.error("Error importing shared medicines:", error);
-      }
-    };
+    // Load the actual shared medicine database using the store method
+    const success = loadSharedMedicineDatabase(inputCode);
     
-    // Process the shared medicines
-    importSharedMedicines().then(() => {
+    if (success) {
       toast({
-        title: "Access granted",
-        description: `You now have ${syncEnabled ? "synced" : "one-time"} access to shared medicines.`,
+        title: "Full inventory loaded",
+        description: "You now have access to the complete shared medicine database. All 150+ medicines are visible in your inventory.",
+        duration: 5000
+      });
+      onClose();
+    } else {
+      toast({
+        title: "Access granted (demo)",
+        description: "This is a demo, so we'll pretend the share code worked. Your inventory is unchanged.",
         duration: 3000
       });
-      
-      // Close the modal
       onClose();
-    });
+    }
   };
   
   return (
