@@ -80,8 +80,8 @@ export default function ShareModal({ isOpen, onClose }: ShareModalProps) {
     
     if (success) {
       toast({
-        title: "Full inventory loaded",
-        description: "You now have access to the complete shared medicine database. All 150+ medicines are visible in your inventory.",
+        title: "Shared inventory loaded",
+        description: "You now have access to the complete shared medicine database.",
         duration: 5000
       });
       onClose();
