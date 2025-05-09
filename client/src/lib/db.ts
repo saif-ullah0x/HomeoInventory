@@ -78,17 +78,50 @@ export async function pushToServer(medicines: Medicine[]) {
   }
 }
 
-// Family sharing functions
+// Family sharing functions - Now using cloud API
 export async function createSharedInventory(shareCode: string, medicines: Medicine[], name?: string): Promise<boolean> {
   try {
-    const sharedInventory: SharedInventory = {
+    // Store inventory in local database for offline access
+    const localSharedInventory: SharedInventory = {
       shareCode,
       medicines,
       created: new Date(),
       name
     };
     
-    await db.sharedInventories.add(sharedInventory);
+    await db.sharedInventories.add(localSharedInventory);
+    
+    // Also store in cloud database if online
+    try {
+      const response = await fetch('/api/shared-inventory', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          medicines,
+          name: name || "My Medicine Inventory",
+          isViewOnly: false
+        }),
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        console.log('Cloud inventory created with ID:', result.inventoryId);
+        
+        // Update the local record with the actual inventory ID from server
+        if (result.inventoryId) {
+          await db.sharedInventories
+            .where('shareCode')
+            .equals(shareCode)
+            .modify({ shareCode: result.inventoryId });
+        }
+      }
+    } catch (err) {
+      console.warn('Failed to create cloud inventory, but local copy was saved:', err);
+      // Continue with local storage only if cloud fails
+    }
+    
     return true;
   } catch (error) {
     console.error('Error creating shared inventory:', error);
@@ -98,6 +131,24 @@ export async function createSharedInventory(shareCode: string, medicines: Medici
 
 export async function getSharedInventory(shareCode: string): Promise<SharedInventory | null> {
   try {
+    // First try to get from the cloud
+    try {
+      const response = await fetch(`/api/shared-inventory/${shareCode}`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        return {
+          shareCode: data.inventoryId,
+          medicines: data.medicines,
+          created: new Date(data.createdAt),
+          name: data.name
+        };
+      }
+    } catch (err) {
+      console.warn('Failed to fetch from cloud, trying local cache:', err);
+    }
+    
+    // If cloud fails or returns no results, try local cache
     const shared = await db.sharedInventories
       .where('shareCode')
       .equals(shareCode)
@@ -112,77 +163,36 @@ export async function getSharedInventory(shareCode: string): Promise<SharedInven
 
 export async function importSharedInventory(shareCode: string): Promise<boolean> {
   try {
-    // First, check if this share code exists in our db
+    // Get the shared inventory (tries cloud first, then local)
     const shared = await getSharedInventory(shareCode);
     
-    if (shared && shared.medicines.length > 0) {
+    if (shared && shared.medicines && shared.medicines.length > 0) {
       // Clear current medicines
       await db.medicines.clear();
       
-      // Add the shared medicines
+      // Add the shared medicines to local database
       await db.medicines.bulkAdd(shared.medicines);
+      
+      // Also store this shared inventory locally for offline access
+      const existingLocal = await db.sharedInventories
+        .where('shareCode')
+        .equals(shareCode)
+        .first();
+      
+      if (!existingLocal) {
+        await db.sharedInventories.add({
+          shareCode,
+          medicines: shared.medicines,
+          created: new Date(),
+          name: shared.name
+        });
+      }
+      
       return true;
     }
     
-    // If no shared inventory found, add sample data
-    const sampleMedicines: Medicine[] = [
-      {
-        id: 1,
-        name: "Arnica Montana",
-        potency: "30C",
-        company: "Masood",
-        location: "Home",
-        subLocation: "Medicine Cabinet",
-        quantity: 2
-      },
-      {
-        id: 2,
-        name: "Belladonna",
-        potency: "200C",
-        company: "Kent",
-        location: "Home",
-        subLocation: "Drawer",
-        quantity: 1
-      },
-      {
-        id: 3,
-        name: "Nux Vomica",
-        potency: "30C",
-        company: "BM",
-        location: "Home",
-        subLocation: "Medicine Cabinet",
-        quantity: 3
-      },
-      {
-        id: 4,
-        name: "Rhus Tox",
-        potency: "30C",
-        company: "SBL",
-        location: "Travel Kit",
-        subLocation: "Small Box",
-        quantity: 1
-      },
-      {
-        id: 5,
-        name: "Pulsatilla",
-        potency: "200C",
-        company: "Schwabe",
-        location: "Office",
-        subLocation: "Desk Drawer",
-        quantity: 1
-      }
-    ];
-    
-    // First clear any existing data
-    await db.medicines.clear();
-    
-    // Add sample medicines
-    await db.medicines.bulkAdd(sampleMedicines);
-    
-    // Also create a shared inventory from this code for future use
-    await createSharedInventory(shareCode, sampleMedicines, "Sample Inventory");
-    
-    return true;
+    // If we couldn't find the inventory, return false
+    return false;
   } catch (error) {
     console.error('Error importing shared inventory:', error);
     return false;

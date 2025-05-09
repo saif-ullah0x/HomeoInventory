@@ -1,9 +1,16 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { InsertMedicine, Medicine, medicines } from "@shared/schema";
+import { 
+  InsertMedicine, 
+  Medicine, 
+  medicines, 
+  sharedInventories, 
+  InsertSharedInventory 
+} from "@shared/schema";
 import { eq } from "drizzle-orm";
 import { db } from "@db";
+import { nanoid } from "nanoid";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Medicine API routes
@@ -130,6 +137,122 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error syncing medicines:", error);
       return res.status(500).json({ error: "Failed to sync medicines" });
+    }
+  });
+  
+  // SHARED INVENTORY API ENDPOINTS
+  
+  // Create a new shared inventory
+  app.post(`${apiPrefix}/shared-inventory`, async (req, res) => {
+    try {
+      const { medicines, name, isViewOnly } = req.body;
+      
+      if (!medicines || !Array.isArray(medicines) || medicines.length === 0) {
+        return res.status(400).json({
+          error: "Inventory data missing or invalid. Must contain at least one medicine."
+        });
+      }
+      
+      // Generate a unique, memorable inventory ID
+      const inventoryId = nanoid(8);
+      
+      // Create the shared inventory entry
+      const [newInventory] = await db.insert(sharedInventories).values({
+        inventory_id: inventoryId,
+        inventory_data: medicines,
+        name: name || "My Medicine Inventory",
+        is_view_only: isViewOnly || false,
+        created_at: new Date(),
+        updated_at: new Date()
+      }).returning();
+      
+      return res.status(201).json({
+        inventoryId: newInventory.inventory_id,
+        message: "Inventory shared successfully"
+      });
+    } catch (error) {
+      console.error("Error creating shared inventory:", error);
+      return res.status(500).json({ error: "Failed to create shared inventory" });
+    }
+  });
+  
+  // Get a shared inventory by ID
+  app.get(`${apiPrefix}/shared-inventory/:id`, async (req, res) => {
+    try {
+      const inventoryId = req.params.id;
+      
+      const sharedInventory = await db.query.sharedInventories.findFirst({
+        where: eq(sharedInventories.inventory_id, inventoryId)
+      });
+      
+      if (!sharedInventory) {
+        return res.status(404).json({ error: "Shared inventory not found" });
+      }
+      
+      return res.json({
+        inventoryId: sharedInventory.inventory_id,
+        medicines: sharedInventory.inventory_data,
+        name: sharedInventory.name,
+        isViewOnly: sharedInventory.is_view_only,
+        createdAt: sharedInventory.created_at
+      });
+    } catch (error) {
+      console.error("Error fetching shared inventory:", error);
+      return res.status(500).json({ error: "Failed to fetch shared inventory" });
+    }
+  });
+  
+  // Update a shared inventory
+  app.put(`${apiPrefix}/shared-inventory/:id`, async (req, res) => {
+    try {
+      const inventoryId = req.params.id;
+      const { medicines, name, isViewOnly } = req.body;
+      
+      if (!medicines || !Array.isArray(medicines)) {
+        return res.status(400).json({ error: "Invalid inventory data" });
+      }
+      
+      const [updatedInventory] = await db.update(sharedInventories)
+        .set({
+          inventory_data: medicines,
+          name: name,
+          is_view_only: isViewOnly,
+          updated_at: new Date()
+        })
+        .where(eq(sharedInventories.inventory_id, inventoryId))
+        .returning();
+      
+      if (!updatedInventory) {
+        return res.status(404).json({ error: "Shared inventory not found" });
+      }
+      
+      return res.json({
+        inventoryId: updatedInventory.inventory_id,
+        message: "Inventory updated successfully"
+      });
+    } catch (error) {
+      console.error("Error updating shared inventory:", error);
+      return res.status(500).json({ error: "Failed to update shared inventory" });
+    }
+  });
+  
+  // Delete a shared inventory
+  app.delete(`${apiPrefix}/shared-inventory/:id`, async (req, res) => {
+    try {
+      const inventoryId = req.params.id;
+      
+      const [deletedInventory] = await db.delete(sharedInventories)
+        .where(eq(sharedInventories.inventory_id, inventoryId))
+        .returning();
+      
+      if (!deletedInventory) {
+        return res.status(404).json({ error: "Shared inventory not found" });
+      }
+      
+      return res.json({ message: "Shared inventory deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting shared inventory:", error);
+      return res.status(500).json({ error: "Failed to delete shared inventory" });
     }
   });
 
