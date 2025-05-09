@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { db } from '@/lib/db';
+import { db, createSharedInventory, importSharedInventory } from '@/lib/db';
 
 export interface Medicine {
   id: number;
@@ -40,7 +40,7 @@ interface MedicineState {
   
   // Family sharing methods
   shareMedicineDatabase: () => string;
-  loadSharedMedicineDatabase: (shareCode: string) => boolean;
+  loadSharedMedicineDatabase: (shareCode: string) => Promise<boolean>;
 }
 
 // Use Zustand with persist middleware for local storage
@@ -145,119 +145,41 @@ export const useStore = create<MedicineState>()(
         // Create a share code
         const shareCode = Math.random().toString(36).substring(2, 10);
         
-        // Store the current medicine database with this share code
-        const shareData = {
-          shareCode,
-          medicines: get().medicines,
-          created: new Date().toISOString()
-        };
+        // Get current medicines
+        const medicines = get().medicines;
         
-        // Save to localStorage for retrieval by other devices/browsers
-        localStorage.setItem(`homeo-share-${shareCode}`, JSON.stringify(shareData));
+        // Store the current medicine database with this share code in IndexedDB
+        createSharedInventory(shareCode, medicines);
         
         return shareCode;
       },
       
-      loadSharedMedicineDatabase: (shareCode) => {
-        // In a real app, this would make an API call to fetch shared data
-        // For now we'll simulate by finding the database in localStorage
-        
-        // Try to find share data by code in localStorage
-        const sharedData = localStorage.getItem(`homeo-share-${shareCode}`);
-        
-        if (sharedData) {
-          try {
-            const parsed = JSON.parse(sharedData);
+      loadSharedMedicineDatabase: async (shareCode) => {
+        try {
+          // Use our shared inventory function to load data
+          const success = await importSharedInventory(shareCode);
+          
+          if (success) {
+            // Get the latest medicines from IndexedDB after importing
+            const medicines = await db.medicines.toArray();
             
-            // For demo, just update the database directly
-            // In a real app, we would merge intelligently with existing data
-            if (parsed.medicines && Array.isArray(parsed.medicines)) {
-              // Update the store
-              set({
-                medicines: parsed.medicines,
-                lastUpdated: new Date().toISOString(),
-                syncStatus: 'synced'
-              });
-              
-              // Update IndexedDB - clear existing and bulk add
-              db.medicines.clear().then(() => {
-                db.medicines.bulkAdd(parsed.medicines);
-              });
-              
-              return true;
-            }
-          } catch (error) {
-            console.error("Error parsing shared database:", error);
+            // Update the store state
+            set({
+              medicines,
+              lastUpdated: new Date().toISOString(),
+              syncStatus: 'synced'
+            });
+            
+            // Create a banner to show we're viewing shared data
+            localStorage.setItem('viewing-shared-inventory', shareCode);
+            
+            return true;
           }
+        } catch (error) {
+          console.error("Error loading shared inventory:", error);
         }
         
-        // If no medicines were found for the share code,
-        // add some demo medicines so the user can see the feature working
-        const currentMedicines = get().medicines;
-        
-        if (currentMedicines.length === 0) {
-          // Add some sample medicines if none exist
-          const sampleMedicines = [
-            {
-              id: 1,
-              name: "Arnica Montana",
-              potency: "30C",
-              company: "Masood",
-              location: "Home",
-              subLocation: "Medicine Cabinet",
-              quantity: 2
-            },
-            {
-              id: 2,
-              name: "Belladonna",
-              potency: "200C",
-              company: "Kent",
-              location: "Home",
-              subLocation: "Drawer",
-              quantity: 1
-            },
-            {
-              id: 3,
-              name: "Nux Vomica",
-              potency: "30C",
-              company: "BM",
-              location: "Home",
-              subLocation: "Medicine Cabinet",
-              quantity: 3
-            },
-            {
-              id: 4,
-              name: "Rhus Tox",
-              potency: "30C",
-              company: "SBL",
-              location: "Travel Kit",
-              subLocation: "Small Box",
-              quantity: 1
-            },
-            {
-              id: 5,
-              name: "Pulsatilla",
-              potency: "200C",
-              company: "Schwabe",
-              location: "Office",
-              subLocation: "Desk Drawer",
-              quantity: 1
-            }
-          ];
-          
-          // Update the store
-          set({
-            medicines: sampleMedicines,
-            lastUpdated: new Date().toISOString(),
-            syncStatus: 'synced'
-          });
-          
-          // Update IndexedDB
-          db.medicines.bulkAdd(sampleMedicines);
-        }
-        
-        // For demo purposes, always return success
-        return true;
+        return false;
       }
     }),
     {

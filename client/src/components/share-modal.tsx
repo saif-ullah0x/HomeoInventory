@@ -66,7 +66,7 @@ export default function ShareModal({ isOpen, onClose }: ShareModalProps) {
   };
   
   // Use someone else's share code
-  const useShareCode = () => {
+  const useShareCode = async () => {
     // Simple validation
     if (!inputCode || inputCode.length < 5) {
       setCodeWarning(true);
@@ -75,23 +75,48 @@ export default function ShareModal({ isOpen, onClose }: ShareModalProps) {
     
     setCodeWarning(false);
     
-    // Load the actual shared medicine database using the store method
-    const success = loadSharedMedicineDatabase(inputCode);
+    // Show loading toast
+    const loadingToast = toast({
+      title: "Loading shared inventory...",
+      description: "Please wait while we retrieve the inventory data.",
+      duration: 5000
+    });
     
-    if (success) {
+    try {
+      // Load the actual shared medicine database using the store method (now async)
+      const success = await loadSharedMedicineDatabase(inputCode);
+      
+      if (success) {
+        toast({
+          title: "Shared inventory loaded",
+          description: "You now have access to the shared medicine inventory.",
+          duration: 5000
+        });
+        
+        // Add a banner to show we're viewing shared data
+        const sharedBanner = document.createElement('div');
+        sharedBanner.id = 'shared-inventory-banner';
+        sharedBanner.className = 'fixed top-16 left-0 right-0 bg-primary text-white py-2 px-4 text-center text-sm z-50';
+        sharedBanner.innerHTML = `Viewing shared inventory (Code: ${inputCode})`;
+        document.body.appendChild(sharedBanner);
+        
+        onClose();
+      } else {
+        toast({
+          title: "Error loading inventory",
+          description: "There was a problem loading the shared inventory. Please try again.",
+          variant: "destructive",
+          duration: 3000
+        });
+      }
+    } catch (error) {
+      console.error("Error accessing shared inventory:", error);
       toast({
-        title: "Shared inventory loaded",
-        description: "You now have access to the complete shared medicine database.",
-        duration: 5000
-      });
-      onClose();
-    } else {
-      toast({
-        title: "Access granted (demo)",
-        description: "This is a demo, so we'll pretend the share code worked. Your inventory is unchanged.",
+        title: "Error",
+        description: "Something went wrong accessing the shared inventory.",
+        variant: "destructive",
         duration: 3000
       });
-      onClose();
     }
   };
   
