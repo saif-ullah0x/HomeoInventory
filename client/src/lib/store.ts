@@ -170,8 +170,8 @@ export const useStore = create<MedicineState>()(
               syncStatus: 'synced'
             });
             
-            // Create a banner to show we're viewing shared data
-            localStorage.setItem('viewing-shared-inventory', shareCode);
+            // Save the share code for persistent access
+            localStorage.setItem('saved-share-code', shareCode);
             
             return true;
           }
@@ -191,11 +191,24 @@ export const useStore = create<MedicineState>()(
         if (state) {
           // Attempt to get medicines from IndexedDB
           db.open().then(() => {
+            console.log("Database opened successfully");
             return db.medicines.toArray();
-          }).then((medicines) => {
+          }).then(async (medicines) => {
             // If IndexedDB has medicines, update the store state
             if (medicines && medicines.length > 0) {
               state.medicines = medicines;
+            }
+            
+            // Check for saved share code and load it if found
+            const savedShareCode = localStorage.getItem('saved-share-code');
+            if (savedShareCode && state.loadSharedMedicineDatabase) {
+              console.log("Auto-loading shared inventory with code:", savedShareCode);
+              try {
+                // Attempt to load the saved shared inventory
+                await state.loadSharedMedicineDatabase(savedShareCode);
+              } catch (err) {
+                console.error("Failed to auto-load shared inventory:", err);
+              }
             }
           }).catch(error => {
             console.error("Failed to load medicines from IndexedDB:", error);

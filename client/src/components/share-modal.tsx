@@ -9,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useState, useRef, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Copy, CheckCircle, Users, Link as LinkIcon, Eye, Edit2, Cloud, Loader2 } from "lucide-react";
+import { Copy, CheckCircle, Users, Link as LinkIcon, Eye, Edit2, Cloud, Loader2, Unlink } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
@@ -43,13 +43,29 @@ export default function ShareModal({ isOpen, onClose }: ShareModalProps) {
   const loadSharedMedicineDatabase = useStore((state) => state.loadSharedMedicineDatabase);
   
   // Check for existing saved share code
+  const [hasActiveSharedInventory, setHasActiveSharedInventory] = useState(false);
+  
   useEffect(() => {
     // Load any saved share code from localStorage
     const savedShareCode = localStorage.getItem('saved-share-code');
     if (savedShareCode && savedShareCode.length > 0) {
       setInputCode(savedShareCode);
+      setHasActiveSharedInventory(true);
     }
   }, []);
+  
+  // Function to unlink from the current shared inventory
+  const unlinkSharedInventory = () => {
+    // Remove the saved code
+    localStorage.removeItem('saved-share-code');
+    setHasActiveSharedInventory(false);
+    
+    // Reset the input field
+    setInputCode('');
+    
+    // Reload the page to restore the user's original inventory
+    window.location.reload();
+  };
   
   // Generate a cloud-based share code
   const generateShareCode = async () => {
@@ -338,44 +354,67 @@ export default function ShareModal({ isOpen, onClose }: ShareModalProps) {
                 </p>
               </div>
               
-              <div>
-                <Label htmlFor="input-code" className="block mb-2">Enter share code</Label>
-                <Input 
-                  id="input-code"
-                  value={inputCode}
-                  onChange={(e) => {
-                    setInputCode(e.target.value);
-                    setCodeWarning(false);
-                  }}
-                  placeholder="Enter the code you received"
-                  className={codeWarning ? "border-red-500" : ""}
-                />
-                {codeWarning && (
-                  <p className="text-xs text-red-500 mt-1">Please enter a valid share code</p>
-                )}
-              </div>
-              
-              <div className="flex items-center space-x-2 py-2">
-                <Switch 
-                  id="sync-mode" 
-                  checked={syncEnabled}
-                  onCheckedChange={setSyncEnabled}
-                />
-                <Label htmlFor="sync-mode">Keep synchronized with source inventory</Label>
-              </div>
-              
-              <Button 
-                onClick={useShareCode} 
-                className="w-full"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <LinkIcon className="mr-2 h-4 w-4" />
-                )}
-                {isLoading ? "Accessing Inventory..." : "Access Shared Inventory"}
-              </Button>
+              {hasActiveSharedInventory ? (
+                <div className="space-y-4">
+                  <Alert className="bg-primary/10 border-primary/20">
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                    <AlertTitle>Currently using a shared inventory</AlertTitle>
+                    <AlertDescription className="text-sm mt-2">
+                      You are currently accessing a shared inventory with code: <span className="font-mono font-medium">{inputCode}</span>
+                    </AlertDescription>
+                  </Alert>
+                  
+                  <Button 
+                    onClick={unlinkSharedInventory} 
+                    variant="destructive"
+                    className="w-full"
+                  >
+                    <Unlink className="mr-2 h-4 w-4" />
+                    Unlink from Shared Inventory
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <div>
+                    <Label htmlFor="input-code" className="block mb-2">Enter share code</Label>
+                    <Input 
+                      id="input-code"
+                      value={inputCode}
+                      onChange={(e) => {
+                        setInputCode(e.target.value);
+                        setCodeWarning(false);
+                      }}
+                      placeholder="Enter the code you received"
+                      className={codeWarning ? "border-red-500" : ""}
+                    />
+                    {codeWarning && (
+                      <p className="text-xs text-red-500 mt-1">Please enter a valid share code</p>
+                    )}
+                  </div>
+                  
+                  <div className="flex items-center space-x-2 py-2">
+                    <Switch 
+                      id="sync-mode" 
+                      checked={syncEnabled}
+                      onCheckedChange={setSyncEnabled}
+                    />
+                    <Label htmlFor="sync-mode">Keep synchronized with source inventory</Label>
+                  </div>
+                  
+                  <Button 
+                    onClick={useShareCode} 
+                    className="w-full"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <LinkIcon className="mr-2 h-4 w-4" />
+                    )}
+                    {isLoading ? "Accessing Inventory..." : "Access Shared Inventory"}
+                  </Button>
+                </>
+              )}
             </div>
           </TabsContent>
         </Tabs>
