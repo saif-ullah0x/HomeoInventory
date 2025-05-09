@@ -48,6 +48,17 @@ export default function RightSideMenu() {
               <span className="mr-2">📤</span> Export Data
             </Button>
             
+            <Button 
+              variant="outline" 
+              className="justify-start" 
+              onClick={() => {
+                setShowShareModal(true);
+                setIsOpen(false);
+              }}
+            >
+              <span className="mr-2">👨‍👩‍👧‍👦</span> Family Access Sharing
+            </Button>
+            
             <div className="mt-auto pt-6">
               <p className="text-xs text-muted-foreground">
                 Application version: 1.0.0
