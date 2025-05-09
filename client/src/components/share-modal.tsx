@@ -27,7 +27,6 @@ export default function ShareModal({ isOpen, onClose }: ShareModalProps) {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("create");
   const [shareCode, setShareCode] = useState("");
-  const [accessLevel, setAccessLevel] = useState("view");
   const [generateSuccess, setGenerateSuccess] = useState(false);
   const [inputCode, setInputCode] = useState("");
   const [syncEnabled, setSyncEnabled] = useState(false);
@@ -50,7 +49,6 @@ export default function ShareModal({ isOpen, onClose }: ShareModalProps) {
     const shareData = {
       code: code,
       medicines: medicines,
-      access: accessLevel,
       created: new Date().toISOString()
     };
     
@@ -88,72 +86,107 @@ export default function ShareModal({ isOpen, onClose }: ShareModalProps) {
     setCodeWarning(false);
     
     // In a real app, this would verify the share code against a database
-    // For now, we'll simulate by sharing the existing inventory
+    // For demo purposes, we'll add sample medicines to represent a shared inventory
     const importSharedMedicines = async () => {
-      // Get saved medicines from the store 
-      if (medicines.length > 0) {
+      // Add several medicines to represent a shared family inventory
+      try {
+        // These represent medicines shared by a family member
+        const sharedMedicines = [
+          {
+            name: "Acid Carbolicum",
+            potency: "200",
+            company: "Masood",
+            location: "D1_DT",
+            quantity: 2
+          },
+          {
+            name: "Acid Nitricum",
+            potency: "200",
+            company: "Masood/Schwabe",
+            location: "D1_DT_MB",
+            quantity: 3
+          },
+          {
+            name: "Acid Phos",
+            potency: "200",
+            company: "Masood",
+            location: "D1_DT",
+            quantity: 2
+          },
+          {
+            name: "Aconite Napellus",
+            potency: "30",
+            company: "Masood",
+            location: "MB",
+            quantity: 2
+          },
+          {
+            name: "Aethusa",
+            potency: "200",
+            company: "Masood",
+            location: "TN",
+            quantity: 1
+          },
+          {
+            name: "Allium Cepa",
+            potency: "30",
+            company: "Homecraft",
+            location: "Kitchen Cabinet",
+            quantity: 1
+          },
+          {
+            name: "Apis Mellifica",
+            potency: "200",
+            company: "SBL",
+            location: "First Aid Kit",
+            quantity: 1
+          },
+          {
+            name: "Baptisia",
+            potency: "200",
+            company: "Masood",
+            location: "MB_2",
+            quantity: 1
+          },
+          {
+            name: "Belladonna",
+            potency: "200",
+            company: "Schwabe",
+            location: "First Aid Kit",
+            quantity: 2
+          },
+          {
+            name: "Bryonia",
+            potency: "30",
+            company: "Reckeweg",
+            location: "Travel Kit",
+            quantity: 1
+          }
+        ];
+        
+        let addedCount = 0;
+        for (const medicine of sharedMedicines) {
+          const result = await addMedicine({
+            name: medicine.name,
+            potency: medicine.potency,
+            company: medicine.company,
+            location: medicine.location,
+            quantity: medicine.quantity
+          });
+          
+          if (result.success) {
+            addedCount++;
+          }
+        }
+        
         toast({
-          title: "Using your current inventory",
-          description: "Since this is a demo, we'll use your existing inventory as the shared data."
+          title: `Added ${addedCount} shared medicines`,
+          description: `${sharedMedicines.length - addedCount} medicines were already in your inventory`,
+          duration: 3000
         });
         
-        // In a real implementation, this is where we would fetch 
-        // medicines shared by another user based on the shareCode
-        return;
-      } else {
-        // If no medicines exist, add some samples
-        try {
-          // Add several medicines with realistic data
-          const sampleMedicines = [
-            {
-              name: "Acid Carbolicum",
-              potency: "200",
-              company: "Masood",
-              location: "D1_DT",
-              quantity: 2
-            },
-            {
-              name: "Acid Nitricum",
-              potency: "200",
-              company: "Masood/Schwabe",
-              location: "D1_DT_MB",
-              quantity: 3
-            },
-            {
-              name: "Acid Phos",
-              potency: "200",
-              company: "Masood",
-              location: "D1_DT",
-              quantity: 2
-            },
-            {
-              name: "Aconite Napellus",
-              potency: "30",
-              company: "Masood",
-              location: "MB",
-              quantity: 2
-            },
-            {
-              name: "Aethusa",
-              potency: "200",
-              company: "Masood",
-              location: "TN",
-              quantity: 1
-            }
-          ];
-          
-          for (const medicine of sampleMedicines) {
-            await addMedicine({
-              name: medicine.name,
-              potency: medicine.potency,
-              company: medicine.company,
-              location: medicine.location,
-              quantity: medicine.quantity
-            });
-          }
-        } catch (error) {
-          console.error("Error importing medicines:", error);
-        }
+      } catch (error) {
+        console.error("Error importing shared medicines:", error);
       }
     };
     
@@ -161,7 +194,8 @@ export default function ShareModal({ isOpen, onClose }: ShareModalProps) {
     importSharedMedicines().then(() => {
       toast({
         title: "Access granted",
-        description: `You now have ${syncEnabled ? "synced" : "one-time"} access to shared medicines.`
+        description: `You now have ${syncEnabled ? "synced" : "one-time"} access to shared medicines.`,
+        duration: 3000
       });
       
       // Close the modal
@@ -187,24 +221,10 @@ export default function ShareModal({ isOpen, onClose }: ShareModalProps) {
           
           <TabsContent value="create" className="space-y-4 py-4">
             <div className="space-y-4">
-              <div>
-                <h3 className="font-medium mb-2">Access Level</h3>
-                <RadioGroup defaultValue="view" value={accessLevel} onValueChange={setAccessLevel}>
-                  <div className="flex items-center space-x-2 mb-2">
-                    <RadioGroupItem value="view" id="option-view" />
-                    <Label htmlFor="option-view" className="flex items-center">
-                      <Eye className="h-4 w-4 mr-2 text-muted-foreground" />
-                      View-only access
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="edit" id="option-edit" />
-                    <Label htmlFor="option-edit" className="flex items-center">
-                      <Edit2 className="h-4 w-4 mr-2 text-muted-foreground" />
-                      Full edit access
-                    </Label>
-                  </div>
-                </RadioGroup>
+              <div className="bg-primary/10 rounded-lg p-4 mb-2">
+                <p className="text-sm leading-normal">
+                  Family members will receive full access to view and edit your medicine inventory.
+                </p>
               </div>
               
               {!generateSuccess ? (
