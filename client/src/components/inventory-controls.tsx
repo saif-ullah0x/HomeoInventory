@@ -157,17 +157,6 @@ export default function InventoryControls({
           Import
         </Button>
 
-        {onShareClick && (
-          <Button 
-            variant="outline"
-            onClick={onShareClick} 
-            className="gap-2"
-          >
-            <Users className="h-4 w-4" />
-            Family Share
-          </Button>
-        )}
-
         <Button 
           onClick={onAddClick} 
           className="gap-2 button-hover-effect glow-effect"

@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
+import { SAMPLE_MEDICINES } from "@/lib/data";
 
 interface ShareModalProps {
   isOpen: boolean;
@@ -87,9 +88,32 @@ export default function ShareModal({ isOpen, onClose }: ShareModalProps) {
     
     setCodeWarning(false);
     
-    // Simulate successful share code validation and sync
-    // In a real implementation, this would make a request to get the shared data
-    setTimeout(() => {
+    // Import sample medicines to demonstrate functionality
+    // In a real implementation, this would fetch shared medicines based on the code
+    const importSharedMedicines = async () => {
+      // Use the sample medicines as shared medicines for demonstration
+      for (const medicine of SAMPLE_MEDICINES) {
+        try {
+          // Skip already existing medicines to avoid duplicates
+          const medicineData = {
+            name: medicine.name,
+            potency: medicine.potency,
+            company: medicine.company,
+            location: medicine.location,
+            subLocation: medicine.subLocation,
+            bottleSize: medicine.bottleSize,
+            quantity: medicine.quantity
+          };
+          
+          await addMedicine(medicineData);
+        } catch (error) {
+          console.error("Error importing shared medicine:", error);
+        }
+      }
+    };
+    
+    // Process the shared medicines
+    importSharedMedicines().then(() => {
       toast({
         title: "Access granted",
         description: `You now have ${syncEnabled ? "synced" : "one-time"} access to shared medicines.`
@@ -97,7 +121,7 @@ export default function ShareModal({ isOpen, onClose }: ShareModalProps) {
       
       // Close the modal
       onClose();
-    }, 1000);
+    });
   };
   
   return (
