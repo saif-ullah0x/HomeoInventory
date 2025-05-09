@@ -145,7 +145,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create a new shared inventory
   app.post(`${apiPrefix}/shared-inventory`, async (req, res) => {
     try {
-      const { medicines, name, isViewOnly } = req.body;
+      const { medicines, name } = req.body;
       
       if (!medicines || !Array.isArray(medicines) || medicines.length === 0) {
         return res.status(400).json({
@@ -156,12 +156,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Generate a unique, memorable inventory ID
       const inventoryId = nanoid(8);
       
-      // Create the shared inventory entry
+      // Create the shared inventory entry (always full access)
       const [newInventory] = await db.insert(sharedInventories).values({
         inventory_id: inventoryId,
         inventory_data: medicines,
         name: name || "My Medicine Inventory",
-        is_view_only: isViewOnly || false,
+        is_view_only: false, // All shares are full access
         created_at: new Date(),
         updated_at: new Date()
       }).returning();
@@ -206,7 +206,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put(`${apiPrefix}/shared-inventory/:id`, async (req, res) => {
     try {
       const inventoryId = req.params.id;
-      const { medicines, name, isViewOnly } = req.body;
+      const { medicines, name } = req.body;
       
       if (!medicines || !Array.isArray(medicines)) {
         return res.status(400).json({ error: "Invalid inventory data" });
@@ -216,7 +216,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .set({
           inventory_data: medicines,
           name: name,
-          is_view_only: isViewOnly,
+          is_view_only: false, // Always full access
           updated_at: new Date()
         })
         .where(eq(sharedInventories.inventory_id, inventoryId))

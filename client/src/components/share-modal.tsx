@@ -33,7 +33,6 @@ export default function ShareModal({ isOpen, onClose }: ShareModalProps) {
   const [codeWarning, setCodeWarning] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [inventoryName, setInventoryName] = useState("My Medicine Inventory");
-  const [isViewOnly, setIsViewOnly] = useState(false);
   const [networkError, setNetworkError] = useState(false);
   
   const copyLinkRef = useRef<HTMLInputElement>(null);
@@ -43,15 +42,13 @@ export default function ShareModal({ isOpen, onClose }: ShareModalProps) {
   const shareMedicineDatabase = useStore((state) => state.shareMedicineDatabase);
   const loadSharedMedicineDatabase = useStore((state) => state.loadSharedMedicineDatabase);
   
-  // Set up a loading state when network operations are happening
+  // Check for existing saved share code
   useEffect(() => {
-    // Clean up any shared inventory banner when the modal is closed
-    return () => {
-      const existingBanner = document.getElementById('shared-inventory-banner');
-      if (existingBanner) {
-        existingBanner.remove();
-      }
-    };
+    // Load any saved share code from localStorage
+    const savedShareCode = localStorage.getItem('saved-share-code');
+    if (savedShareCode && savedShareCode.length > 0) {
+      setInputCode(savedShareCode);
+    }
   }, []);
   
   // Generate a cloud-based share code
@@ -68,8 +65,7 @@ export default function ShareModal({ isOpen, onClose }: ShareModalProps) {
         },
         body: JSON.stringify({
           medicines: medicines,
-          name: inventoryName,
-          isViewOnly: isViewOnly
+          name: inventoryName
         }),
       });
       
@@ -171,6 +167,9 @@ export default function ShareModal({ isOpen, onClose }: ShareModalProps) {
       }
       
       if (success) {
+        // Save the share code to localStorage for persistence
+        localStorage.setItem('saved-share-code', inputCode);
+        
         toast({
           title: "Shared inventory loaded",
           description: networkError 
@@ -178,18 +177,6 @@ export default function ShareModal({ isOpen, onClose }: ShareModalProps) {
             : "You now have access to the shared medicine inventory.",
           duration: 5000
         });
-        
-        // Add a banner to show we're viewing shared data
-        const existingBanner = document.getElementById('shared-inventory-banner');
-        if (existingBanner) {
-          existingBanner.remove();
-        }
-        
-        const sharedBanner = document.createElement('div');
-        sharedBanner.id = 'shared-inventory-banner';
-        sharedBanner.className = 'fixed top-16 left-0 right-0 bg-primary text-white py-2 px-4 text-center text-sm z-50';
-        sharedBanner.innerHTML = `Viewing shared inventory: ${sharedInventoryName} (Code: ${inputCode})`;
-        document.body.appendChild(sharedBanner);
         
         onClose();
       } else {
@@ -208,6 +195,9 @@ export default function ShareModal({ isOpen, onClose }: ShareModalProps) {
       const success = await loadSharedMedicineDatabase(inputCode);
       
       if (success) {
+        // Save the share code to localStorage for persistence
+        localStorage.setItem('saved-share-code', inputCode);
+        
         toast({
           title: "Local inventory loaded",
           description: "Connected to local inventory (cloud not available).",
@@ -268,14 +258,7 @@ export default function ShareModal({ isOpen, onClose }: ShareModalProps) {
                       </p>
                     </div>
                     
-                    <div className="flex items-center space-x-2 py-2">
-                      <Switch 
-                        id="view-only" 
-                        checked={isViewOnly}
-                        onCheckedChange={setIsViewOnly}
-                      />
-                      <Label htmlFor="view-only">View-only access (prevent editing)</Label>
-                    </div>
+                    {/* View-only option removed as requested */}
                     
                     <Button 
                       onClick={generateShareCode} 
@@ -338,7 +321,7 @@ export default function ShareModal({ isOpen, onClose }: ShareModalProps) {
                     </p>
                     <p className="flex items-center mt-1">
                       <span className="font-medium">Access Type:</span>
-                      <span className="ml-1">{isViewOnly ? "View Only" : "Full Access"}</span>
+                      <span className="ml-1">Full Access</span>
                     </p>
                   </div>
                 </div>
