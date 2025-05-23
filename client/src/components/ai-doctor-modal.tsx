@@ -79,7 +79,7 @@ export default function AIDoctorModal({ isOpen, onClose }: AIDoctorModalProps) {
     if (isOpen && messages.length === 0) {
       setMessages([{
         type: 'ai',
-        content: "Hello! I'm Dr. Harmony, your friendly homeopathic assistant! 🌿✨\n\nI'm here to help you find gentle, natural remedies based on classical books by Kent, Boericke, Clarke, and other trusted sources.\n\nHow are you feeling today? Share your symptoms with me and I'll suggest the perfect homeopathic remedies for you! 💚\n\nFor example:\n• \"I have a headache with anxiety\"\n• \"Feeling tired and stressed\"\n• \"Stomach pain after eating\"",
+        content: "Hello! I'm Dr. Harmony, your homeopathic assistant! 🌿\n\nI can help you find natural remedies based on classical homeopathic literature. Just tell me how you're feeling and I'll suggest appropriate medicines.\n\nYou're taking a wonderful step towards natural healing! 💜",
         timestamp: new Date()
       }]);
     }
@@ -173,20 +173,25 @@ export default function AIDoctorModal({ isOpen, onClose }: AIDoctorModalProps) {
   
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[420px] h-[650px] flex flex-col p-0 bg-gradient-to-br from-green-50 to-blue-50 dark:from-green-950 dark:to-blue-950">
-        {/* Header - WhatsApp Style */}
-        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-green-500 to-teal-600 text-white">
+      <DialogContent className="sm:max-w-[400px] max-h-[90vh] h-[600px] flex flex-col p-0 bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-950 dark:to-indigo-950">
+        <DialogHeader className="sr-only">
+          <DialogTitle>Dr. Harmony - Homeopathic Assistant</DialogTitle>
+          <DialogDescription>Get natural remedy suggestions based on classical homeopathic literature</DialogDescription>
+        </DialogHeader>
+        
+        {/* Header - Purple Theme */}
+        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
           <div className="flex items-center gap-3">
             {/* Cute Doctor Avatar */}
             <div className="relative">
               <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg">
-                <span className="text-2xl">🩺</span>
+                <span className="text-2xl">🌿</span>
               </div>
-              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white"></div>
+              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-purple-400 rounded-full border-2 border-white"></div>
             </div>
             <div>
               <h3 className="font-semibold text-white">Dr. Harmony</h3>
-              <p className="text-xs text-green-100">Online • Homeopathic Assistant</p>
+              <p className="text-xs text-purple-100">Online • Homeopathic Assistant</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -217,7 +222,7 @@ export default function AIDoctorModal({ isOpen, onClose }: AIDoctorModalProps) {
                     </p>
                   </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogAction className="bg-green-600 hover:bg-green-700">I Understand</AlertDialogAction>
+                <AlertDialogAction className="bg-purple-600 hover:bg-purple-700">I Understand</AlertDialogAction>
               </AlertDialogContent>
             </AlertDialog>
             <Button
@@ -238,40 +243,40 @@ export default function AIDoctorModal({ isOpen, onClose }: AIDoctorModalProps) {
             {messages.map((message, index) => (
               <div key={index} className={`flex gap-2 ${message.type === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2`}>
                 {message.type === 'ai' && (
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-teal-500 flex items-center justify-center flex-shrink-0 shadow-lg">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center flex-shrink-0 shadow-lg">
                     <span className="text-white text-sm">🌿</span>
                   </div>
                 )}
                 
-                <div className={`max-w-[80%] rounded-2xl px-4 py-3 shadow-md ${
+                <div className={`max-w-[85%] sm:max-w-[80%] rounded-2xl px-4 py-3 shadow-md ${
                   message.type === 'user' 
-                    ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-br-sm' 
-                    : 'bg-white dark:bg-gray-800 rounded-bl-sm border border-green-100 dark:border-green-800'
+                    ? 'bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-br-sm' 
+                    : 'bg-white dark:bg-gray-800 rounded-bl-sm border border-purple-100 dark:border-purple-800'
                 }`}>
                   <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
                   
                   {/* Remedy Suggestions */}
                   {message.remedies && message.remedies.length > 0 && (
                     <div className="mt-4 space-y-3">
-                      <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                      <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400">
                         <BookOpen className="h-4 w-4" />
                         <span className="font-medium text-sm">Recommended Remedies</span>
-                        <span className="text-xs bg-green-100 dark:bg-green-900 px-2 py-1 rounded-full">
+                        <span className="text-xs bg-purple-100 dark:bg-purple-900 px-2 py-1 rounded-full">
                           {message.remedies.length} found
                         </span>
                       </div>
                       {message.remedies.map((remedy, remedyIndex) => (
-                        <div key={remedyIndex} className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-950 dark:to-blue-950 rounded-xl p-3 border border-green-200 dark:border-green-700">
+                        <div key={remedyIndex} className="bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-950 dark:to-indigo-950 rounded-xl p-3 border border-purple-200 dark:border-purple-700">
                           <div className="flex items-start justify-between mb-2">
                             <div className="flex items-center gap-2">
-                              <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                              <div className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center">
                                 <Pill className="h-3 w-3 text-white" />
                               </div>
-                              <span className="font-semibold text-sm text-green-700 dark:text-green-300">
+                              <span className="font-semibold text-sm text-purple-700 dark:text-purple-300">
                                 {remedy.name} {remedy.potency}
                               </span>
                               {remedy.inInventory && (
-                                <Badge className="text-xs bg-green-500 hover:bg-green-600">
+                                <Badge className="text-xs bg-purple-500 hover:bg-purple-600">
                                   <CheckCircle2 className="h-3 w-3 mr-1" />
                                   In Your Kit
                                 </Badge>
@@ -281,12 +286,12 @@ export default function AIDoctorModal({ isOpen, onClose }: AIDoctorModalProps) {
                           
                           <div className="space-y-2 text-xs">
                             <p className="flex items-start gap-2">
-                              <span className="text-green-600 font-medium">For:</span>
+                              <span className="text-purple-600 font-medium">For:</span>
                               <span className="text-gray-700 dark:text-gray-300">{remedy.indication}</span>
                             </p>
                             
                             <p className="flex items-start gap-2">
-                              <span className="text-blue-600 font-medium">Why:</span>
+                              <span className="text-indigo-600 font-medium">Why:</span>
                               <span className="text-gray-700 dark:text-gray-300">{remedy.reasoning}</span>
                             </p>
                             
@@ -306,7 +311,7 @@ export default function AIDoctorModal({ isOpen, onClose }: AIDoctorModalProps) {
                 </div>
                 
                 {message.type === 'user' && (
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-500 flex items-center justify-center flex-shrink-0 shadow-lg">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-purple-500 flex items-center justify-center flex-shrink-0 shadow-lg">
                     <User className="h-4 w-4 text-white" />
                   </div>
                 )}
@@ -315,24 +320,24 @@ export default function AIDoctorModal({ isOpen, onClose }: AIDoctorModalProps) {
             
             {isLoading && (
               <div className="flex gap-2 animate-in slide-in-from-bottom-2">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-teal-500 flex items-center justify-center shadow-lg">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center shadow-lg">
                   <span className="text-white text-sm">🌿</span>
                 </div>
-                <div className="bg-white dark:bg-gray-800 rounded-2xl rounded-bl-sm px-4 py-3 flex items-center gap-3 shadow-md border border-green-100 dark:border-green-800">
+                <div className="bg-white dark:bg-gray-800 rounded-2xl rounded-bl-sm px-4 py-3 flex items-center gap-3 shadow-md border border-purple-100 dark:border-purple-800">
                   <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                    <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                    <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce"></div>
                   </div>
-                  <span className="text-sm text-green-600">Dr. Harmony is thinking...</span>
+                  <span className="text-sm text-purple-600">Dr. Harmony is thinking...</span>
                 </div>
               </div>
             )}
           </div>
         </ScrollArea>
         
-        {/* Input Area - WhatsApp Style */}
-        <div className="p-4 bg-white dark:bg-gray-900 border-t border-green-200 dark:border-green-700">
+        {/* Input Area - Purple Theme */}
+        <div className="p-4 bg-white dark:bg-gray-900 border-t border-purple-200 dark:border-purple-700">
           <div className="flex items-end gap-3">
             <div className="flex-1 relative">
               <Input
@@ -341,14 +346,14 @@ export default function AIDoctorModal({ isOpen, onClose }: AIDoctorModalProps) {
                 onKeyDown={handleKeyPress}
                 placeholder="Tell Dr. Harmony how you're feeling... 💭"
                 disabled={isLoading}
-                className="rounded-3xl border-green-200 dark:border-green-700 focus:border-green-400 pl-4 pr-4 py-3 bg-gray-50 dark:bg-gray-800"
+                className="rounded-3xl border-purple-200 dark:border-purple-700 focus:border-purple-400 pl-4 pr-4 py-3 bg-gray-50 dark:bg-gray-800"
               />
             </div>
             <Button
               onClick={sendMessage}
               disabled={!inputText.trim() || isLoading}
               size="icon"
-              className="rounded-full w-12 h-12 bg-gradient-to-br from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 shadow-lg"
+              className="rounded-full w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 shadow-lg"
             >
               {isLoading ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
@@ -358,11 +363,11 @@ export default function AIDoctorModal({ isOpen, onClose }: AIDoctorModalProps) {
             </Button>
           </div>
           <div className="flex items-center justify-center mt-3 gap-2">
-            <span className="text-xs text-green-600 dark:text-green-400">🌿</span>
-            <p className="text-xs text-green-600 dark:text-green-400 text-center">
-              Share symptoms like "tired and anxious" or "headache after stress"
+            <span className="text-xs text-purple-600 dark:text-purple-400">🌿</span>
+            <p className="text-xs text-purple-600 dark:text-purple-400 text-center">
+              Describe your symptoms naturally
             </p>
-            <span className="text-xs text-green-600 dark:text-green-400">✨</span>
+            <span className="text-xs text-purple-600 dark:text-purple-400">💜</span>
           </div>
         </div>
       </DialogContent>
