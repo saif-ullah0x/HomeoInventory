@@ -13,26 +13,61 @@ import { db } from "@db";
 import { nanoid } from "nanoid";
 import { findRemediesBySymptoms, generateHomeopathicResponse } from "./homeopathic-knowledge";
 import { searchMedicines } from "./medicine-database";
+import { searchMedicinesBySymptoms } from "./symptom-medicine-database";
 
-// Enhanced AI Doctor using comprehensive homeopathic knowledge base
+// Enhanced AI Doctor using symptom-based medicine database from PDF
 function analyzeSymptoms(symptoms: string, userInventory: string[]) {
-  // Use our comprehensive knowledge base
-  const matchedRemedies = findRemediesBySymptoms(symptoms);
-  const aiResponse = generateHomeopathicResponse(symptoms, matchedRemedies);
+  // Use the structured symptom-medicine database from PDF
+  const medicineGuides = searchMedicinesBySymptoms(symptoms);
   
-  // Check which remedies user has in inventory
-  const remediesWithInventory = aiResponse.remedies.map((remedy: any) => ({
-    ...remedy,
-    inInventory: userInventory.some(med => 
-      med.toLowerCase().includes(remedy.name.toLowerCase()) ||
-      remedy.name.toLowerCase().includes(med.toLowerCase())
+  if (medicineGuides.length === 0) {
+    return {
+      response: "I'd like to help you find the right remedy! 💜 Could you describe your symptoms in a bit more detail? For example, mention when you feel worse or better, or what triggered the symptoms.",
+      remedies: []
+    };
+  }
+
+  // Get motivational message
+  const motivationalMsg = getSimpleMotivationalMessage(symptoms);
+  
+  // Use the first matched guide for response
+  const primaryGuide = medicineGuides[0];
+  
+  const response = `${motivationalMsg}\n\nBased on classical homeopathic guidance, here are the recommended medicines for "${primaryGuide.condition}":\n\n**Dosage:** ${primaryGuide.dosage}\n**Frequency:** ${primaryGuide.frequency}`;
+  
+  // Convert medicine recommendations to our format
+  const remedies = primaryGuide.medicines.map(med => ({
+    name: med.name,
+    potency: med.potency,
+    indication: primaryGuide.condition,
+    reasoning: `${med.drops} drops - ${primaryGuide.notes || 'As per classical guidance'}`,
+    source: med.company || "Classical Homeopathic Literature",
+    inInventory: userInventory.some(inv => 
+      inv.toLowerCase().includes(med.name.toLowerCase()) ||
+      med.name.toLowerCase().includes(inv.toLowerCase())
     )
   }));
 
-  return {
-    response: aiResponse.response,
-    remedies: remediesWithInventory
-  };
+  return { response, remedies };
+}
+
+// Simplified motivational messages
+function getSimpleMotivationalMessage(symptoms: string): string {
+  const symptomsLower = symptoms.toLowerCase();
+  
+  if (symptomsLower.includes('pain') || symptomsLower.includes('hurt')) {
+    return "💜 You're taking the right step towards healing!";
+  }
+  
+  if (symptomsLower.includes('anxious') || symptomsLower.includes('stress')) {
+    return "🌿 Take a deep breath - natural healing can help!";
+  }
+  
+  if (symptomsLower.includes('tired') || symptomsLower.includes('weak')) {
+    return "✨ Rest is important - let's find gentle remedies for you!";
+  }
+  
+  return "🌸 Natural remedies can support your body's healing!";
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
