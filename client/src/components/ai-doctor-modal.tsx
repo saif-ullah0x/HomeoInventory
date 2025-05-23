@@ -79,7 +79,7 @@ export default function AIDoctorModal({ isOpen, onClose }: AIDoctorModalProps) {
     if (isOpen && messages.length === 0) {
       setMessages([{
         type: 'ai',
-        content: "Hello! I'm your AI Homeopathic Doctor 👨‍⚕️\n\nI can suggest remedies based on classical materia medica from Kent, Boericke, Clarke, and other established sources.\n\nTell me about your symptoms and I'll help find suitable homeopathic remedies! For example:\n• 'Headache with anxiety'\n• 'Stomach pain after eating'\n• 'Difficulty sleeping with restlessness'",
+        content: "Hello! I'm Dr. Harmony, your friendly homeopathic assistant! 🌿✨\n\nI'm here to help you find gentle, natural remedies based on classical books by Kent, Boericke, Clarke, and other trusted sources.\n\nHow are you feeling today? Share your symptoms with me and I'll suggest the perfect homeopathic remedies for you! 💚\n\nFor example:\n• \"I have a headache with anxiety\"\n• \"Feeling tired and stressed\"\n• \"Stomach pain after eating\"",
         timestamp: new Date()
       }]);
     }
@@ -173,44 +173,51 @@ export default function AIDoctorModal({ isOpen, onClose }: AIDoctorModalProps) {
   
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[500px] h-[600px] flex flex-col p-0">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b">
+      <DialogContent className="sm:max-w-[420px] h-[650px] flex flex-col p-0 bg-gradient-to-br from-green-50 to-blue-50 dark:from-green-950 dark:to-blue-950">
+        {/* Header - WhatsApp Style */}
+        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-green-500 to-teal-600 text-white">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary/10 rounded-full">
-              <Stethoscope className="h-5 w-5 text-primary" />
+            {/* Cute Doctor Avatar */}
+            <div className="relative">
+              <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg">
+                <span className="text-2xl">🩺</span>
+              </div>
+              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white"></div>
             </div>
             <div>
-              <h3 className="font-semibold">AI Homeopathic Doctor</h3>
-              <p className="text-sm text-muted-foreground">Based on classical materia medica</p>
+              <h3 className="font-semibold text-white">Dr. Harmony</h3>
+              <p className="text-xs text-green-100">Online • Homeopathic Assistant</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
                   <Info className="h-4 w-4" />
                 </Button>
               </AlertDialogTrigger>
-              <AlertDialogContent>
+              <AlertDialogContent className="bg-white dark:bg-gray-900">
                 <AlertDialogHeader>
                   <AlertDialogTitle className="flex items-center gap-2">
                     <AlertTriangle className="h-5 w-5 text-amber-500" />
-                    Medical Disclaimer
+                    Important Medical Information
                   </AlertDialogTitle>
-                  <AlertDialogDescription className="text-left space-y-2">
-                    <p>
-                      This AI provides <strong>educational information</strong> based on homeopathic literature including works by Kent, Boericke, Clarke, and other classical sources.
+                  <AlertDialogDescription className="text-left space-y-3">
+                    <p className="flex items-start gap-2">
+                      <span className="text-2xl">📚</span>
+                      <span>Dr. Harmony provides <strong>educational information</strong> based on classical homeopathic literature including works by Kent, Boericke, Clarke, and other trusted sources.</span>
                     </p>
-                    <p>
-                      <strong>Important:</strong> This is <strong>not a substitute</strong> for professional medical advice, diagnosis, or treatment.
+                    <p className="flex items-start gap-2">
+                      <span className="text-2xl">⚠️</span>
+                      <span><strong>Important:</strong> This is <strong>not a substitute</strong> for professional medical advice, diagnosis, or treatment.</span>
                     </p>
-                    <p>
-                      Always consult qualified healthcare providers for serious health conditions or before making any medical decisions.
+                    <p className="flex items-start gap-2">
+                      <span className="text-2xl">👩‍⚕️</span>
+                      <span>Always consult qualified healthcare providers for serious health conditions or before making any medical decisions.</span>
                     </p>
                   </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogAction>I Understand</AlertDialogAction>
+                <AlertDialogAction className="bg-green-600 hover:bg-green-700">I Understand</AlertDialogAction>
               </AlertDialogContent>
             </AlertDialog>
             <Button
@@ -218,124 +225,145 @@ export default function AIDoctorModal({ isOpen, onClose }: AIDoctorModalProps) {
               size="sm"
               onClick={clearChat}
               disabled={isLoading}
+              className="text-white hover:bg-white/20"
             >
               <Trash2 className="h-4 w-4" />
             </Button>
           </div>
         </div>
         
-        {/* Chat Messages */}
-        <ScrollArea className="flex-1 p-4" ref={scrollRef}>
-          <div className="space-y-4">
+        {/* Chat Messages - WhatsApp Style */}
+        <ScrollArea className="flex-1 p-4 bg-gradient-to-b from-transparent to-white/50 dark:to-black/20" ref={scrollRef}>
+          <div className="space-y-3">
             {messages.map((message, index) => (
-              <div key={index} className={`flex gap-3 ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
+              <div key={index} className={`flex gap-2 ${message.type === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2`}>
                 {message.type === 'ai' && (
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <Bot className="h-4 w-4 text-primary" />
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-teal-500 flex items-center justify-center flex-shrink-0 shadow-lg">
+                    <span className="text-white text-sm">🌿</span>
                   </div>
                 )}
                 
-                <div className={`max-w-[85%] rounded-2xl px-4 py-2 ${
+                <div className={`max-w-[80%] rounded-2xl px-4 py-3 shadow-md ${
                   message.type === 'user' 
-                    ? 'bg-primary text-primary-foreground rounded-br-md' 
-                    : 'bg-muted rounded-bl-md'
+                    ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-br-sm' 
+                    : 'bg-white dark:bg-gray-800 rounded-bl-sm border border-green-100 dark:border-green-800'
                 }`}>
                   <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
                   
                   {/* Remedy Suggestions */}
                   {message.remedies && message.remedies.length > 0 && (
                     <div className="mt-4 space-y-3">
-                      <h4 className="font-medium text-sm flex items-center gap-2 text-primary">
+                      <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
                         <BookOpen className="h-4 w-4" />
-                        Suggested Remedies
-                      </h4>
+                        <span className="font-medium text-sm">Recommended Remedies</span>
+                        <span className="text-xs bg-green-100 dark:bg-green-900 px-2 py-1 rounded-full">
+                          {message.remedies.length} found
+                        </span>
+                      </div>
                       {message.remedies.map((remedy, remedyIndex) => (
-                        <div key={remedyIndex} className="border rounded-xl p-3 bg-background/80 backdrop-blur-sm">
+                        <div key={remedyIndex} className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-950 dark:to-blue-950 rounded-xl p-3 border border-green-200 dark:border-green-700">
                           <div className="flex items-start justify-between mb-2">
                             <div className="flex items-center gap-2">
-                              <Pill className="h-4 w-4 text-primary" />
-                              <span className="font-medium text-sm">
+                              <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                                <Pill className="h-3 w-3 text-white" />
+                              </div>
+                              <span className="font-semibold text-sm text-green-700 dark:text-green-300">
                                 {remedy.name} {remedy.potency}
                               </span>
                               {remedy.inInventory && (
-                                <Badge variant="secondary" className="text-xs">
+                                <Badge className="text-xs bg-green-500 hover:bg-green-600">
                                   <CheckCircle2 className="h-3 w-3 mr-1" />
-                                  In Stock
+                                  In Your Kit
                                 </Badge>
                               )}
                             </div>
                           </div>
                           
-                          <p className="text-xs text-muted-foreground mb-2">
-                            <strong>For:</strong> {remedy.indication}
-                          </p>
-                          
-                          <p className="text-xs text-muted-foreground mb-2">
-                            <strong>Why:</strong> {remedy.reasoning}
-                          </p>
-                          
-                          <p className="text-xs font-medium text-primary">
-                            <strong>Source:</strong> {remedy.source}
-                          </p>
+                          <div className="space-y-2 text-xs">
+                            <p className="flex items-start gap-2">
+                              <span className="text-green-600 font-medium">For:</span>
+                              <span className="text-gray-700 dark:text-gray-300">{remedy.indication}</span>
+                            </p>
+                            
+                            <p className="flex items-start gap-2">
+                              <span className="text-blue-600 font-medium">Why:</span>
+                              <span className="text-gray-700 dark:text-gray-300">{remedy.reasoning}</span>
+                            </p>
+                            
+                            <p className="flex items-start gap-2">
+                              <span className="text-purple-600 font-medium">Source:</span>
+                              <span className="text-purple-700 dark:text-purple-300 font-medium">{remedy.source}</span>
+                            </p>
+                          </div>
                         </div>
                       ))}
                     </div>
                   )}
                   
-                  <p className="text-xs text-muted-foreground mt-2">
+                  <p className="text-xs opacity-60 mt-2 text-right">
                     {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </p>
                 </div>
                 
                 {message.type === 'user' && (
-                  <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
-                    <User className="h-4 w-4 text-primary-foreground" />
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-500 flex items-center justify-center flex-shrink-0 shadow-lg">
+                    <User className="h-4 w-4 text-white" />
                   </div>
                 )}
               </div>
             ))}
             
             {isLoading && (
-              <div className="flex gap-3">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Bot className="h-4 w-4 text-primary" />
+              <div className="flex gap-2 animate-in slide-in-from-bottom-2">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-teal-500 flex items-center justify-center shadow-lg">
+                  <span className="text-white text-sm">🌿</span>
                 </div>
-                <div className="bg-muted rounded-2xl rounded-bl-md px-4 py-3 flex items-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                  <span className="text-sm">Analyzing symptoms...</span>
+                <div className="bg-white dark:bg-gray-800 rounded-2xl rounded-bl-sm px-4 py-3 flex items-center gap-3 shadow-md border border-green-100 dark:border-green-800">
+                  <div className="flex space-x-1">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce"></div>
+                  </div>
+                  <span className="text-sm text-green-600">Dr. Harmony is thinking...</span>
                 </div>
               </div>
             )}
           </div>
         </ScrollArea>
         
-        {/* Input Area */}
-        <div className="p-4 border-t bg-background">
-          <div className="flex gap-2">
-            <Input
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              onKeyDown={handleKeyPress}
-              placeholder="Type your symptoms here..."
-              disabled={isLoading}
-              className="flex-1"
-            />
+        {/* Input Area - WhatsApp Style */}
+        <div className="p-4 bg-white dark:bg-gray-900 border-t border-green-200 dark:border-green-700">
+          <div className="flex items-end gap-3">
+            <div className="flex-1 relative">
+              <Input
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                onKeyDown={handleKeyPress}
+                placeholder="Tell Dr. Harmony how you're feeling... 💭"
+                disabled={isLoading}
+                className="rounded-3xl border-green-200 dark:border-green-700 focus:border-green-400 pl-4 pr-4 py-3 bg-gray-50 dark:bg-gray-800"
+              />
+            </div>
             <Button
               onClick={sendMessage}
               disabled={!inputText.trim() || isLoading}
               size="icon"
-              className="rounded-full"
+              className="rounded-full w-12 h-12 bg-gradient-to-br from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 shadow-lg"
             >
               {isLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Loader2 className="h-5 w-5 animate-spin" />
               ) : (
-                <Send className="h-4 w-4" />
+                <Send className="h-5 w-5" />
               )}
             </Button>
           </div>
-          <p className="text-xs text-muted-foreground mt-2 text-center">
-            Describe symptoms like "headache with restlessness" or "stomach pain after eating"
-          </p>
+          <div className="flex items-center justify-center mt-3 gap-2">
+            <span className="text-xs text-green-600 dark:text-green-400">🌿</span>
+            <p className="text-xs text-green-600 dark:text-green-400 text-center">
+              Share symptoms like "tired and anxious" or "headache after stress"
+            </p>
+            <span className="text-xs text-green-600 dark:text-green-400">✨</span>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

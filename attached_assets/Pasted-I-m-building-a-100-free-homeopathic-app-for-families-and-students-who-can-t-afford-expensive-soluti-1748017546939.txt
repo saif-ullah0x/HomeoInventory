@@ -1,0 +1,33 @@
+I'm building a 100% free homeopathic app for families and students who can't afford expensive solutions. One of the main features I’m adding is an AI Doctor — it should suggest medicines based on real homeopathic books, not random answers or imagination. Please do not use any paid APIs like Plexity — my goal is to make this accessible for everyone. If needed, you can use open-source models or local tools to build a basic version.
+
+I will provide you with a PDF file that contains a list of homeopathic medicines, and your job is to parse and store all the data from that PDF into a searchable database within the app. This data will then be used to help the user while typing medicine names manually — the app should suggest medicine names automatically using this stored data (like autosuggestions or autocomplete). These suggestions should work whether the user is adding a new medicine to inventory or describing a symptom to the AI Doctor.
+
+In addition to the PDF data, I’ll also give you links to some public books and trusted homeopathy websites. You should use those as reference material to train or power the AI Doctor. The AI’s responses should be based strictly on these sources — again, no imagination.
+
+Also, please make the AI motivational and friendly. Along with medicine suggestions, the AI should give a short supportive or psychological message. For example, if someone says they are tired or anxious, it might say, “You are strong, rest is important — you’re doing well,” along with the remedy.
+
+Please also update the interface design of the AI Doctor to feel modern and warm:
+
+Add a cute doctor icon and friendly name
+
+Use soft shadows, rounded corners, animations (like loading dots while replying)
+
+Improve the color scheme to look calming and friendly
+
+Make the layout feel conversational and easy to follow
+
+This is an educational and family-focused project, and it’s very important that it looks and works beautifully. Make sure the AI can:
+
+Accept a variety of symptoms
+
+Respond using book-based logic
+
+Offer autosuggestions for medicine names from the imported PDF
+
+Provide a helpful and motivating tone
+
+Use the external references I will give you
+
+Work completely offline or without paid tools
+
+Once I send the PDF, integrate that into the database, and use it for autosuggestions and AI answers.

@@ -12,6 +12,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@db";
 import { nanoid } from "nanoid";
 import { findRemediesBySymptoms, generateHomeopathicResponse } from "./homeopathic-knowledge";
+import { searchMedicines } from "./medicine-database";
 
 // Enhanced AI Doctor using comprehensive homeopathic knowledge base
 function analyzeSymptoms(symptoms: string, userInventory: string[]) {

@@ -381,23 +381,57 @@ export function findRemediesBySymptoms(symptoms: string): HomeopathicRemedy[] {
     .map(match => match.remedy);
 }
 
+// Generate motivational and supportive messages
+function getMotivationalMessage(symptoms: string): string {
+  const symptomsLower = symptoms.toLowerCase();
+  
+  if (symptomsLower.includes('tired') || symptomsLower.includes('exhausted') || symptomsLower.includes('fatigue')) {
+    return "💪 You are stronger than you think! Rest is not just important—it's essential for healing. Take time to nurture yourself, you're doing great! 🌟";
+  }
+  
+  if (symptomsLower.includes('anxious') || symptomsLower.includes('anxiety') || symptomsLower.includes('worried') || symptomsLower.includes('stress')) {
+    return "🌸 Take a deep breath—you've overcome challenges before, and you'll get through this too. You are resilient and capable! Remember, healing takes time. 💙";
+  }
+  
+  if (symptomsLower.includes('pain') || symptomsLower.includes('hurt') || symptomsLower.includes('ache')) {
+    return "🌈 Your body is wise and knows how to heal. This discomfort is temporary—you're on your journey to feeling better! Stay hopeful and gentle with yourself. ✨";
+  }
+  
+  if (symptomsLower.includes('sad') || symptomsLower.includes('depressed') || symptomsLower.includes('grief') || symptomsLower.includes('cry')) {
+    return "🤗 It's okay to feel what you're feeling. Your emotions are valid, and healing happens one day at a time. You are loved and you matter! 💕";
+  }
+  
+  if (symptomsLower.includes('sleep') || symptomsLower.includes('insomnia') || symptomsLower.includes('rest')) {
+    return "🌙 Good sleep is like a reset button for your body and mind. You deserve peaceful rest—your healing journey includes taking care of yourself! 😴";
+  }
+  
+  if (symptomsLower.includes('digest') || symptomsLower.includes('stomach') || symptomsLower.includes('nausea')) {
+    return "🌿 Listen to your body's wisdom. Gentle nourishment and patience will help restore your natural balance. You're taking good care of yourself! 🌱";
+  }
+  
+  // Default motivational message
+  return "🌟 Your body has amazing healing power! Taking care of yourself with homeopathy shows how much you value your wellbeing. Keep going—you're doing wonderfully! 💚";
+}
+
 // Generate AI response based on matched remedies
 export function generateHomeopathicResponse(symptoms: string, matches: HomeopathicRemedy[]) {
+  const motivationalMsg = getMotivationalMessage(symptoms);
+  
   if (matches.length === 0) {
     return {
-      response: "I couldn't find specific remedies for those symptoms in my classical materia medica database. Could you please describe your symptoms in more detail? For example, mention:\n\n• When symptoms are worse or better\n• How you're feeling emotionally\n• Any physical sensations\n• What triggered the symptoms",
+      response: `${motivationalMsg}\n\nI'd love to help you find the right remedy! Could you share a bit more detail about your symptoms? For example:\n\n• When do you feel worse or better?\n• How are you feeling emotionally?\n• Any specific physical sensations?\n• What might have triggered this?\n\nThe more details you share, the better I can match you with classical remedies! 💝`,
       remedies: []
     };
   }
 
   const topMatch = matches[0];
-  const response = `Based on your symptoms and classical homeopathic materia medica, here are some remedies that may be helpful:\n\nThe primary remedy that comes to mind is **${topMatch.name}**, which is particularly indicated for symptoms like yours according to ${topMatch.sources[0]}.`;
+  const response = `${motivationalMsg}\n\nBased on your symptoms and classical homeopathic materia medica, I found some wonderful remedies that may help! 🌿\n\nThe primary remedy that comes to mind is **${topMatch.name}**, which is beautifully indicated for symptoms like yours according to ${topMatch.sources[0]}.\n\nRemember, homeopathy works gently with your body's natural healing ability! 💙`;
 
   const remedies = matches.map(remedy => ({
     name: remedy.name,
     potency: remedy.potencies[1] || "30C", // Default to 30C
     indication: remedy.keySymptoms.slice(0, 2).join(", "),
-    reasoning: `This remedy matches your symptom pattern, particularly: ${remedy.keySymptoms[0]}`,
+    reasoning: `This gentle remedy matches your symptom pattern beautifully: ${remedy.keySymptoms[0]}`,
     source: remedy.sources[0]
   }));
 
