@@ -19,17 +19,14 @@ import { Input } from "@/components/ui/input";
 import { useState, useRef, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { 
-  Stethoscope, 
   Send, 
   Loader2, 
-  Bot, 
   BookOpen, 
   AlertTriangle,
   CheckCircle2,
   Pill,
   User,
   Info,
-  MoreVertical,
   Trash2
 } from "lucide-react";
 import { useStore } from "@/lib/store";
@@ -173,63 +170,85 @@ export default function AIDoctorModal({ isOpen, onClose }: AIDoctorModalProps) {
   
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[400px] max-h-[90vh] h-[600px] flex flex-col p-0 bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-950 dark:to-indigo-950">
-        <DialogHeader className="sr-only">
-          <DialogTitle>Dr. Harmony - Homeopathic Assistant</DialogTitle>
-          <DialogDescription>Get natural remedy suggestions based on classical homeopathic literature</DialogDescription>
-        </DialogHeader>
+      <DialogContent className="sm:max-w-[450px] max-h-[90vh] h-[600px] flex flex-col p-0 rounded-xl overflow-hidden">
+        <style dangerouslySetInnerHTML={{ __html: `
+          @keyframes slideIn {
+            from { transform: translateY(10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+          }
+          .message-animation {
+            animation: slideIn 0.3s ease-out forwards;
+          }
+          .typing-indicator span {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background-color: #a855f7;
+            border-radius: 50%;
+            margin-right: 3px;
+            animation: bounce 1.5s infinite ease-in-out;
+          }
+          .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+          }
+          .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+          }
+          @keyframes bounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-4px); }
+          }
+        `}} />
         
-        {/* Header - Purple Theme */}
+        {/* Header */}
         <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
           <div className="flex items-center gap-3">
-            {/* Cute Doctor Avatar */}
-            <div className="relative">
-              <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg">
-                <span className="text-2xl">🌿</span>
-              </div>
-              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-purple-400 rounded-full border-2 border-white"></div>
+            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md">
+              <span className="text-xl">🌿</span>
             </div>
             <div>
               <h3 className="font-semibold text-white">Dr. Harmony</h3>
-              <p className="text-xs text-purple-100">Online • Homeopathic Assistant</p>
+              <p className="text-xs text-purple-100">Homeopathic Assistant</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-white hover:bg-white/20"
+                >
                   <Info className="h-4 w-4" />
                 </Button>
               </AlertDialogTrigger>
-              <AlertDialogContent className="bg-white dark:bg-gray-900">
+              <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle className="flex items-center gap-2">
                     <AlertTriangle className="h-5 w-5 text-amber-500" />
-                    Important Medical Information
+                    Medical Disclaimer
                   </AlertDialogTitle>
-                  <AlertDialogDescription className="text-left space-y-3">
-                    <p className="flex items-start gap-2">
-                      <span className="text-2xl">📚</span>
-                      <span>Dr. Harmony provides <strong>educational information</strong> based on classical homeopathic literature including works by Kent, Boericke, Clarke, and other trusted sources.</span>
+                  <AlertDialogDescription className="space-y-2 text-left">
+                    <p>
+                      Dr. Harmony provides educational information based on classical homeopathic literature including works by Kent, Boericke, Clarke, and other trusted sources.
                     </p>
-                    <p className="flex items-start gap-2">
-                      <span className="text-2xl">⚠️</span>
-                      <span><strong>Important:</strong> This is <strong>not a substitute</strong> for professional medical advice, diagnosis, or treatment.</span>
+                    <p className="font-bold">
+                      This is not a substitute for professional medical advice, diagnosis, or treatment.
                     </p>
-                    <p className="flex items-start gap-2">
-                      <span className="text-2xl">👩‍⚕️</span>
-                      <span>Always consult qualified healthcare providers for serious health conditions or before making any medical decisions.</span>
+                    <p>
+                      Always consult qualified healthcare providers for serious health conditions or before making any medical decisions.
                     </p>
                   </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogAction className="bg-purple-600 hover:bg-purple-700">I Understand</AlertDialogAction>
+                <AlertDialogAction className="bg-purple-600 hover:bg-purple-700">
+                  I Understand
+                </AlertDialogAction>
               </AlertDialogContent>
             </AlertDialog>
             <Button
               variant="ghost"
               size="sm"
               onClick={clearChat}
-              disabled={isLoading}
               className="text-white hover:bg-white/20"
             >
               <Trash2 className="h-4 w-4" />
@@ -237,67 +256,72 @@ export default function AIDoctorModal({ isOpen, onClose }: AIDoctorModalProps) {
           </div>
         </div>
         
-        {/* Chat Messages - WhatsApp Style */}
-        <ScrollArea className="flex-1 p-4 bg-gradient-to-b from-transparent to-white/50 dark:to-black/20" ref={scrollRef}>
-          <div className="space-y-3">
+        {/* Chat Messages */}
+        <ScrollArea className="flex-1 p-4 bg-gradient-to-b from-purple-50 to-white dark:from-gray-900 dark:to-gray-800">
+          <div className="space-y-4">
             {messages.map((message, index) => (
-              <div key={index} className={`flex gap-2 ${message.type === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2`}>
+              <div 
+                key={index} 
+                className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'} message-animation`}
+                style={{ 
+                  opacity: 0, 
+                  animationDelay: `${index * 0.1}s` 
+                }}
+              >
                 {message.type === 'ai' && (
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center flex-shrink-0 shadow-lg">
-                    <span className="text-white text-sm">🌿</span>
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center flex-shrink-0 mr-2 shadow-sm">
+                    <span className="text-white text-xs">🌿</span>
                   </div>
                 )}
                 
-                <div className={`max-w-[85%] sm:max-w-[80%] rounded-2xl px-4 py-3 shadow-md ${
-                  message.type === 'user' 
-                    ? 'bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-br-sm' 
-                    : 'bg-white dark:bg-gray-800 rounded-bl-sm border border-purple-100 dark:border-purple-800'
-                }`}>
-                  <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
+                <div 
+                  className={`max-w-[80%] rounded-xl px-4 py-3 shadow-sm ${
+                    message.type === 'user' 
+                      ? 'bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-br-none' 
+                      : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-bl-none border border-purple-100 dark:border-purple-800'
+                  }`}
+                >
+                  <p className="text-sm whitespace-pre-wrap">{message.content}</p>
                   
                   {/* Remedy Suggestions */}
                   {message.remedies && message.remedies.length > 0 && (
                     <div className="mt-4 space-y-3">
-                      <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400">
+                      <div className="flex items-center gap-2 text-purple-700 dark:text-purple-300">
                         <BookOpen className="h-4 w-4" />
                         <span className="font-medium text-sm">Recommended Remedies</span>
-                        <span className="text-xs bg-purple-100 dark:bg-purple-900 px-2 py-1 rounded-full">
-                          {message.remedies.length} found
-                        </span>
                       </div>
+                      
                       {message.remedies.map((remedy, remedyIndex) => (
-                        <div key={remedyIndex} className="bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-950 dark:to-indigo-950 rounded-xl p-3 border border-purple-200 dark:border-purple-700">
-                          <div className="flex items-start justify-between mb-2">
+                        <div key={remedyIndex} className="bg-purple-50 dark:bg-gray-700 rounded-lg p-3 border border-purple-100 dark:border-purple-700 transition-all duration-200 hover:shadow-md">
+                          <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center gap-2">
-                              <div className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center">
-                                <Pill className="h-3 w-3 text-white" />
-                              </div>
+                              <Pill className="h-4 w-4 text-purple-500" />
                               <span className="font-semibold text-sm text-purple-700 dark:text-purple-300">
                                 {remedy.name} {remedy.potency}
                               </span>
-                              {remedy.inInventory && (
-                                <Badge className="text-xs bg-purple-500 hover:bg-purple-600">
-                                  <CheckCircle2 className="h-3 w-3 mr-1" />
-                                  In Your Kit
-                                </Badge>
-                              )}
                             </div>
+                            {remedy.inInventory && (
+                              <Badge className="bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900 dark:text-green-300">
+                                <CheckCircle2 className="h-3 w-3 mr-1" />
+                                In Your Kit
+                              </Badge>
+                            )}
                           </div>
                           
                           <div className="space-y-2 text-xs">
-                            <p className="flex items-start gap-2">
-                              <span className="text-purple-600 font-medium">For:</span>
+                            <p>
+                              <span className="text-purple-600 dark:text-purple-400 font-medium">For: </span>
                               <span className="text-gray-700 dark:text-gray-300">{remedy.indication}</span>
                             </p>
                             
-                            <p className="flex items-start gap-2">
-                              <span className="text-indigo-600 font-medium">Why:</span>
+                            <p>
+                              <span className="text-purple-600 dark:text-purple-400 font-medium">Why: </span>
                               <span className="text-gray-700 dark:text-gray-300">{remedy.reasoning}</span>
                             </p>
                             
-                            <p className="flex items-start gap-2">
-                              <span className="text-purple-600 font-medium">Source:</span>
-                              <span className="text-purple-700 dark:text-purple-300 font-medium">{remedy.source}</span>
+                            <p>
+                              <span className="text-purple-600 dark:text-purple-400 font-medium">Source: </span>
+                              <span className="text-purple-700 dark:text-purple-300">{remedy.source}</span>
                             </p>
                           </div>
                         </div>
@@ -311,64 +335,58 @@ export default function AIDoctorModal({ isOpen, onClose }: AIDoctorModalProps) {
                 </div>
                 
                 {message.type === 'user' && (
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-purple-500 flex items-center justify-center flex-shrink-0 shadow-lg">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-purple-500 flex items-center justify-center flex-shrink-0 ml-2 shadow-sm">
                     <User className="h-4 w-4 text-white" />
                   </div>
                 )}
               </div>
             ))}
             
+            {/* Typing Indicator */}
             {isLoading && (
-              <div className="flex gap-2 animate-in slide-in-from-bottom-2">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center shadow-lg">
-                  <span className="text-white text-sm">🌿</span>
+              <div className="flex message-animation">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center flex-shrink-0 mr-2 shadow-sm">
+                  <span className="text-white text-xs">🌿</span>
                 </div>
-                <div className="bg-white dark:bg-gray-800 rounded-2xl rounded-bl-sm px-4 py-3 flex items-center gap-3 shadow-md border border-purple-100 dark:border-purple-800">
-                  <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                    <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                    <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce"></div>
+                <div className="bg-white dark:bg-gray-800 rounded-xl rounded-bl-none px-4 py-3 shadow-sm border border-purple-100 dark:border-purple-800">
+                  <div className="typing-indicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
                   </div>
-                  <span className="text-sm text-purple-600">Dr. Harmony is thinking...</span>
                 </div>
               </div>
             )}
           </div>
         </ScrollArea>
         
-        {/* Input Area - Purple Theme */}
-        <div className="p-4 bg-white dark:bg-gray-900 border-t border-purple-200 dark:border-purple-700">
-          <div className="flex items-end gap-3">
-            <div className="flex-1 relative">
-              <Input
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                onKeyDown={handleKeyPress}
-                placeholder="Tell Dr. Harmony how you're feeling... 💭"
-                disabled={isLoading}
-                className="rounded-3xl border-purple-200 dark:border-purple-700 focus:border-purple-400 pl-4 pr-4 py-3 bg-gray-50 dark:bg-gray-800"
-              />
-            </div>
+        {/* Input Area */}
+        <div className="p-4 bg-white dark:bg-gray-900 border-t border-purple-100 dark:border-purple-800">
+          <div className="flex gap-2">
+            <Input
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              onKeyDown={handleKeyPress}
+              placeholder="Tell Dr. Harmony how you're feeling..."
+              disabled={isLoading}
+              className="rounded-full border-purple-200 dark:border-purple-700 focus:border-purple-400"
+            />
             <Button
               onClick={sendMessage}
               disabled={!inputText.trim() || isLoading}
               size="icon"
-              className="rounded-full w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 shadow-lg"
+              className="rounded-full bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700"
             >
               {isLoading ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                <Send className="h-5 w-5" />
+                <Send className="h-4 w-4" />
               )}
             </Button>
           </div>
-          <div className="flex items-center justify-center mt-3 gap-2">
-            <span className="text-xs text-purple-600 dark:text-purple-400">🌿</span>
-            <p className="text-xs text-purple-600 dark:text-purple-400 text-center">
-              Describe your symptoms naturally
-            </p>
-            <span className="text-xs text-purple-600 dark:text-purple-400">💜</span>
-          </div>
+          <p className="text-xs text-center mt-2 text-purple-500 dark:text-purple-400">
+            Describe your symptoms in detail for better remedy suggestions
+          </p>
         </div>
       </DialogContent>
     </Dialog>
