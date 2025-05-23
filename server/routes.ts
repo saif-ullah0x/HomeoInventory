@@ -256,6 +256,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // AI DOCTOR ENDPOINT
+  app.post(`${apiPrefix}/ai-doctor`, async (req, res) => {
+    try {
+      const { symptoms, userInventory } = req.body;
+
+      if (!symptoms || typeof symptoms !== 'string') {
+        return res.status(400).json({ error: "Symptoms are required" });
+      }
+
+      // For now, provide a structured response based on homeopathic principles
+      // This will be enhanced with actual AI integration when API key is provided
+      const mockResponse = analyzeSymptoms(symptoms, userInventory || []);
+      
+      return res.json(mockResponse);
+    } catch (error) {
+      console.error("Error in AI Doctor endpoint:", error);
+      return res.status(500).json({ error: "Failed to analyze symptoms" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
