@@ -11,43 +11,27 @@ import {
 import { eq } from "drizzle-orm";
 import { db } from "@db";
 import { nanoid } from "nanoid";
+import { findRemediesBySymptoms, generateHomeopathicResponse } from "./homeopathic-knowledge";
 
-// Homeopathic Knowledge Base - Based on Classical Materia Medica
+// Enhanced AI Doctor using comprehensive homeopathic knowledge base
 function analyzeSymptoms(symptoms: string, userInventory: string[]) {
-  const symptomsLower = symptoms.toLowerCase();
-  const remedies: any[] = [];
+  // Use our comprehensive knowledge base
+  const matchedRemedies = findRemediesBySymptoms(symptoms);
+  const aiResponse = generateHomeopathicResponse(symptoms, matchedRemedies);
   
-  // Classical remedy database based on Boericke, Kent, and Clarke's Materia Medica
-  const materiamedica = [
-    {
-      name: "Aconitum Napellus",
-      potency: "30C",
-      keywords: ["sudden", "anxiety", "fear", "restless", "thirst", "fever", "shock", "panic"],
-      indication: "Sudden onset of acute conditions with great anxiety and restlessness",
-      reasoning: "Indicated in sudden, violent complaints that come on from exposure to dry cold winds or from fright",
-      source: "Boericke's Materia Medica"
-    },
-    {
-      name: "Arsenicum Album",
-      potency: "30C",
-      keywords: ["anxiety", "restless", "thirst", "burning", "weakness", "fear", "midnight", "cold"],
-      indication: "Great anxiety and restlessness with burning pains and thirst for small quantities",
-      reasoning: "The restlessness of Arsenicum is marked by anguish and desire to move from place to place",
-      source: "Kent's Materia Medica"
-    },
-    {
-      name: "Belladonna",
-      potency: "30C",
-      keywords: ["headache", "sudden", "throbbing", "hot", "red", "fever", "violent", "intense"],
-      indication: "Sudden, violent headaches with throbbing and heat",
-      reasoning: "Headaches that come on suddenly with great violence, heat, and redness",
-      source: "Boericke's Materia Medica"
-    },
-    {
-      name: "Bryonia Alba",
-      potency: "30C",
-      keywords: ["headache", "worse motion", "thirst", "dry", "irritable", "wants quiet"],
-      indication: "Headaches worse from motion, better from pressure and rest",
+  // Check which remedies user has in inventory
+  const remediesWithInventory = aiResponse.remedies.map((remedy: any) => ({
+    ...remedy,
+    inInventory: userInventory.some(med => 
+      med.toLowerCase().includes(remedy.name.toLowerCase()) ||
+      remedy.name.toLowerCase().includes(med.toLowerCase())
+    )
+  }));
+
+  return {
+    response: aiResponse.response,
+    remedies: remediesWithInventory
+  };
       reasoning: "The great characteristic is aggravation from any motion and amelioration from rest",
       source: "Kent's Materia Medica"
     },
