@@ -288,14 +288,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Symptoms are required" });
       }
 
-      // For now, provide a structured response based on homeopathic principles
-      // This will be enhanced with actual AI integration when API key is provided
-      const mockResponse = analyzeSymptoms(symptoms, userInventory || []);
+      const aiResponse = analyzeSymptoms(symptoms, userInventory || []);
       
-      return res.json(mockResponse);
+      return res.json(aiResponse);
     } catch (error) {
       console.error("Error in AI Doctor endpoint:", error);
       return res.status(500).json({ error: "Failed to analyze symptoms" });
+    }
+  });
+
+  // Medicine autosuggestion endpoint for typing assistance
+  app.get(`${apiPrefix}/medicine-suggestions`, async (req, res) => {
+    try {
+      const { q, limit = 8 } = req.query;
+      
+      if (!q || typeof q !== 'string' || q.trim().length < 2) {
+        return res.json([]);
+      }
+      
+      const suggestions = searchMedicines(q.trim(), parseInt(limit as string));
+      return res.json(suggestions);
+      
+    } catch (error) {
+      console.error('Error getting medicine suggestions:', error);
+      return res.status(500).json({ error: 'Failed to get suggestions' });
     }
   });
 
