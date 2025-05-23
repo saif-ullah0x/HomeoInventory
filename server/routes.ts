@@ -12,6 +12,148 @@ import { eq } from "drizzle-orm";
 import { db } from "@db";
 import { nanoid } from "nanoid";
 
+// Homeopathic Knowledge Base - Based on Classical Materia Medica
+function analyzeSymptoms(symptoms: string, userInventory: string[]) {
+  const symptomsLower = symptoms.toLowerCase();
+  const remedies: any[] = [];
+  
+  // Classical remedy database based on Boericke, Kent, and Clarke's Materia Medica
+  const materiamedica = [
+    {
+      name: "Aconitum Napellus",
+      potency: "30C",
+      keywords: ["sudden", "anxiety", "fear", "restless", "thirst", "fever", "shock", "panic"],
+      indication: "Sudden onset of acute conditions with great anxiety and restlessness",
+      reasoning: "Indicated in sudden, violent complaints that come on from exposure to dry cold winds or from fright",
+      source: "Boericke's Materia Medica"
+    },
+    {
+      name: "Arsenicum Album",
+      potency: "30C",
+      keywords: ["anxiety", "restless", "thirst", "burning", "weakness", "fear", "midnight", "cold"],
+      indication: "Great anxiety and restlessness with burning pains and thirst for small quantities",
+      reasoning: "The restlessness of Arsenicum is marked by anguish and desire to move from place to place",
+      source: "Kent's Materia Medica"
+    },
+    {
+      name: "Belladonna",
+      potency: "30C",
+      keywords: ["headache", "sudden", "throbbing", "hot", "red", "fever", "violent", "intense"],
+      indication: "Sudden, violent headaches with throbbing and heat",
+      reasoning: "Headaches that come on suddenly with great violence, heat, and redness",
+      source: "Boericke's Materia Medica"
+    },
+    {
+      name: "Bryonia Alba",
+      potency: "30C",
+      keywords: ["headache", "worse motion", "thirst", "dry", "irritable", "wants quiet"],
+      indication: "Headaches worse from motion, better from pressure and rest",
+      reasoning: "The great characteristic is aggravation from any motion and amelioration from rest",
+      source: "Kent's Materia Medica"
+    },
+    {
+      name: "Gelsemium",
+      potency: "30C",
+      keywords: ["dizzy", "dizziness", "weakness", "drowsy", "fear", "anxiety", "trembling"],
+      indication: "Dizziness with weakness, drowsiness and trembling from fear",
+      reasoning: "Great remedy for weakness and trembling from emotional excitement",
+      source: "Clarke's Materia Medica"
+    },
+    {
+      name: "Nux Vomica",
+      potency: "30C",
+      keywords: ["irritable", "anger", "digestive", "nausea", "headache", "oversensitive"],
+      indication: "Digestive complaints with great irritability and oversensitiveness",
+      reasoning: "The typical Nux patient is very irritable, oversensitive to noise, odors, and light",
+      source: "Boericke's Materia Medica"
+    },
+    {
+      name: "Pulsatilla",
+      potency: "30C",
+      keywords: ["changeable", "mild", "weepy", "better open air", "thirstless", "gentle"],
+      indication: "Changeable symptoms in mild, gentle patients who crave open air",
+      reasoning: "Symptoms are changeable, no two attacks alike, better in open air",
+      source: "Kent's Materia Medica"
+    },
+    {
+      name: "Rhus Toxicodendron",
+      potency: "30C",
+      keywords: ["restless", "stiff", "better motion", "worse rest", "joint", "muscle"],
+      indication: "Restlessness with stiffness, better from continued motion",
+      reasoning: "The restlessness is marked - cannot remain in any position long",
+      source: "Boericke's Materia Medica"
+    },
+    {
+      name: "Sulphur",
+      potency: "30C",
+      keywords: ["burning", "itching", "worse heat", "dirty", "untidy", "philosophical"],
+      indication: "Burning sensations, worse from heat, in untidy patients",
+      reasoning: "The great anti-psoric remedy with characteristic burning sensations",
+      source: "Kent's Materia Medica"
+    },
+    {
+      name: "Ignatia",
+      potency: "30C",
+      keywords: ["grief", "emotional", "contradictory", "sighing", "mood", "hysteria"],
+      indication: "Emotional disturbances with contradictory and changeable symptoms",
+      reasoning: "The remedy of contradictions - symptoms appear contradictory and unexpected",
+      source: "Clarke's Materia Medica"
+    }
+  ];
+  
+  // Analyze symptoms and match with remedies
+  for (const remedy of materiamedica) {
+    let matchScore = 0;
+    const matchedKeywords: string[] = [];
+    
+    for (const keyword of remedy.keywords) {
+      if (symptomsLower.includes(keyword)) {
+        matchScore++;
+        matchedKeywords.push(keyword);
+      }
+    }
+    
+    // If we have matches, include the remedy
+    if (matchScore > 0) {
+      remedies.push({
+        ...remedy,
+        matchScore,
+        matchedKeywords,
+        inInventory: userInventory.some(inv => 
+          inv.toLowerCase().includes(remedy.name.toLowerCase()) ||
+          remedy.name.toLowerCase().includes(inv.toLowerCase())
+        )
+      });
+    }
+  }
+  
+  // Sort by match score and take top 3
+  const topRemedies = remedies
+    .sort((a, b) => b.matchScore - a.matchScore)
+    .slice(0, 3)
+    .map(remedy => ({
+      name: remedy.name,
+      potency: remedy.potency,
+      indication: remedy.indication,
+      reasoning: remedy.reasoning,
+      source: remedy.source,
+      inInventory: remedy.inInventory
+    }));
+  
+  let response = "";
+  
+  if (topRemedies.length > 0) {
+    response = `Based on the symptoms you've described, here are some homeopathic remedies from classical materia medica that may be helpful:\n\nThese suggestions are based on traditional homeopathic literature and symptom matching. Please consult with a qualified homeopathic practitioner for personalized treatment.`;
+  } else {
+    response = `I couldn't find specific remedy matches for those symptoms in my classical materia medica database. This doesn't mean homeopathy can't help - I recommend consulting with a qualified homeopathic practitioner who can conduct a more detailed case analysis.\n\nYou might also try describing your symptoms with more specific details about what makes them better or worse, timing, and associated feelings.`;
+  }
+  
+  return {
+    response,
+    remedies: topRemedies
+  };
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Medicine API routes
   // Prefix all routes with /api

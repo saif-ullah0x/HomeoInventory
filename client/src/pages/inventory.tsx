@@ -7,6 +7,7 @@ import MedicineModal from "@/components/medicine-modal";
 import DeleteModal from "@/components/delete-modal";
 import ImportModal from "@/components/import-modal";
 import ShareModal from "@/components/share-modal";
+import AIDoctorModal from "@/components/ai-doctor-modal";
 import { useStore } from "@/lib/store";
 import { useToast } from "@/hooks/use-toast";
 import * as XLSX from 'xlsx';
@@ -19,6 +20,7 @@ export default function Inventory() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isAIDoctorModalOpen, setIsAIDoctorModalOpen] = useState(false);
   const [medicineToEdit, setMedicineToEdit] = useState<number | null>(null);
   const [medicineToDelete, setMedicineToDelete] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -228,19 +230,40 @@ export default function Inventory() {
         onClose={() => setIsShareModalOpen(false)}
       />
       
-      {/* Fixed share button positioned at bottom right */}
-      <button 
-        onClick={() => setIsShareModalOpen(true)}
-        className="fixed right-6 bottom-6 bg-primary hover:bg-primary/90 text-white rounded-full p-4 shadow-lg transition-all duration-200 ease-in-out z-10"
-        aria-label="Family Access Sharing"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-users">
-          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-          <circle cx="9" cy="7" r="4" />
-          <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-        </svg>
-      </button>
+      <AIDoctorModal 
+        isOpen={isAIDoctorModalOpen}
+        onClose={() => setIsAIDoctorModalOpen(false)}
+      />
+      
+      {/* Fixed floating buttons positioned at bottom right */}
+      <div className="fixed right-6 bottom-6 flex flex-col gap-3 z-10">
+        {/* AI Doctor Button */}
+        <button 
+          onClick={() => setIsAIDoctorModalOpen(true)}
+          className="bg-green-600 hover:bg-green-700 text-white rounded-full p-4 shadow-lg transition-all duration-200 ease-in-out"
+          aria-label="AI Homeopathic Doctor"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-stethoscope">
+            <path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3" />
+            <path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4" />
+            <circle cx="20" cy="10" r="2" />
+          </svg>
+        </button>
+        
+        {/* Share Button */}
+        <button 
+          onClick={() => setIsShareModalOpen(true)}
+          className="bg-primary hover:bg-primary/90 text-white rounded-full p-4 shadow-lg transition-all duration-200 ease-in-out"
+          aria-label="Family Access Sharing"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-users">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+        </button>
+      </div>
     </main>
   );
 }
