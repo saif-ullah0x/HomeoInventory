@@ -31,8 +31,7 @@ import {
   MapPin,
   BarChart3,
   RefreshCw,
-  Archive,
-  Stethoscope
+  Archive
 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -91,7 +90,7 @@ export default function AIHomeopathyChatbot({ isOpen, onClose }: AIChatbotProps)
     if (isOpen && messages.length === 0) {
       setMessages([{
         type: 'ai',
-        content: "Hello! I'm Dr. Harmony, your AI Homeopathy Assistant! 🌿\n\nI can help you with:\n• 📊 **Usage trends** - Ask 'show my trends'\n• 🔄 **Remedy substitutions** - Ask 'alternatives for [remedy]'\n• ⚖️ **Dosage adjustments** - Ask 'dosage for [condition]'\n\nWhat would you like to explore today?",
+        content: "Hello! I'm Dr. Harmony, your AI Homeopathy Assistant! 🌿\n\nI can help you with:\n• 💊 **Symptom matching** - Tell me your symptoms\n• 📊 **Usage trends** - Ask 'show my trends'\n• 🔄 **Remedy substitutions** - Ask 'alternatives for [remedy]'\n• ⚖️ **Dosage adjustments** - Ask 'dosage for [condition]'\n\nWhat would you like to explore today?",
         messageType: 'general',
         timestamp: new Date()
       }]);
@@ -251,24 +250,8 @@ export default function AIHomeopathyChatbot({ isOpen, onClose }: AIChatbotProps)
       timestamp: new Date()
     }]);
   };
-  
-  // Open the AI Doctor modal when this button is clicked
-  const openAIDoctor = () => {
-    onClose(); // Close this chatbot first
-    
-    // Dispatch a custom event to open the AI Doctor modal
-    setTimeout(() => {
-      const event = new CustomEvent('openAIDoctor');
-      document.dispatchEvent(event);
-    }, 300);
-  };
 
   const quickActions = [
-    { 
-      label: "AI Doctor", 
-      icon: Stethoscope, 
-      action: openAIDoctor 
-    },
     { label: "Find alternatives", icon: RefreshCw, action: () => setInputText("Find alternatives for ") },
     { label: "Dosage advice", icon: Archive, action: () => setInputText("What dosage for ") },
     { label: "General guidance", icon: BookOpen, action: () => setInputText("I need help with homeopathic remedies") }
@@ -435,7 +418,7 @@ export default function AIHomeopathyChatbot({ isOpen, onClose }: AIChatbotProps)
               >
                 {message.type === 'ai' && (
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center flex-shrink-0 mr-2 shadow-sm">
-                    <span className="text-white text-xs">🌿</span>
+                    <span className="text-white text-xs">🤖</span>
                   </div>
                 )}
                 
@@ -456,50 +439,63 @@ export default function AIHomeopathyChatbot({ isOpen, onClose }: AIChatbotProps)
                         <span className="font-medium text-sm">Recommended Remedies</span>
                       </div>
                       
-                      {message.remedies.map((remedy, remedyIndex) => renderRemedyCard(remedy, remedyIndex))}
+                      <div className="space-y-2">
+                        {message.remedies
+                          .sort((a, b) => {
+                            if (a.inInventory && !b.inInventory) return -1;
+                            if (!a.inInventory && b.inInventory) return 1;
+                            return (b.confidence || 0) - (a.confidence || 0);
+                          })
+                          .map((remedy, remedyIndex) => renderRemedyCard(remedy, remedyIndex))
+                        }
+                      </div>
                     </div>
                   )}
-                  
+
                   {/* Usage Trends */}
                   {message.trends && message.trends.length > 0 && (
                     <div className="mt-4 space-y-3">
                       <div className="flex items-center gap-2 text-purple-700 dark:text-purple-300">
                         <BarChart3 className="h-4 w-4" />
-                        <span className="font-medium text-sm">Usage Trends</span>
+                        <span className="font-medium text-sm">Usage Insights</span>
                       </div>
                       
-                      <div className="bg-white dark:bg-gray-700 rounded-lg p-3 border border-purple-100 dark:border-purple-800">
-                        <ul className="space-y-2 text-xs text-gray-700 dark:text-gray-300">
-                          {message.trends.map((trend, trendIndex) => (
-                            <li key={trendIndex} className="flex items-start gap-2">
-                              <span className="text-purple-500">•</span>
-                              <span>{trend}</span>
-                            </li>
-                          ))}
-                        </ul>
+                      <div className="space-y-2">
+                        {message.trends.map((trend: any, trendIndex: number) => (
+                          <Card key={trendIndex} className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800">
+                            <CardContent className="p-3">
+                              <p className="text-sm text-blue-800 dark:text-blue-300">{trend.insight}</p>
+                            </CardContent>
+                          </Card>
+                        ))}
                       </div>
                     </div>
                   )}
+                  
+                  <p className="text-xs opacity-60 mt-2 text-right">
+                    {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </p>
                 </div>
                 
                 {message.type === 'user' && (
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-400 to-purple-400 flex items-center justify-center flex-shrink-0 ml-2 shadow-sm">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-purple-500 flex items-center justify-center flex-shrink-0 ml-2 shadow-sm">
                     <User className="h-4 w-4 text-white" />
                   </div>
                 )}
               </div>
             ))}
             
+            {/* Typing Indicator */}
             {isLoading && (
-              <div className="flex justify-start">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center flex-shrink-0 mr-2">
-                  <span className="text-white text-xs">🌿</span>
+              <div className="flex">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center flex-shrink-0 mr-2 shadow-sm">
+                  <span className="text-white text-xs">🤖</span>
                 </div>
                 <div className="bg-white dark:bg-gray-800 rounded-xl rounded-bl-none px-4 py-3 shadow-sm border border-purple-100 dark:border-purple-800">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                    <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-                    <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '600ms' }}></div>
+                  <div className="flex space-x-1">
+                    <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                    <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
                   </div>
                 </div>
               </div>
@@ -514,9 +510,9 @@ export default function AIHomeopathyChatbot({ isOpen, onClose }: AIChatbotProps)
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               onKeyDown={handleKeyPress}
-              placeholder="Ask about trends, alternatives, or dosages..."
+              placeholder="Ask about symptoms, trends, alternatives, or dosages..."
               disabled={isLoading}
-              className="flex-1"
+              className="rounded-full border-purple-200 dark:border-purple-700 focus:border-purple-400"
             />
             <Button
               onClick={sendMessage}
@@ -532,7 +528,7 @@ export default function AIHomeopathyChatbot({ isOpen, onClose }: AIChatbotProps)
             </Button>
           </div>
           <p className="text-xs text-center mt-2 text-purple-500 dark:text-purple-400">
-            Try: "Show my trends" • "Alternatives for Arnica" • "Dosage for cold"
+            Try: "I have a fever" • "Show my trends" • "Alternatives for Arnica"
           </p>
         </div>
       </DialogContent>
