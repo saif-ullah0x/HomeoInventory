@@ -22,14 +22,57 @@ import {
   findSymptomByName as findComprehensiveSymptom,
   searchMedicinesBySymptom as searchComprehensiveMedicines
 } from "./comprehensive-homeopathy-database";
+import { 
+  BOERICKE_REMEDIES, 
+  findBoerickeRemedies, 
+  isGreeting, 
+  getGreetingResponse 
+} from "./boericke-materia-medica";
 
-// Enhanced AI Doctor with confidence scoring and external AI API integration
+// Enhanced AI Doctor with Boericke's Materia Medica and natural greeting responses
 async function analyzeSymptoms(symptoms: string, userInventory: string[]) {
   let remedies: any[] = [];
   let response = "";
   
+  // Handle greetings naturally without AI dependency
+  if (isGreeting(symptoms)) {
+    return {
+      response: getGreetingResponse(),
+      remedies: []
+    };
+  }
+  
+  // Use authentic Boericke's Materia Medica as primary source
+  const boerickeMatches = findBoerickeRemedies(symptoms);
+  if (boerickeMatches.length > 0) {
+    response = getSimpleMotivationalMessage(symptoms) + "\n\nBased on Boericke's Materia Medica, here are the authentic homeopathic recommendations:";
+    
+    boerickeMatches.forEach((remedy, index) => {
+      const confidence = Math.max(95 - (index * 5), 75);
+      const isInInventory = userInventory.some(inv => 
+        inv.toLowerCase().includes(remedy.name.toLowerCase())
+      );
+      
+      remedies.push({
+        name: remedy.name,
+        potency: remedy.potency,
+        indication: remedy.keyIndications.join(', '),
+        source: 'Boericke\'s Materia Medica',
+        reasoning: `Key symptoms: ${remedy.keyIndications.slice(0, 2).join(', ')}`,
+        confidence: isInInventory ? Math.min(confidence + 10, 100) : confidence,
+        dosage: '3-4 pellets',
+        frequency: 'Every 2-4 hours in acute cases',
+        inInventory: isInInventory,
+        modalities: remedy.modalities,
+        clinicalUses: remedy.clinicalUses
+      });
+    });
+    
+    return { response, remedies };
+  }
+  
+  // Try external AI API if Boericke database doesn't have matches
   try {
-    // First, try external AI API if available (placeholder for xAI Grok API or OpenAI)
     if (process.env.AI_API_KEY && process.env.AI_API_ENDPOINT) {
       remedies = await getAIRemedyRecommendations(symptoms, userInventory);
       response = getSimpleMotivationalMessage(symptoms) + "\n\nBased on AI-enhanced analysis with classical homeopathic principles:";
@@ -38,7 +81,7 @@ async function analyzeSymptoms(symptoms: string, userInventory: string[]) {
     console.log("External AI API not available, using classical database matching");
   }
   
-  // Fallback to classical database matching if AI API fails or not configured
+  // Fallback to comprehensive database matching
   if (remedies.length === 0) {
     // Combine structured symptom-medicine database with comprehensive remedy database
     const medicineGuides = searchMedicinesBySymptoms(symptoms);
