@@ -77,10 +77,10 @@ export default function InventoryList({ medicines, onEdit, onDelete }: Inventory
 
   return (
     <div className="relative">
-      <div className="bg-card shadow-sm overflow-hidden rounded-lg mb-6">
+      <div className="bg-card shadow-sm overflow-hidden rounded-lg mb-6 premium-card light-reflection">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="bg-gradient-to-r from-purple-50/40 to-indigo-50/40 dark:from-purple-900/10 dark:to-indigo-900/10">
               <TableHead className="w-[50px]">
                 {/* Always show checkbox header (Gmail-style) */}
                 <Checkbox
@@ -157,7 +157,7 @@ export default function InventoryList({ medicines, onEdit, onDelete }: Inventory
                           e.stopPropagation();
                           onEdit(medicine.id);
                         }}
-                        className="text-secondary h-8 w-8 p-0 mr-1"
+                        className="text-secondary h-8 w-8 p-0 mr-1 premium-simple-button"
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
