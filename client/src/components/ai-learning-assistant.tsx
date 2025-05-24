@@ -477,7 +477,7 @@ export default function AILearningAssistant({ isOpen, onClose }: AILearningAssis
               </TabsTrigger>
             </TabsList>
 
-            <ScrollArea className="flex-1 mt-6">
+            <ScrollArea className="flex-1 mt-6 h-[500px] pr-4 [&>[data-radix-scroll-area-viewport]]:max-h-[500px]">
               <TabsContent value="learn" className="mt-0">
                 {isLoading ? (
                   <div className="flex items-center justify-center h-64">
