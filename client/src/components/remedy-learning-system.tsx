@@ -5,14 +5,13 @@ import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   BookOpen, 
   Brain, 
   Star, 
   CheckCircle2, 
   XCircle, 
-  ArrowRight, 
   ArrowLeft,
   Award,
   Lightbulb,
@@ -45,27 +44,7 @@ interface Remedy {
   imageUrl?: string;
 }
 
-interface Question {
-  id: number;
-  remedyId: number;
-  question: string;
-  options: string[];
-  correctAnswer: number;
-  explanation: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
-}
-
-interface UserProgress {
-  currentRemedy: number;
-  completedRemedies: number[];
-  currentScore: number;
-  totalQuestions: number;
-  correctAnswers: number;
-  level: 'beginner' | 'intermediate' | 'advanced';
-  streak: number;
-}
-
-// Comprehensive Boericke's Materia Medica Database
+// Homeopathic remedies database
 const REMEDIES_DATABASE: Remedy[] = [
   {
     id: 1,
@@ -186,800 +165,335 @@ const REMEDIES_DATABASE: Remedy[] = [
   }
 ];
 
-// Question Bank for Each Remedy
-const QUESTIONS_DATABASE: Question[] = [
-  // Arnica Questions
-  {
-    id: 1,
-    remedyId: 1,
-    question: "What is the primary indication for Arnica Montana?",
-    options: ["Digestive issues", "Trauma and injuries", "Skin conditions", "Respiratory problems"],
-    correctAnswer: 1,
-    explanation: "Arnica is the premier trauma remedy in homeopathy, used for bruises, sprains, and any injury with soreness.",
-    difficulty: "beginner"
-  },
-  {
-    id: 2,
-    remedyId: 1,
-    question: "A key mental symptom of Arnica is:",
-    options: ["Extreme anxiety", "Denies severity of condition", "Depression", "Confusion"],
-    correctAnswer: 1,
-    explanation: "Arnica patients often deny they are hurt or say 'I'm fine' even when clearly injured.",
-    difficulty: "intermediate"
-  },
-  {
-    id: 3,
-    remedyId: 1,
-    question: "What makes an Arnica patient feel worse?",
-    options: ["Cold air", "Touch and motion", "Eating", "Lying down"],
-    correctAnswer: 1,
-    explanation: "Arnica patients are extremely sensitive to touch and movement worsens their condition.",
-    difficulty: "intermediate"
-  },
-  // Aconite Questions
-  {
-    id: 4,
-    remedyId: 2,
-    question: "Aconitum Napellus is best known for treating:",
-    options: ["Chronic conditions", "Sudden onset acute conditions", "Digestive problems", "Skin disorders"],
-    correctAnswer: 1,
-    explanation: "Aconite is the remedy for sudden, violent onset of symptoms, especially after fright or cold wind exposure.",
-    difficulty: "beginner"
-  },
-  {
-    id: 5,
-    remedyId: 2,
-    question: "The characteristic mental state of Aconite includes:",
-    options: ["Calmness", "Great fear and restlessness", "Sadness", "Irritability"],
-    correctAnswer: 1,
-    explanation: "Aconite patients experience intense fear, often predicting their time of death, with great restlessness.",
-    difficulty: "intermediate"
-  },
-  // Belladonna Questions
-  {
-    id: 6,
-    remedyId: 3,
-    question: "A key physical symptom of Belladonna is:",
-    options: ["Cold, clammy skin", "Bright red, hot skin", "Pale complexion", "Blue lips"],
-    correctAnswer: 1,
-    explanation: "Belladonna is characterized by bright red, hot, burning skin with intense heat and inflammation.",
-    difficulty: "beginner"
-  }
-];
-
 export default function RemedyLearningSystem({ isOpen, onClose }: RemedyLearningSystemProps) {
   const [selectedRemedyId, setSelectedRemedyId] = useState<number | null>(null);
-  const [activeTab, setActiveTab] = useState('overview');
-  const [userProgress, setUserProgress] = useState({
-    completedRemedies: [],
-    totalQuestions: 0,
-    correctAnswers: 0,
-    level: 'beginner',
-    streak: 0
-  });
+  const [activeTab, setActiveTab] = useState("overview");
 
-  // TODO: Replace with Neon database connection
-  // const { data: remedies } = useQuery({
-  //   queryKey: ['/api/remedies'],
-  //   enabled: isOpen
-  // });
-  // 
-  // const { data: questions } = useQuery({
-  //   queryKey: ['/api/questions', selectedRemedy?.id],
-  //   enabled: !!selectedRemedy
-  // });
-
-  const getRemedyQuestions = (remedyId: number) => {
-    return QUESTIONS_DATABASE.filter(q => q.remedyId === remedyId);
-  };
-
-  const getRandomQuestion = (remedyId: number) => {
-    const questions = getRemedyQuestions(remedyId);
-    const filteredQuestions = questions.filter(q => q.difficulty === userProgress.level);
-    if (filteredQuestions.length === 0) return questions[0];
-    
-    const randomIndex = Math.floor(Math.random() * filteredQuestions.length);
-    return filteredQuestions[randomIndex];
-  };
+  // Get the selected remedy
+  const selectedRemedy = selectedRemedyId 
+    ? REMEDIES_DATABASE.find(r => r.id === selectedRemedyId) 
+    : null;
 
   const startStudy = (remedy: Remedy) => {
-    setSelectedRemedy(remedy);
-    setCurrentView('study');
+    setSelectedRemedyId(remedy.id);
   };
 
-  const startQuiz = () => {
-    if (selectedRemedy) {
-      const question = getRandomQuestion(selectedRemedy.id);
-      setCurrentQuestion(question);
-      setCurrentView('quiz');
-      setSelectedAnswer(null);
-      setShowResult(false);
-    }
-  };
-
-  const handleAnswerSelect = (answerIndex: number) => {
-    setSelectedAnswer(answerIndex);
-    setShowResult(true);
-    
-    const isCorrect = answerIndex === currentQuestion?.correctAnswer;
-    setUserProgress(prev => ({
-      ...prev,
-      totalQuestions: prev.totalQuestions + 1,
-      correctAnswers: prev.correctAnswers + (isCorrect ? 1 : 0),
-      currentScore: Math.round(((prev.correctAnswers + (isCorrect ? 1 : 0)) / (prev.totalQuestions + 1)) * 100),
-      streak: isCorrect ? prev.streak + 1 : 0
-    }));
-  };
-
-  const nextQuestion = () => {
-    if (selectedRemedy) {
-      const question = getRandomQuestion(selectedRemedy.id);
-      setCurrentQuestion(question);
-      setSelectedAnswer(null);
-      setShowResult(false);
-    }
-  };
-
-  const getProgressPercent = () => {
-    return (userProgress.completedRemedies.length / REMEDIES_DATABASE.length) * 100;
-  };
-
-  const renderOverview = () => (
-    <div className="p-6 space-y-6">
-      <div className="text-center space-y-4">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full mb-4">
-          <BookOpen className="h-8 w-8 text-purple-600" />
-        </div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-          Remedy Learning Center
-        </h2>
-        <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-          Master homeopathic remedies through interactive lessons from Boericke's Materia Medica. 
-          Study remedy profiles, symptoms, and test your knowledge with adaptive quizzes.
-        </p>
-      </div>
-
-      {/* Progress Overview */}
-      <Card className="bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 border-purple-200">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Award className="h-5 w-5 text-purple-600" />
-            Your Progress
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">{userProgress.completedRemedies.length}</div>
-              <div className="text-sm text-gray-600">Remedies Studied</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">{userProgress.currentScore}%</div>
-              <div className="text-sm text-gray-600">Quiz Score</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">{userProgress.streak}</div>
-              <div className="text-sm text-gray-600">Current Streak</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600">{userProgress.level}</div>
-              <div className="text-sm text-gray-600">Difficulty Level</div>
-            </div>
-          </div>
-          <Progress value={getProgressPercent()} className="h-2" />
-        </CardContent>
-      </Card>
-
-      {/* Remedy Categories */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {REMEDIES_DATABASE.map((remedy) => (
-          <Card key={remedy.id} className="hover:shadow-lg transition-shadow cursor-pointer border-purple-100 hover:border-purple-300">
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="space-y-2">
-                  <CardTitle className="text-lg">{remedy.name}</CardTitle>
-                  <Badge variant="secondary" className="bg-purple-100 text-purple-800">
-                    {remedy.category}
-                  </Badge>
-                </div>
-                <div className="flex items-center gap-1">
-                  {userProgress.completedRemedies.includes(remedy.id) && (
-                    <CheckCircle2 className="h-5 w-5 text-green-500" />
-                  )}
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-3">
-                {remedy.description}
-              </p>
-              <div className="space-y-2">
-                <div className="text-xs font-medium text-gray-700 dark:text-gray-300">Key Uses:</div>
-                <div className="flex flex-wrap gap-1">
-                  {remedy.keyUses.slice(0, 3).map((use, index) => (
-                    <Badge key={index} variant="outline" className="text-xs">
-                      {use}
-                    </Badge>
-                  ))}
-                  {remedy.keyUses.length > 3 && (
-                    <Badge variant="outline" className="text-xs">
-                      +{remedy.keyUses.length - 3} more
-                    </Badge>
-                  )}
-                </div>
-              </div>
-              <Button 
-                onClick={() => startStudy(remedy)}
-                className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
-              >
-                <BookOpen className="h-4 w-4 mr-2" />
-                Study Remedy
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </div>
-  );
-
-  const renderStudyView = () => {
-    if (!selectedRemedy) return null;
-
-    return (
-      <div className="h-full flex flex-col">
-        {/* Header */}
-        <div className="p-4 border-b bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900">
-          <div className="flex items-center justify-between mb-2">
-            <Button
-              variant="ghost"
-              onClick={() => setCurrentView('overview')}
-              className="text-purple-600 hover:text-purple-700"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Overview
-            </Button>
-            <div className="flex space-x-2">
-              <Button variant="outline" size="sm" onClick={startQuiz} className="bg-purple-100 text-purple-800 border-purple-300 hover:bg-purple-200">
-                <Brain className="h-4 w-4 mr-1" />
-                Start Quiz
-              </Button>
-              <Badge className="bg-purple-100 text-purple-800">
-                {selectedRemedy.category}
-              </Badge>
-            </div>
-          </div>
-          <div className="space-y-1">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-              {selectedRemedy.name}
-            </h1>
-            <p className="text-sm text-gray-600 dark:text-gray-400 italic">
-              {selectedRemedy.fullName}
-            </p>
-          </div>
-        </div>
-
-        {/* Content with Tabs */}
-        <div className="border-b">
-          <div className="flex overflow-x-auto">
-            <TabsList className="bg-transparent p-0 h-auto">
-              <TabsTrigger 
-                value="overview" 
-                onClick={() => setActiveTab('overview')}
-                className={`px-4 py-2 rounded-none border-b-2 ${activeTab === 'overview' ? 'border-purple-600 text-purple-700' : 'border-transparent'}`}
-              >
-                Overview
-              </TabsTrigger>
-              <TabsTrigger 
-                value="symptoms" 
-                onClick={() => setActiveTab('symptoms')}
-                className={`px-4 py-2 rounded-none border-b-2 ${activeTab === 'symptoms' ? 'border-purple-600 text-purple-700' : 'border-transparent'}`}
-              >
-                Symptoms
-              </TabsTrigger>
-              <TabsTrigger 
-                value="modalities" 
-                onClick={() => setActiveTab('modalities')}
-                className={`px-4 py-2 rounded-none border-b-2 ${activeTab === 'modalities' ? 'border-purple-600 text-purple-700' : 'border-transparent'}`}
-              >
-                Modalities
-              </TabsTrigger>
-              <TabsTrigger 
-                value="practice" 
-                onClick={() => setActiveTab('practice')}
-                className={`px-4 py-2 rounded-none border-b-2 ${activeTab === 'practice' ? 'border-purple-600 text-purple-700' : 'border-transparent'}`}
-              >
-                Practice Quiz
-              </TabsTrigger>
-            </TabsList>
-          </div>
-        </div>
-        
-        {/* Scrollable Content Area */}
-        <ScrollArea className="flex-1 overflow-auto">
-          <div className="p-4 space-y-4">
-            {activeTab === 'overview' && (
-              <>
-                {/* Description */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Lightbulb className="h-5 w-5 text-yellow-500" />
-                      Overview
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                      {selectedRemedy.description}
-                    </p>
-                  </CardContent>
-                </Card>
-
-                {/* Key Uses */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <CheckCircle2 className="h-5 w-5 text-green-500" />
-                      Key Uses
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                      {selectedRemedy.keyUses.map((use, index) => (
-                        <div key={index} className="flex items-start gap-2">
-                          <div className="bg-green-100 text-green-800 rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">
-                            <CheckCircle2 className="h-3 w-3" />
-                          </div>
-                          <span className="text-gray-700 dark:text-gray-300">{use}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </>
-            )}
-
-            {activeTab === 'symptoms' && (
-              <div className="space-y-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Heart className="h-5 w-5 text-red-500" />
-                      Mental & Emotional Symptoms
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      {selectedRemedy.mentalSymptoms.map((symptom, index) => (
-                        <div key={index} className="flex items-start gap-2">
-                          <div className="bg-red-100 text-red-800 rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">
-                            <span className="text-xs">{index + 1}</span>
-                          </div>
-                          <span className="text-gray-700 dark:text-gray-300">{symptom}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Leaf className="h-5 w-5 text-blue-500" />
-                      Physical Symptoms
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      {selectedRemedy.physicalSymptoms.map((symptom, index) => (
-                        <div key={index} className="flex items-start gap-2">
-                          <div className="bg-blue-100 text-blue-800 rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">
-                            <span className="text-xs">{index + 1}</span>
-                          </div>
-                          <span className="text-gray-700 dark:text-gray-300">{symptom}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            )}
-
-            {activeTab === 'modalities' && (
-              <div className="space-y-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <XCircle className="h-5 w-5 text-red-500" />
-                      Worse From
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      {selectedRemedy.modalities.worse.map((item, index) => (
-                        <Badge key={index} variant="outline" className="mr-2 mb-2 bg-red-50 text-red-800 border-red-200">
-                          {item}
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <CheckCircle2 className="h-5 w-5 text-green-500" />
-                      Better From
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      {selectedRemedy.modalities.better.map((item, index) => (
-                        <Badge key={index} variant="outline" className="mr-2 mb-2 bg-green-50 text-green-800 border-green-200">
-                          {item}
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Star className="h-5 w-5 text-yellow-500" />
-                      Potencies & Dosage
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    <div className="flex flex-wrap gap-2">
-                      {selectedRemedy.potencies.map((potency, index) => (
-                        <Badge key={index} className="bg-purple-100 text-purple-800">
-                          {potency}
-                        </Badge>
-                      ))}
-                    </div>
-                    <p className="text-gray-700 dark:text-gray-300 mt-2">
-                      <span className="font-medium">Recommended dosage:</span> {selectedRemedy.dosage}
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-            )}
-
-            {activeTab === 'practice' && (
-              <div className="space-y-4">
-                <Card className="bg-purple-50 dark:bg-gray-800 border-purple-200">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Brain className="h-5 w-5 text-purple-600" />
-                      Practice Questions
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <p className="text-gray-700 dark:text-gray-300">
-                      Test your knowledge about {selectedRemedy.name} with these practice questions.
-                    </p>
-                    <Button 
-                      onClick={startQuiz}
-                      className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
-                    >
-                      <Brain className="h-4 w-4 mr-2" />
-                      Start Quiz
-                    </Button>
-                  </CardContent>
-                </Card>
-
-                {getRemedyQuestions(selectedRemedy.id).length > 0 ? (
-                  <div className="space-y-2">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Sample question preview:
-                    </p>
-                    <Card className="border-purple-200">
-                      <CardContent className="pt-4">
-                        <p className="font-medium text-gray-800 dark:text-gray-200 mb-2">
-                          {getRemedyQuestions(selectedRemedy.id)[0].question}
-                        </p>
-                        <div className="space-y-2 mt-3">
-                          {getRemedyQuestions(selectedRemedy.id)[0].options.map((option, index) => (
-                            <div 
-                              key={index}
-                              className="flex items-center p-2 rounded-md border border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
-                            >
-                              <div className="w-6 h-6 rounded-full border-2 border-purple-500 flex items-center justify-center mr-2">
-                                <span className="text-xs">{index + 1}</span>
-                              </div>
-                              <span>{option}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                ) : (
-                  <Card>
-                    <CardContent className="pt-4">
-                      <div className="text-center text-gray-500 dark:text-gray-400">
-                        No practice questions available for this remedy yet.
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-              </div>
-            )}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Heart className="h-5 w-5 text-red-500" />
-                  Primary Uses
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-2">
-                  {selectedRemedy.keyUses.map((use, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                      <span className="text-gray-700 dark:text-gray-300">{use}</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Symptoms */}
-            <Tabs defaultValue="mental" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="mental">Mental Symptoms</TabsTrigger>
-                <TabsTrigger value="physical">Physical Symptoms</TabsTrigger>
-                <TabsTrigger value="modalities">Modalities</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="mental">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Brain className="h-5 w-5 text-blue-500" />
-                      Mental & Emotional Symptoms
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      {selectedRemedy.mentalSymptoms.map((symptom, index) => (
-                        <div key={index} className="flex items-start gap-2">
-                          <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-                          <span className="text-gray-700 dark:text-gray-300">{symptom}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              
-              <TabsContent value="physical">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Leaf className="h-5 w-5 text-green-500" />
-                      Physical Symptoms
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      {selectedRemedy.physicalSymptoms.map((symptom, index) => (
-                        <div key={index} className="flex items-start gap-2">
-                          <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
-                          <span className="text-gray-700 dark:text-gray-300">{symptom}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              
-              <TabsContent value="modalities">
-                <div className="grid gap-4 md:grid-cols-2">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-red-600">Worse From</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        {selectedRemedy.modalities.worse.map((item, index) => (
-                          <div key={index} className="flex items-center gap-2">
-                            <XCircle className="h-4 w-4 text-red-500" />
-                            <span className="text-gray-700 dark:text-gray-300">{item}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                  
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-green-600">Better From</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        {selectedRemedy.modalities.better.map((item, index) => (
-                          <div key={index} className="flex items-center gap-2">
-                            <CheckCircle2 className="h-4 w-4 text-green-500" />
-                            <span className="text-gray-700 dark:text-gray-300">{item}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              </TabsContent>
-            </Tabs>
-
-            {/* Dosage Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Dosage & Potencies</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div>
-                  <span className="font-medium text-gray-700 dark:text-gray-300">Common Potencies: </span>
-                  <div className="flex gap-2 mt-1">
-                    {selectedRemedy.potencies.map((potency, index) => (
-                      <Badge key={index} variant="outline">{potency}</Badge>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <span className="font-medium text-gray-700 dark:text-gray-300">Typical Dosage: </span>
-                  <span className="text-gray-600 dark:text-gray-400">{selectedRemedy.dosage}</span>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </ScrollArea>
-
-        {/* Quiz Button */}
-        <div className="p-6 border-t bg-gray-50 dark:bg-gray-900">
-          <Button 
-            onClick={startQuiz}
-            className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white py-3"
-            size="lg"
-          >
-            <Brain className="h-5 w-5 mr-2" />
-            Test Your Knowledge
-          </Button>
-        </div>
-      </div>
-    );
-  };
-
-  const renderQuizView = () => {
-    if (!currentQuestion || !selectedRemedy) return null;
-
-    return (
-      <div className="h-full flex flex-col">
-        {/* Header */}
-        <div className="p-6 border-b bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900">
-          <div className="flex items-center justify-between mb-4">
-            <Button
-              variant="ghost"
-              onClick={() => setCurrentView('study')}
-              className="text-purple-600 hover:text-purple-700"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Study
-            </Button>
-            <div className="flex items-center gap-4">
-              <Badge className="bg-purple-100 text-purple-800">
-                {userProgress.level}
-              </Badge>
-              <div className="text-sm text-gray-600">
-                Score: {userProgress.currentScore}%
-              </div>
-            </div>
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            Quiz: {selectedRemedy.name}
-          </h1>
-        </div>
-
-        {/* Question */}
-        <div className="flex-1 p-6 bg-gradient-to-b from-white to-purple-50 dark:from-gray-900 dark:to-gray-800 overflow-y-auto">
-          <div className="max-w-3xl mx-auto space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-xl">{currentQuestion.question}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {currentQuestion.options.map((option, index) => {
-                    let buttonClass = "w-full p-4 text-left border-2 rounded-lg transition-all duration-200 ";
-                    
-                    if (showResult) {
-                      if (index === currentQuestion.correctAnswer) {
-                        buttonClass += "border-green-500 bg-green-50 text-green-800 dark:bg-green-900/30 dark:text-green-300";
-                      } else if (index === selectedAnswer && index !== currentQuestion.correctAnswer) {
-                        buttonClass += "border-red-500 bg-red-50 text-red-800 dark:bg-red-900/30 dark:text-red-300";
-                      } else {
-                        buttonClass += "border-gray-200 bg-gray-50 text-gray-600 dark:bg-gray-800 dark:text-gray-400";
-                      }
-                    } else {
-                      buttonClass += "border-purple-200 hover:border-purple-400 hover:bg-purple-50 hover:text-gray-900 text-gray-800 dark:text-gray-200 dark:hover:bg-purple-900/20 dark:hover:text-gray-100";
-                    }
-
-                    return (
-                      <Button
-                        key={index}
-                        variant="ghost"
-                        className={buttonClass}
-                        onClick={() => !showResult && handleAnswerSelect(index)}
-                        disabled={showResult}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-6 h-6 rounded-full border-2 border-current flex items-center justify-center text-sm font-bold">
-                            {String.fromCharCode(65 + index)}
-                          </div>
-                          <span className="flex-1">{option}</span>
-                          {showResult && index === currentQuestion.correctAnswer && (
-                            <CheckCircle2 className="h-5 w-5 text-green-600" />
-                          )}
-                          {showResult && index === selectedAnswer && index !== currentQuestion.correctAnswer && (
-                            <XCircle className="h-5 w-5 text-red-600" />
-                          )}
-                        </div>
-                      </Button>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Explanation */}
-            {showResult && (
-              <Card className="border-purple-200 bg-purple-50 dark:bg-purple-900/20">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-purple-800 dark:text-purple-300">
-                    <Lightbulb className="h-5 w-5" />
-                    Explanation
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-purple-700 dark:text-purple-200">
-                    {currentQuestion.explanation}
-                  </p>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        </div>
-
-        {/* Navigation */}
-        {showResult && (
-          <div className="p-6 border-t bg-gray-50 dark:bg-gray-900">
-            <div className="flex gap-3 justify-center">
-              <Button
-                onClick={nextQuestion}
-                className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
-              >
-                Next Question
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => setCurrentView('study')}
-              >
-                Back to Study
-              </Button>
-            </div>
-          </div>
-        )}
-      </div>
-    );
+  const backToOverview = () => {
+    setSelectedRemedyId(null);
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-7xl h-[90vh] p-0">
-        <div className="h-full flex flex-col">
-          {currentView === 'overview' && renderOverview()}
-          {currentView === 'study' && renderStudyView()}
-          {currentView === 'quiz' && renderQuizView()}
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-4xl max-h-[90vh] p-0 flex flex-col">
+        <DialogHeader className="px-6 py-4 border-b bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900">
+          <DialogTitle className="text-2xl font-bold text-center">
+            Remedy Learning Center
+          </DialogTitle>
+        </DialogHeader>
+        
+        <div className="flex-1 overflow-hidden">
+          {selectedRemedy ? (
+            // Study View
+            <div className="h-full flex flex-col">
+              {/* Header */}
+              <div className="p-4 border-b bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900">
+                <div className="flex items-center justify-between mb-2">
+                  <Button
+                    variant="ghost"
+                    onClick={backToOverview}
+                    className="text-purple-600 hover:text-purple-700"
+                  >
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Back to Overview
+                  </Button>
+                  <Badge className="bg-purple-100 text-purple-800">
+                    {selectedRemedy.category}
+                  </Badge>
+                </div>
+                <div className="space-y-1">
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                    {selectedRemedy.name}
+                  </h2>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 italic">
+                    {selectedRemedy.fullName}
+                  </p>
+                </div>
+              </div>
+
+              {/* Content with Tabs */}
+              <div className="border-b">
+                <div className="flex overflow-x-auto">
+                  <TabsList className="bg-transparent p-0 h-auto">
+                    <TabsTrigger 
+                      value="overview" 
+                      onClick={() => setActiveTab("overview")}
+                      className={`px-4 py-2 rounded-none border-b-2 ${activeTab === "overview" ? "border-purple-600 text-purple-700" : "border-transparent"}`}
+                    >
+                      Overview
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="symptoms" 
+                      onClick={() => setActiveTab("symptoms")}
+                      className={`px-4 py-2 rounded-none border-b-2 ${activeTab === "symptoms" ? "border-purple-600 text-purple-700" : "border-transparent"}`}
+                    >
+                      Symptoms
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="modalities" 
+                      onClick={() => setActiveTab("modalities")}
+                      className={`px-4 py-2 rounded-none border-b-2 ${activeTab === "modalities" ? "border-purple-600 text-purple-700" : "border-transparent"}`}
+                    >
+                      Modalities
+                    </TabsTrigger>
+                  </TabsList>
+                </div>
+              </div>
+              
+              {/* Scrollable Content Area */}
+              <ScrollArea className="flex-1 overflow-auto">
+                <div className="p-4 space-y-4">
+                  {activeTab === "overview" && (
+                    <>
+                      {/* Description */}
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="flex items-center gap-2">
+                            <Lightbulb className="h-5 w-5 text-yellow-500" />
+                            Overview
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                            {selectedRemedy.description}
+                          </p>
+                        </CardContent>
+                      </Card>
+
+                      {/* Key Uses */}
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="flex items-center gap-2">
+                            <CheckCircle2 className="h-5 w-5 text-green-500" />
+                            Key Uses
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            {selectedRemedy.keyUses.map((use, index) => (
+                              <div key={index} className="flex items-start gap-2">
+                                <div className="bg-green-100 text-green-800 rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                  <CheckCircle2 className="h-3 w-3" />
+                                </div>
+                                <span className="text-gray-700 dark:text-gray-300">{use}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </>
+                  )}
+
+                  {activeTab === "symptoms" && (
+                    <div className="space-y-4">
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="flex items-center gap-2">
+                            <Heart className="h-5 w-5 text-red-500" />
+                            Mental & Emotional Symptoms
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-2">
+                            {selectedRemedy.mentalSymptoms.map((symptom, index) => (
+                              <div key={index} className="flex items-start gap-2">
+                                <div className="bg-red-100 text-red-800 rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                  <span className="text-xs">{index + 1}</span>
+                                </div>
+                                <span className="text-gray-700 dark:text-gray-300">{symptom}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="flex items-center gap-2">
+                            <Leaf className="h-5 w-5 text-blue-500" />
+                            Physical Symptoms
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-2">
+                            {selectedRemedy.physicalSymptoms.map((symptom, index) => (
+                              <div key={index} className="flex items-start gap-2">
+                                <div className="bg-blue-100 text-blue-800 rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                  <span className="text-xs">{index + 1}</span>
+                                </div>
+                                <span className="text-gray-700 dark:text-gray-300">{symptom}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  )}
+
+                  {activeTab === "modalities" && (
+                    <div className="space-y-4">
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="flex items-center gap-2">
+                            <XCircle className="h-5 w-5 text-red-500" />
+                            Worse From
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="flex flex-wrap gap-2">
+                            {selectedRemedy.modalities.worse.map((item, index) => (
+                              <Badge key={index} variant="outline" className="mr-2 mb-2 bg-red-50 text-red-800 border-red-200">
+                                {item}
+                              </Badge>
+                            ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="flex items-center gap-2">
+                            <CheckCircle2 className="h-5 w-5 text-green-500" />
+                            Better From
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="flex flex-wrap gap-2">
+                            {selectedRemedy.modalities.better.map((item, index) => (
+                              <Badge key={index} variant="outline" className="mr-2 mb-2 bg-green-50 text-green-800 border-green-200">
+                                {item}
+                              </Badge>
+                            ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="flex items-center gap-2">
+                            <Star className="h-5 w-5 text-yellow-500" />
+                            Potencies & Dosage
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-2">
+                          <div className="flex flex-wrap gap-2">
+                            {selectedRemedy.potencies.map((potency, index) => (
+                              <Badge key={index} className="bg-purple-100 text-purple-800">
+                                {potency}
+                              </Badge>
+                            ))}
+                          </div>
+                          <p className="text-gray-700 dark:text-gray-300 mt-2">
+                            <span className="font-medium">Recommended dosage:</span> {selectedRemedy.dosage}
+                          </p>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  )}
+                </div>
+              </ScrollArea>
+            </div>
+          ) : (
+            // Overview
+            <ScrollArea className="h-full">
+              <div className="p-6 space-y-6">
+                <div className="text-center space-y-4">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full mb-4">
+                    <BookOpen className="h-8 w-8 text-purple-600" />
+                  </div>
+                  <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                    Master homeopathic remedies through interactive lessons from Boericke's Materia Medica. 
+                    Study remedy profiles, symptoms, and understand the key uses for each remedy.
+                  </p>
+                </div>
+
+                {/* Progress Overview */}
+                <Card className="bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 border-purple-200">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Award className="h-5 w-5 text-purple-600" />
+                      Learning Progress
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-purple-600">0</div>
+                        <div className="text-sm text-gray-600">Remedies Studied</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-green-600">0%</div>
+                        <div className="text-sm text-gray-600">Completion</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-blue-600">0</div>
+                        <div className="text-sm text-gray-600">Study Sessions</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-orange-600">Beginner</div>
+                        <div className="text-sm text-gray-600">Current Level</div>
+                      </div>
+                    </div>
+                    <Progress value={0} className="h-2" />
+                  </CardContent>
+                </Card>
+
+                {/* Remedy Categories */}
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {REMEDIES_DATABASE.map((remedy) => (
+                    <Card key={remedy.id} className="hover:shadow-lg transition-shadow cursor-pointer border-purple-100 hover:border-purple-300">
+                      <CardHeader>
+                        <div className="flex items-start justify-between">
+                          <div className="space-y-2">
+                            <CardTitle className="text-lg">{remedy.name}</CardTitle>
+                            <Badge variant="secondary" className="bg-purple-100 text-purple-800">
+                              {remedy.category}
+                            </Badge>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-3">
+                          {remedy.description}
+                        </p>
+                        <div className="space-y-2">
+                          <div className="text-xs font-medium text-gray-700 dark:text-gray-300">Key Uses:</div>
+                          <div className="flex flex-wrap gap-1">
+                            {remedy.keyUses.slice(0, 3).map((use, index) => (
+                              <Badge key={index} variant="outline" className="text-xs">
+                                {use}
+                              </Badge>
+                            ))}
+                            {remedy.keyUses.length > 3 && (
+                              <Badge variant="outline" className="text-xs">
+                                +{remedy.keyUses.length - 3} more
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                        <Button 
+                          onClick={() => startStudy(remedy)}
+                          className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
+                        >
+                          <BookOpen className="h-4 w-4 mr-2" />
+                          Study Remedy
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            </ScrollArea>
+          )}
         </div>
       </DialogContent>
     </Dialog>

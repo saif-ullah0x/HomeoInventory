@@ -82,7 +82,7 @@ export default function AIDoctorModal({ isOpen, onClose }: AIDoctorModalProps) {
     if (isOpen && messages.length === 0) {
       setMessages([{
         type: 'ai',
-        content: "Hello! I'm Dr. Harmony, your homeopathic assistant! 🌿\n\nI can help you find natural remedies based on classical homeopathic literature. Just tell me how you're feeling and I'll suggest appropriate medicines.\n\nYou're taking a wonderful step towards natural healing! 💜",
+        content: "Hello! I'm your AI Doctor specializing in homeopathic medicine.\n\nI can analyze your symptoms and recommend specific remedies based on classical homeopathic principles. Describe your symptoms in detail, and I'll suggest the most appropriate homeopathic treatments.\n\nHow are you feeling today?",
         timestamp: new Date()
       }]);
     }

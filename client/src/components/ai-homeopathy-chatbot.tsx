@@ -90,7 +90,7 @@ export default function AIHomeopathyChatbot({ isOpen, onClose }: AIChatbotProps)
     if (isOpen && messages.length === 0) {
       setMessages([{
         type: 'ai',
-        content: "Welcome to HomeoInvent AI Helper! 🌿\n\nI can assist you with:\n• 📊 **Usage trends** - Ask 'show my trends'\n• 🔄 **Remedy substitutions** - Ask 'alternatives for [remedy]'\n• ⚖️ **Dosage adjustments** - Ask 'dosage for [condition]'\n\nFor symptom-based remedy recommendations, please use the AI Doctor button. How can I help you today?",
+        content: "Welcome to HomeoInvent AI Helper!\n\nI can assist you with:\n• Usage trends - Ask 'show my trends'\n• Remedy substitutions - Ask 'alternatives for [remedy]'\n• Dosage adjustments - Ask 'dosage for [condition]'\n\nFor symptom-based remedy recommendations, please use the AI Doctor button. How can I help you today?",
         messageType: 'general',
         timestamp: new Date()
       }]);

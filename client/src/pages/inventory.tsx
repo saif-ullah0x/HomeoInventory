@@ -242,8 +242,8 @@ export default function Inventory() {
       <div className="fixed right-6 bottom-6 z-10">
         <button 
           onClick={() => setIsAIDoctorModalOpen(true)}
-          className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-full p-3 shadow-lg transition-all duration-200 ease-in-out flex items-center justify-center w-14 h-14 hover:scale-105"
-          aria-label="AI Homeopathic Doctor"
+          className="bg-gradient-to-r from-purple-700 to-purple-500 hover:from-purple-800 hover:to-purple-600 text-white rounded-full p-3 shadow-lg transition-all duration-200 ease-in-out flex items-center justify-center w-14 h-14 hover:scale-105"
+          aria-label="AI Doctor"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-stethoscope">
             <path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3" />
