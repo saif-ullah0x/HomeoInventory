@@ -22,7 +22,10 @@ export default function Header() {
         <div className="flex justify-between items-center py-4">
           <div className="flex items-center slide-up-fade-in">
             <Link href="/">
-              <h1 className="font-display text-2xl font-bold cursor-pointer gradient-text">
+              <h1 
+                className="font-display text-2xl font-bold cursor-pointer premium-gradient-text premium-logo"
+                data-text="HomeoInvent"
+              >
                 HomeoInvent
               </h1>
             </Link>
@@ -33,7 +36,7 @@ export default function Header() {
               variant="outline" 
               size="sm"
               onClick={() => setShowAIChatbot(true)}
-              className="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white border-0 flex items-center space-x-1"
+              className="premium-gradient-button bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white border-0 flex items-center space-x-1 premium-glow"
             >
               <MessageCircle className="h-4 w-4" />
               <span className="hidden sm:inline font-medium">AI Helper</span>
@@ -44,7 +47,7 @@ export default function Header() {
               variant="outline" 
               size="sm"
               onClick={() => setShowLearningSystem(true)}
-              className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white border-0 flex items-center space-x-1"
+              className="premium-gradient-button bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white border-0 flex items-center space-x-1 premium-glow"
             >
               <Brain className="h-4 w-4" />
               <span className="hidden sm:inline font-medium">Learn</span>
@@ -54,9 +57,9 @@ export default function Header() {
               variant="outline" 
               size="sm"
               onClick={toggleTheme}
-              className="button-hover-effect border-2 dark:border-slate-600 hover:border-primary dark:hover:border-primary transition-all duration-200 flex items-center space-x-1 relative overflow-hidden group"
+              className="premium-simple-button border-2 dark:border-slate-600 hover:border-primary dark:hover:border-primary transition-all duration-200 flex items-center space-x-1 relative overflow-hidden group"
               style={{ 
-                boxShadow: `0 0 8px rgba(${theme === 'dark' ? '252, 232, 131, 0.3' : '124, 58, 237, 0.3'})`
+                boxShadow: `0 0 12px rgba(${theme === 'dark' ? '252, 232, 131, 0.4' : '124, 58, 237, 0.4'})`
               }}
             >
               <div className="absolute inset-0 opacity-0 dark:opacity-10 bg-primary group-hover:opacity-20 transition-opacity duration-200 rounded-sm"></div>
