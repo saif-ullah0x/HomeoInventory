@@ -406,26 +406,37 @@ export default function AILearningAssistant({ isOpen, onClose }: AILearningAssis
     setSearchTerm("");
   };
 
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-5xl max-h-[95vh] w-[90vw] overflow-hidden p-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-0 shadow-2xl">
-        {/* Purple Gradient Header with Glassy Effect */}
-        <div className="relative bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 p-4 shadow-lg">
-          <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
-          <DialogHeader className="relative z-10">
-            <DialogTitle className="flex items-center gap-2 text-white text-lg font-bold">
-              <div className="p-1.5 bg-white/20 rounded-lg backdrop-blur-sm shadow-lg">
-                <Brain className="h-5 w-5 text-white drop-shadow-sm" />
-              </div>
-              <span className="drop-shadow-sm">AI-Enhanced Remedy Learning Assistant</span>
-            </DialogTitle>
-            <p className="text-purple-100 mt-1 text-sm drop-shadow-sm">
-              Discover homeopathic remedies for common conditions with classical knowledge
-            </p>
-          </DialogHeader>
-        </div>
+  if (!isOpen) return null;
 
-        <div className="flex flex-col h-[calc(95vh-80px)] p-4 bg-gradient-to-br from-blue-50/50 to-purple-50/50 dark:from-gray-800/50 dark:to-gray-900/50">
+  return (
+    <div className="fixed inset-0 z-50 bg-white dark:bg-gray-900">
+      {/* Purple Gradient Header with Glassy Effect */}
+      <div className="relative bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 p-4 shadow-lg">
+        <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+        <div className="relative z-10 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 bg-white/20 rounded-lg backdrop-blur-sm shadow-lg">
+              <Brain className="h-5 w-5 text-white drop-shadow-sm" />
+            </div>
+            <div>
+              <h1 className="text-white text-lg font-bold drop-shadow-sm">AI-Enhanced Remedy Learning Assistant</h1>
+              <p className="text-purple-100 text-sm drop-shadow-sm">
+                Discover homeopathic remedies for common conditions with classical knowledge
+              </p>
+            </div>
+          </div>
+          <Button
+            onClick={onClose}
+            variant="ghost"
+            size="sm"
+            className="text-white hover:bg-white/20 rounded-lg"
+          >
+            ✕ Close
+          </Button>
+        </div>
+      </div>
+
+      <div className="flex flex-col h-[calc(100vh-100px)] p-4 bg-gradient-to-br from-blue-50/50 to-purple-50/50 dark:from-gray-800/50 dark:to-gray-900/50 overflow-hidden">
           {/* Enhanced Search Input */}
           <div className="mb-3 flex-shrink-0">
             <Label htmlFor="search" className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
@@ -481,7 +492,7 @@ export default function AILearningAssistant({ isOpen, onClose }: AILearningAssis
               </TabsTrigger>
             </TabsList>
 
-            <ScrollArea className="flex-1 mt-2 h-[calc(95vh-180px)] min-h-[800px] pr-4 [&>[data-radix-scroll-area-viewport]]:max-h-[calc(95vh-180px)]">
+            <ScrollArea className="flex-1 mt-2 h-[calc(100vh-180px)] pr-4">
               <TabsContent value="learn" className="mt-0">
                 {isLoading ? (
                   <div className="flex items-center justify-center h-64">
@@ -920,8 +931,7 @@ export default function AILearningAssistant({ isOpen, onClose }: AILearningAssis
               </TabsContent>
             </ScrollArea>
           </Tabs>
-        </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 }
