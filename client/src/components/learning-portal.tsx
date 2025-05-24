@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,7 +10,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
 import { Brain, Book, Target, ArrowLeft, Search, Star, CheckCircle, X, Sparkles, Award } from "lucide-react";
 
-interface LearningAssistantProps {
+interface LearningPortalProps {
   isOpen: boolean;
   onClose: () => void;
 }
@@ -162,7 +163,7 @@ const HOMEOPATHIC_REMEDIES: HomeopathicRemedy[] = [
   }
 ];
 
-export default function LearningAssistantFullscreen({ isOpen, onClose }: LearningAssistantProps) {
+function LearningInterface({ onClose }: { onClose: () => void }) {
   const [activeTab, setActiveTab] = useState("learn");
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredRemedies, setFilteredRemedies] = useState<HomeopathicRemedy[]>(HOMEOPATHIC_REMEDIES);
@@ -236,13 +237,10 @@ export default function LearningAssistantFullscreen({ isOpen, onClose }: Learnin
     }
   };
 
-  if (!isOpen) return null;
-
   return (
     <div 
       className="fixed inset-0 bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900"
       style={{ 
-        zIndex: 9999999,
         position: 'fixed',
         top: 0,
         left: 0,
@@ -250,19 +248,9 @@ export default function LearningAssistantFullscreen({ isOpen, onClose }: Learnin
         bottom: 0,
         width: '100vw',
         height: '100vh',
-        isolation: 'isolate'
+        zIndex: 2147483647
       }}
     >
-      {/* Invisible backdrop to block all pointer events */}
-      <div 
-        className="absolute inset-0 w-full h-full"
-        style={{
-          zIndex: -1,
-          pointerEvents: 'auto',
-          background: 'transparent'
-        }}
-      />
-    
       <div className="w-full h-full flex flex-col">
         {/* Purple Gradient Header with Glassy Effects */}
         <div className="relative bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 p-6 shadow-lg">
@@ -562,5 +550,39 @@ export default function LearningAssistantFullscreen({ isOpen, onClose }: Learnin
         </ScrollArea>
       </div>
     </div>
+  );
+}
+
+export default function LearningPortal({ isOpen, onClose }: LearningPortalProps) {
+  const [portalRoot, setPortalRoot] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    // Create a new div and append it to document.body for portal
+    const portalDiv = document.createElement('div');
+    portalDiv.id = 'learning-portal';
+    portalDiv.style.position = 'fixed';
+    portalDiv.style.top = '0';
+    portalDiv.style.left = '0';
+    portalDiv.style.width = '100vw';
+    portalDiv.style.height = '100vh';
+    portalDiv.style.zIndex = '2147483647';
+    portalDiv.style.pointerEvents = 'auto';
+    
+    document.body.appendChild(portalDiv);
+    setPortalRoot(portalDiv);
+
+    return () => {
+      // Cleanup: remove the portal div when component unmounts
+      if (document.body.contains(portalDiv)) {
+        document.body.removeChild(portalDiv);
+      }
+    };
+  }, []);
+
+  if (!isOpen || !portalRoot) return null;
+
+  return createPortal(
+    <LearningInterface onClose={onClose} />,
+    portalRoot
   );
 }
