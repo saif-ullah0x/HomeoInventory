@@ -302,10 +302,11 @@ export default function AILearningAssistant({ isOpen, onClose }: AILearningAssis
 
   // Enhanced quiz functionality
   const handleStartQuiz = async () => {
-    if (!searchTerm.trim() && !selectedSymptom) return;
+    const topic = searchTerm.trim() || selectedSymptom?.name || '';
+    if (!topic) return;
     
     setIsLoading(true);
-    const topic = searchTerm || selectedSymptom?.name || '';
+    setShowDefaultContent(false);
     
     try {
       const response = await fetch('/api/learning/quiz', {
@@ -318,12 +319,15 @@ export default function AILearningAssistant({ isOpen, onClose }: AILearningAssis
 
       if (response.ok) {
         const data = await response.json();
-        setQuizQuestions(data.questions);
-        setIsQuizStarted(true);
-        setCurrentQuestionIndex(0);
-        setSelectedAnswers([]);
-        setShowResults(false);
-        setShowDefaultContent(false);
+        if (data.questions && data.questions.length > 0) {
+          setQuizQuestions(data.questions);
+          setIsQuizStarted(true);
+          setCurrentQuestionIndex(0);
+          setSelectedAnswers([]);
+          setShowResults(false);
+        } else {
+          console.error('No quiz questions received');
+        }
       } else {
         console.error('Failed to fetch quiz questions');
       }
@@ -421,7 +425,7 @@ export default function AILearningAssistant({ isOpen, onClose }: AILearningAssis
           </DialogHeader>
         </div>
 
-        <div className="flex flex-col h-[calc(95vh-100px)] p-4 bg-gradient-to-br from-blue-50/50 to-purple-50/50 dark:from-gray-800/50 dark:to-gray-900/50">
+        <div className="flex flex-col h-[calc(95vh-80px)] p-4 bg-gradient-to-br from-blue-50/50 to-purple-50/50 dark:from-gray-800/50 dark:to-gray-900/50">
           {/* Enhanced Search Input */}
           <div className="mb-3 flex-shrink-0">
             <Label htmlFor="search" className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
@@ -477,7 +481,7 @@ export default function AILearningAssistant({ isOpen, onClose }: AILearningAssis
               </TabsTrigger>
             </TabsList>
 
-            <ScrollArea className="flex-1 mt-2 h-[calc(95vh-220px)] min-h-[700px] pr-4 [&>[data-radix-scroll-area-viewport]]:max-h-[calc(95vh-220px)]">
+            <ScrollArea className="flex-1 mt-2 h-[calc(95vh-180px)] min-h-[800px] pr-4 [&>[data-radix-scroll-area-viewport]]:max-h-[calc(95vh-180px)]">
               <TabsContent value="learn" className="mt-0">
                 {isLoading ? (
                   <div className="flex items-center justify-center h-64">
@@ -845,6 +849,7 @@ export default function AILearningAssistant({ isOpen, onClose }: AILearningAssis
                             className="group cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border-green-200 dark:border-green-700 shadow-lg hover:shadow-green-200/50 dark:hover:shadow-green-800/50"
                             onClick={() => {
                               setSelectedSymptom(symptom);
+                              setSearchTerm(symptom.name);
                               handleStartQuiz();
                             }}
                           >
