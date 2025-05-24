@@ -184,6 +184,101 @@ export default function Analytics() {
         <Tabs />
       </div>
       
+      {/* Usage Trends Section */}
+      <Card className="mb-6 border-purple-200 bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-purple-800 dark:text-purple-300">
+            <TrendingUp className="h-5 w-5" />
+            Usage Trends & Insights
+          </CardTitle>
+          <CardDescription className="text-purple-600 dark:text-purple-400">
+            Discover patterns in your homeopathic medicine usage and get personalized recommendations
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="flex items-center space-x-3 p-3 bg-white/60 dark:bg-gray-800/60 rounded-lg border">
+              <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-full">
+                <Activity className="h-4 w-4 text-purple-600" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Most Used Category</p>
+                <p className="text-lg font-bold text-purple-600">
+                  {medicines.length > 0 ? 
+                    Object.entries(medicines.reduce((acc, med) => {
+                      const category = med.company || 'Unknown';
+                      acc[category] = (acc[category] || 0) + 1;
+                      return acc;
+                    }, {} as Record<string, number>)).sort(([,a], [,b]) => b - a)[0]?.[0] || 'N/A'
+                    : 'N/A'
+                  }
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-3 p-3 bg-white/60 dark:bg-gray-800/60 rounded-lg border">
+              <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-full">
+                <Star className="h-4 w-4 text-green-600" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Top Location</p>
+                <p className="text-lg font-bold text-green-600">
+                  {medicines.length > 0 ? 
+                    Object.entries(medicines.reduce((acc, med) => {
+                      acc[med.location] = (acc[med.location] || 0) + 1;
+                      return acc;
+                    }, {} as Record<string, number>)).sort(([,a], [,b]) => b - a)[0]?.[0] || 'N/A'
+                    : 'N/A'
+                  }
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-3 p-3 bg-white/60 dark:bg-gray-800/60 rounded-lg border">
+              <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-full">
+                <Calendar className="h-4 w-4 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Recent Additions</p>
+                <p className="text-lg font-bold text-blue-600">
+                  {medicines.filter(m => {
+                    const weekAgo = new Date();
+                    weekAgo.setDate(weekAgo.getDate() - 7);
+                    return new Date(m.createdAt) > weekAgo;
+                  }).length}
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-3 p-3 bg-white/60 dark:bg-gray-800/60 rounded-lg border">
+              <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-full">
+                <TrendingUp className="h-4 w-4 text-orange-600" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Inventory Health</p>
+                <p className="text-lg font-bold text-orange-600">
+                  {medicines.length > 10 ? 'Excellent' : medicines.length > 5 ? 'Good' : 'Growing'}
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          {medicines.length > 0 && (
+            <div className="p-4 bg-white/60 dark:bg-gray-800/60 rounded-lg border">
+              <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Smart Recommendations</h4>
+              <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+                <p>• Consider organizing your {Object.keys(medicines.reduce((acc, med) => {
+                  acc[med.location] = true;
+                  return acc;
+                }, {} as Record<string, boolean>)).length} locations for better accessibility</p>
+                <p>• Your inventory includes {new Set(medicines.map(m => m.potency)).size} different potencies - great variety!</p>
+                <p>• You have {medicines.length} remedies from {new Set(medicines.map(m => m.company)).size} companies</p>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <Card>
           <CardHeader>
