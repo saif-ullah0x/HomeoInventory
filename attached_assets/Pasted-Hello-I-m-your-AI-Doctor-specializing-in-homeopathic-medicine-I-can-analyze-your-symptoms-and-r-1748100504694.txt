@@ -1,0 +1,178 @@
+Hello! I'm your AI Doctor specializing in homeopathic medicine.
+
+I can analyze your symptoms and recommend specific remedies based on classical homeopathic principles. Describe your symptoms in detail, and I'll suggest the most appropriate homeopathic treatments.
+
+How are you feeling today?
+
+08:26 PM
+
+i feel headache
+
+08:26 PM
+
+🌿
+🌸 Natural remedies can support your body's healing!
+
+Based on classical homeopathic guidance, here are the recommended medicines with confidence scores:
+
+Recommended Remedies
+Nux vomica 6C
+95% match
+For: irritability, oversensitivity, digestive problems, chilly
+
+Dosage: 2-3 pellets
+
+Frequency: 3 times daily
+
+Why: Key symptoms match: irritability, oversensitivity
+
+Source: Boericke's Materia Medica
+
+Not in inventory - Consider adding to your collection
+
+ADEL 1 (apo-Dolor) liquid
+90% match
+For: Headache, pain in body/legs
+
+Dosage: 10 drops
+
+Frequency: Every 2-4 hours as needed
+
+Why: 10 drops - For various types of pain and headaches
+
+Source: Adelmar Pharma
+
+Not in inventory - Consider adding to your collection
+
+Sulphur 6C
+89% match
+For: burning, itching, skin problems, philosophical, untidy
+
+Dosage: 2-3 pellets
+
+Frequency: Once daily
+
+Why: Key symptoms match: burning, itching
+
+Source: Boericke's Materia Medica
+
+Not in inventory - Consider adding to your collection
+
+Belladonna 30
+87% match
+For: Headache, pain in body/legs
+
+Dosage: 4 drops
+
+Frequency: Every 2-4 hours as needed
+
+Why: 4 drops - For various types of pain and headaches
+
+Source: Classical Homeopathic Literature
+
+Not in inventory - Consider adding to your collection
+
+Bryonia 30
+84% match
+For: Headache, pain in body/legs
+
+Dosage: 4 drops
+
+Frequency: Every 2-4 hours as needed
+
+Why: 4 drops - For various types of pain and headaches
+
+Source: Classical Homeopathic Literature
+
+Not in inventory - Consider adding to your collection
+
+Gelsemium 30
+81% match
+For: Headache, pain in body/legs
+
+Dosage: 4 drops
+
+Frequency: Every 2-4 hours as needed
+
+Why: 4 drops - For various types of pain and headaches
+
+Source: Classical Homeopathic Literature
+
+Not in inventory - Consider adding to your collection
+
+08:26 PM
+
+nope
+
+08:27 PM
+
+🌿
+I'd like to help you find the right remedy! 💜 Could you describe your symptoms in a bit more detail? For example, mention when you feel worse or better, or what triggered the symptoms.
+
+08:27 PM
+
+no
+
+08:28 PM
+
+🌿
+🌸 Natural remedies can support your body's healing!
+
+Based on classical homeopathic guidance, here are the recommended medicines with confidence scores:
+
+Recommended Remedies
+Ignatia 30
+90% match
+For: Depression and Anxiety due to tension/menopause/heart problems
+
+Dosage: 4 drops
+
+Frequency: 3 times a day
+
+Why: 4 drops - Especially effective for emotional stress and hormonal changes
+
+Source: Classical Homeopathic Literature
+
+Not in inventory - Consider adding to your collection
+
+Natrum mur 30
+87% match
+For: Depression and Anxiety due to tension/menopause/heart problems
+
+Dosage: 4 drops
+
+Frequency: 3 times a day
+
+Why: 4 drops - Especially effective for emotional stress and hormonal changes
+
+Source: Classical Homeopathic Literature
+
+Not in inventory - Consider adding to your collection
+
+Sepia 30
+84% match
+For: Depression and Anxiety due to tension/menopause/heart problems
+
+Dosage: 4 drops
+
+Frequency: 3 times a day
+
+Why: 4 drops - Especially effective for emotional stress and hormonal changes
+
+Source: Classical Homeopathic Literature
+
+Not in inventory - Consider adding to your collection
+
+Pulsatilla 30
+81% match
+For: Depression and Anxiety due to tension/menopause/heart problems
+
+Dosage: 4 drops
+
+Frequency: 3 times a day
+
+Why: 4 drops - Especially effective for emotional stress and hormonal changes
+
+Source: Classical Homeopathic Literature
+
+Not in inventory - Consider adding to your collection

@@ -42,6 +42,15 @@ async function analyzeSymptoms(symptoms: string, userInventory: string[]) {
     };
   }
   
+  // Handle simple negative responses
+  const symptomsLower = symptoms.toLowerCase().trim();
+  if (symptomsLower === 'no' || symptomsLower === 'nope' || symptomsLower === 'not really') {
+    return {
+      response: "I understand. Could you please tell me what specific symptoms you're experiencing? For example, you could mention: headache, fever, stomach pain, anxiety, cough, or any other discomfort you're feeling. The more details you provide, the better I can help you find the right homeopathic remedy.",
+      remedies: []
+    };
+  }
+
   // Use authentic Boericke's Materia Medica as primary source
   const boerickeMatches = findBoerickeRemedies(symptoms);
   if (boerickeMatches.length > 0) {
@@ -53,18 +62,25 @@ async function analyzeSymptoms(symptoms: string, userInventory: string[]) {
         inv.toLowerCase().includes(remedy.name.toLowerCase())
       );
       
+      // Get the most relevant symptoms for this remedy based on the query
+      let relevantSymptoms = remedy.keyIndications;
+      if (symptomsLower.includes('headache')) {
+        relevantSymptoms = remedy.headSymptoms.length > 0 ? remedy.headSymptoms : remedy.keyIndications;
+      } else if (symptomsLower.includes('fever')) {
+        relevantSymptoms = remedy.feverSymptoms.length > 0 ? remedy.feverSymptoms : remedy.keyIndications;
+      }
+      
       remedies.push({
         name: remedy.name,
         potency: remedy.potency,
-        indication: remedy.keyIndications.join(', '),
+        indication: relevantSymptoms.slice(0, 3).join(', '),
         source: 'Boericke\'s Materia Medica',
-        reasoning: `Key symptoms: ${remedy.keyIndications.slice(0, 2).join(', ')}`,
+        reasoning: `${remedy.commonName}: ${relevantSymptoms[0]}`,
         confidence: isInInventory ? Math.min(confidence + 10, 100) : confidence,
         dosage: '3-4 pellets',
         frequency: 'Every 2-4 hours in acute cases',
         inInventory: isInInventory,
-        modalities: remedy.modalities,
-        clinicalUses: remedy.clinicalUses
+        modalities: remedy.modalities
       });
     });
     

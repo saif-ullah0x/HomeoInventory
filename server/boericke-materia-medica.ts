@@ -352,57 +352,76 @@ export const GREETING_RESPONSES = {
 
 // Enhanced symptom matching using Boericke's methodology
 export function findBoerickeRemedies(symptoms: string): BoerickeRemedy[] {
-  const symptomLower = symptoms.toLowerCase();
+  const symptomLower = symptoms.toLowerCase().trim();
   const matches: BoerickeRemedy[] = [];
+
+  // Handle simple negative responses
+  if (symptomLower === 'no' || symptomLower === 'nope' || symptomLower === 'not really') {
+    return []; // Return empty to trigger helpful response
+  }
 
   BOERICKE_REMEDIES.forEach(remedy => {
     let score = 0;
     
+    // Direct symptom matching for common complaints
+    if (symptomLower.includes('headache') || symptomLower === 'head pain') {
+      if (remedy.name === 'Belladonna' || remedy.name === 'Bryonia Alba' || remedy.name === 'Gelsemium Sempervirens') {
+        score += 15; // High priority for headache remedies
+      }
+    }
+
+    if (symptomLower.includes('fever') || symptomLower.includes('temperature')) {
+      if (remedy.name === 'Aconitum Napellus' || remedy.name === 'Belladonna') {
+        score += 15; // High priority for fever remedies
+      }
+    }
+
+    if (symptomLower.includes('digestive') || symptomLower.includes('stomach') || symptomLower.includes('nausea')) {
+      if (remedy.name === 'Nux Vomica' || remedy.name === 'Chamomilla') {
+        score += 15;
+      }
+    }
+
+    // Check head symptoms specifically
+    remedy.headSymptoms.forEach(symptom => {
+      const symptomWords = symptom.toLowerCase().split(' ');
+      if (symptomWords.some(word => symptomLower.includes(word) && word.length > 3)) {
+        score += 8;
+      }
+    });
+
     // Check key indications (highest weight)
     remedy.keyIndications.forEach(indication => {
-      if (symptomLower.includes(indication.toLowerCase())) {
+      const indicationWords = indication.toLowerCase().split(' ');
+      if (indicationWords.some(word => symptomLower.includes(word) && word.length > 3)) {
         score += 10;
       }
     });
 
-    // Check specific symptom categories
-    if (symptomLower.includes('headache') || symptomLower.includes('head')) {
-      remedy.headSymptoms.forEach(symptom => {
-        if (symptomLower.includes(symptom.toLowerCase().split(' ').slice(0, 3).join(' '))) {
-          score += 8;
-        }
-      });
-    }
-
+    // Check fever symptoms
     if (symptomLower.includes('fever') || symptomLower.includes('temperature')) {
       remedy.feverSymptoms.forEach(symptom => {
-        if (symptomLower.includes(symptom.toLowerCase().split(' ').slice(0, 3).join(' '))) {
+        const symptomWords = symptom.toLowerCase().split(' ');
+        if (symptomWords.some(word => symptomLower.includes(word) && word.length > 3)) {
           score += 8;
         }
       });
     }
-
-    // Check general symptoms
-    remedy.generalSymptoms.forEach(symptom => {
-      if (symptomLower.includes(symptom.toLowerCase().split(' ').slice(0, 2).join(' '))) {
-        score += 5;
-      }
-    });
 
     // Check clinical uses
     remedy.clinicalUses.forEach(use => {
       if (symptomLower.includes(use.toLowerCase())) {
-        score += 6;
+        score += 12;
       }
     });
 
-    if (score >= 5) {
+    if (score >= 8) {
       matches.push(remedy);
     }
   });
 
-  // Sort by relevance (score) and return top matches
-  return matches.slice(0, 5);
+  // Sort by relevance and return top matches
+  return matches.slice(0, 3);
 }
 
 // Check if input is a greeting
