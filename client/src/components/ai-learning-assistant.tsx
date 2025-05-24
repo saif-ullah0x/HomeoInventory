@@ -474,8 +474,8 @@ export default function AILearningAssistant({ isOpen, onClose }: AILearningAssis
             </div>
           </div>
 
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
-            <TabsList className="grid w-full grid-cols-2 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm p-1 shadow-lg rounded-lg border border-purple-200 dark:border-purple-700">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col h-full">
+            <TabsList className="grid w-full grid-cols-2 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm p-1 shadow-lg rounded-lg border border-purple-200 dark:border-purple-700 flex-shrink-0">
               <TabsTrigger 
                 value="learn" 
                 className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white transition-all duration-300 rounded-md"
@@ -492,7 +492,7 @@ export default function AILearningAssistant({ isOpen, onClose }: AILearningAssis
               </TabsTrigger>
             </TabsList>
 
-            <div className="flex-1 mt-2 h-[calc(100vh-180px)] overflow-y-auto pr-4">
+            <div className="flex-1 mt-2 overflow-y-auto pr-4" style={{height: 'calc(100vh - 250px)'}}>
               <TabsContent value="learn" className="mt-0">
                 {isLoading ? (
                   <div className="flex items-center justify-center h-64">
