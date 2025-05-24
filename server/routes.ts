@@ -14,8 +14,9 @@ import { nanoid } from "nanoid";
 import { findRemediesBySymptoms, generateHomeopathicResponse } from "./homeopathic-knowledge";
 import { searchMedicines } from "./medicine-database";
 import { searchMedicinesBySymptoms } from "./symptom-medicine-database";
+import { searchRemediesBySymptoms } from "./remedies-database";
 
-// Enhanced AI Doctor using symptom-based medicine database from PDF
+// Enhanced AI Doctor with confidence scoring using symptom-based medicine database
 function analyzeSymptoms(symptoms: string, userInventory: string[]) {
   // Use the structured symptom-medicine database from PDF
   const medicineGuides = searchMedicinesBySymptoms(symptoms);
@@ -30,25 +31,53 @@ function analyzeSymptoms(symptoms: string, userInventory: string[]) {
   // Get motivational message
   const motivationalMsg = getSimpleMotivationalMessage(symptoms);
   
-  // Use the first matched guide for response
-  const primaryGuide = medicineGuides[0];
+  // Use multiple guides for better confidence scoring
+  const response = `${motivationalMsg}\n\nBased on classical homeopathic guidance, here are the recommended medicines with confidence scores:`;
   
-  const response = `${motivationalMsg}\n\nBased on classical homeopathic guidance, here are the recommended medicines for "${primaryGuide.condition}":\n\n**Dosage:** ${primaryGuide.dosage}\n**Frequency:** ${primaryGuide.frequency}`;
+  // Convert medicine recommendations to our format with confidence scoring
+  const remedies: any[] = [];
   
-  // Convert medicine recommendations to our format
-  const remedies = primaryGuide.medicines.map(med => ({
-    name: med.name,
-    potency: med.potency,
-    indication: primaryGuide.condition,
-    reasoning: `${med.drops} drops - ${primaryGuide.notes || 'As per classical guidance'}`,
-    source: med.company || "Classical Homeopathic Literature",
-    inInventory: userInventory.some(inv => 
-      inv.toLowerCase().includes(med.name.toLowerCase()) ||
-      med.name.toLowerCase().includes(inv.toLowerCase())
-    )
-  }));
+  medicineGuides.forEach((guide, guideIndex) => {
+    // Base confidence starts high for first match, decreases for subsequent matches
+    const baseConfidence = Math.max(95 - (guideIndex * 15), 60);
+    
+    guide.medicines.forEach((med, medIndex) => {
+      // Calculate confidence based on position and symptom match quality
+      let confidence = baseConfidence - (medIndex * 5);
+      
+      // Boost confidence if remedy is in user's inventory
+      const isInInventory = userInventory.some(inv => 
+        inv.toLowerCase().includes(med.name.toLowerCase()) ||
+        med.name.toLowerCase().includes(inv.toLowerCase())
+      );
+      
+      if (isInInventory) {
+        confidence = Math.min(confidence + 10, 100);
+      }
+      
+      // Ensure confidence stays within bounds
+      confidence = Math.max(Math.min(confidence, 100), 50);
+      
+      remedies.push({
+        name: med.name,
+        potency: med.potency,
+        indication: guide.condition,
+        reasoning: `${med.drops} drops - ${guide.notes || 'As per classical guidance'}`,
+        source: med.company || "Classical Homeopathic Literature",
+        confidence: Math.round(confidence),
+        dosage: `${med.drops} drops`,
+        frequency: guide.frequency,
+        inInventory: isInInventory
+      });
+    });
+  });
+  
+  // Sort by confidence and limit to top 6 remedies
+  const sortedRemedies = remedies
+    .sort((a, b) => b.confidence - a.confidence)
+    .slice(0, 6);
 
-  return { response, remedies };
+  return { response, remedies: sortedRemedies };
 }
 
 // Simplified motivational messages

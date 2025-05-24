@@ -27,7 +27,9 @@ import {
   Pill,
   User,
   Info,
-  Trash2
+  Trash2,
+  TrendingUp,
+  MapPin
 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -44,6 +46,10 @@ interface Remedy {
   indication: string;
   source: string;
   reasoning: string;
+  confidence: number; // Confidence score 0-100
+  dosage?: string;
+  frequency?: string;
+  storageLocation?: string;
   inInventory?: boolean;
 }
 
@@ -114,14 +120,19 @@ export default function AIDoctorModal({ isOpen, onClose }: AIDoctorModalProps) {
       
       const data = await response.json();
       
-      // Check which remedies are in user's inventory
-      const remediesWithInventoryCheck = data.remedies?.map((remedy: Remedy) => ({
-        ...remedy,
-        inInventory: medicines.some(m => 
+      // Check which remedies are in user's inventory and add storage location
+      const remediesWithInventoryCheck = data.remedies?.map((remedy: Remedy) => {
+        const matchingMedicine = medicines.find(m => 
           m.name.toLowerCase().includes(remedy.name.toLowerCase()) ||
           remedy.name.toLowerCase().includes(m.name.toLowerCase())
-        )
-      })) || [];
+        );
+        
+        return {
+          ...remedy,
+          inInventory: !!matchingMedicine,
+          storageLocation: matchingMedicine ? `${matchingMedicine.location}${matchingMedicine.subLocation ? ` - ${matchingMedicine.subLocation}` : ''}` : undefined
+        };
+      }) || [];
       
       const aiMessage: ChatMessage = {
         type: 'ai',
@@ -291,41 +302,90 @@ export default function AIDoctorModal({ isOpen, onClose }: AIDoctorModalProps) {
                         <span className="font-medium text-sm">Recommended Remedies</span>
                       </div>
                       
-                      {message.remedies.map((remedy, remedyIndex) => (
-                        <div key={remedyIndex} className="bg-purple-50 dark:bg-gray-700 rounded-lg p-3 border border-purple-100 dark:border-purple-700 transition-all duration-200 hover:shadow-md">
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center gap-2">
-                              <Pill className="h-4 w-4 text-purple-500" />
-                              <span className="font-semibold text-sm text-purple-700 dark:text-purple-300">
-                                {remedy.name} {remedy.potency}
-                              </span>
-                            </div>
-                            {remedy.inInventory && (
-                              <Badge className="bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900 dark:text-green-300">
-                                <CheckCircle2 className="h-3 w-3 mr-1" />
-                                In Your Kit
-                              </Badge>
-                            )}
-                          </div>
+{message.remedies
+                        .sort((a, b) => (b.confidence || 0) - (a.confidence || 0)) // Sort by confidence score
+                        .map((remedy, remedyIndex) => {
+                          const confidenceColor = 
+                            (remedy.confidence || 0) >= 80 ? 'text-green-600' :
+                            (remedy.confidence || 0) >= 60 ? 'text-yellow-600' : 'text-orange-600';
+                          const confidenceBg = 
+                            (remedy.confidence || 0) >= 80 ? 'bg-green-100' :
+                            (remedy.confidence || 0) >= 60 ? 'bg-yellow-100' : 'bg-orange-100';
                           
-                          <div className="space-y-2 text-xs">
-                            <p>
-                              <span className="text-purple-600 dark:text-purple-400 font-medium">For: </span>
-                              <span className="text-gray-700 dark:text-gray-300">{remedy.indication}</span>
-                            </p>
-                            
-                            <p>
-                              <span className="text-purple-600 dark:text-purple-400 font-medium">Why: </span>
-                              <span className="text-gray-700 dark:text-gray-300">{remedy.reasoning}</span>
-                            </p>
-                            
-                            <p>
-                              <span className="text-purple-600 dark:text-purple-400 font-medium">Source: </span>
-                              <span className="text-purple-700 dark:text-purple-300">{remedy.source}</span>
-                            </p>
-                          </div>
-                        </div>
-                      ))}
+                          return (
+                            <div key={remedyIndex} className="bg-purple-50 dark:bg-gray-700 rounded-lg p-3 border border-purple-100 dark:border-purple-700 transition-all duration-200 hover:shadow-md">
+                              <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center gap-2">
+                                  <Pill className="h-4 w-4 text-purple-500" />
+                                  <span className="font-semibold text-sm text-purple-700 dark:text-purple-300">
+                                    {remedy.name} {remedy.potency}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  {remedy.confidence && (
+                                    <Badge className={`${confidenceBg} ${confidenceColor} hover:opacity-80`}>
+                                      <TrendingUp className="h-3 w-3 mr-1" />
+                                      {remedy.confidence}% match
+                                    </Badge>
+                                  )}
+                                  {remedy.inInventory && (
+                                    <Badge className="bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-900 dark:text-green-300">
+                                      <CheckCircle2 className="h-3 w-3 mr-1" />
+                                      In Your Kit
+                                    </Badge>
+                                  )}
+                                </div>
+                              </div>
+                              
+                              <div className="space-y-2 text-xs">
+                                <p>
+                                  <span className="text-purple-600 dark:text-purple-400 font-medium">For: </span>
+                                  <span className="text-gray-700 dark:text-gray-300">{remedy.indication}</span>
+                                </p>
+                                
+                                {remedy.dosage && (
+                                  <p>
+                                    <span className="text-purple-600 dark:text-purple-400 font-medium">Dosage: </span>
+                                    <span className="text-gray-700 dark:text-gray-300">{remedy.dosage}</span>
+                                  </p>
+                                )}
+                                
+                                {remedy.frequency && (
+                                  <p>
+                                    <span className="text-purple-600 dark:text-purple-400 font-medium">Frequency: </span>
+                                    <span className="text-gray-700 dark:text-gray-300">{remedy.frequency}</span>
+                                  </p>
+                                )}
+                                
+                                {remedy.storageLocation && (
+                                  <p>
+                                    <span className="text-purple-600 dark:text-purple-400 font-medium">Location: </span>
+                                    <span className="text-green-700 dark:text-green-300 flex items-center gap-1">
+                                      <MapPin className="h-3 w-3" />
+                                      {remedy.storageLocation}
+                                    </span>
+                                  </p>
+                                )}
+                                
+                                <p>
+                                  <span className="text-purple-600 dark:text-purple-400 font-medium">Why: </span>
+                                  <span className="text-gray-700 dark:text-gray-300">{remedy.reasoning}</span>
+                                </p>
+                                
+                                <p>
+                                  <span className="text-purple-600 dark:text-purple-400 font-medium">Source: </span>
+                                  <span className="text-purple-700 dark:text-purple-300">{remedy.source}</span>
+                                </p>
+                                
+                                {!remedy.inInventory && (
+                                  <p className="text-orange-600 dark:text-orange-400 text-xs italic mt-2">
+                                    Not in inventory - Consider adding to your collection
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
                     </div>
                   )}
                   
