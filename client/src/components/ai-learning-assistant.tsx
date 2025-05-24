@@ -532,7 +532,7 @@ export default function AILearningAssistant({ isOpen, onClose }: AILearningAssis
                         </div>
                       </div>
                       <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2">
-                        Welcome to Homeopathic Learning! 🌿
+                        Welcome to Homeopathic Learning! <span className="text-purple-600 dark:text-purple-400">🌿</span>
                       </h2>
                       <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
                         Explore common symptoms and discover their main homeopathic remedies. Click on any condition below to start learning!
