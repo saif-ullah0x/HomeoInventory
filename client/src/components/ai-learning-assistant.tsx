@@ -704,8 +704,11 @@ export default function AILearningAssistant({ isOpen, onClose }: AILearningAssis
                 {isLoading ? (
                   <div className="flex items-center justify-center h-64">
                     <div className="text-center">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto mb-4"></div>
-                      <p className="text-gray-600">Preparing your quiz...</p>
+                      <div className="relative">
+                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-green-200 border-t-green-600 mx-auto mb-4 shadow-lg"></div>
+                        <div className="absolute inset-0 rounded-full bg-green-100/50 animate-pulse"></div>
+                      </div>
+                      <p className="text-gray-600 dark:text-gray-300 font-medium">🎯 Preparing your quiz...</p>
                     </div>
                   </div>
                 ) : showResults ? (
@@ -815,12 +818,97 @@ export default function AILearningAssistant({ isOpen, onClose }: AILearningAssis
                       </div>
                     </CardContent>
                   </Card>
+                ) : showDefaultContent ? (
+                  <div className="space-y-6">
+                    {/* Quiz Welcome */}
+                    <div className="text-center py-8">
+                      <div className="mb-4">
+                        <div className="inline-block p-4 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full shadow-xl">
+                          <Target className="h-8 w-8 text-white" />
+                        </div>
+                      </div>
+                      <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2">
+                        Ready to Test Your Knowledge? 🎯
+                      </h2>
+                      <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                        Choose a symptom category below to start a quiz, or search for a specific topic above!
+                      </p>
+                    </div>
+
+                    {/* Quiz Categories */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {COMMON_SYMPTOMS.map((symptom) => {
+                        const IconComponent = symptom.icon;
+                        return (
+                          <Card 
+                            key={symptom.id}
+                            className="group cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border-green-200 dark:border-green-700 shadow-lg hover:shadow-green-200/50 dark:hover:shadow-green-800/50"
+                            onClick={() => {
+                              setSelectedSymptom(symptom);
+                              handleStartQuiz();
+                            }}
+                          >
+                            <CardHeader className="pb-3">
+                              <div className="flex items-center gap-3">
+                                <div className={`p-3 rounded-lg bg-gradient-to-r ${symptom.color} shadow-lg group-hover:shadow-xl transition-all duration-300`}>
+                                  <IconComponent className="h-6 w-6 text-white" />
+                                </div>
+                                <div>
+                                  <CardTitle className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                                    Quiz: {symptom.name}
+                                  </CardTitle>
+                                  <CardDescription className="text-sm text-gray-600 dark:text-gray-400">
+                                    Test your {symptom.name.toLowerCase()} knowledge
+                                  </CardDescription>
+                                </div>
+                              </div>
+                            </CardHeader>
+                            <CardContent className="pt-0">
+                              <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                                Questions about: {symptom.description}
+                              </p>
+                              <Button 
+                                size="sm" 
+                                className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white shadow-lg"
+                              >
+                                Start Quiz 🚀
+                              </Button>
+                            </CardContent>
+                          </Card>
+                        );
+                      })}
+                    </div>
+
+                    {/* Quiz Tips */}
+                    <Card className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200 dark:border-green-700 shadow-lg">
+                      <CardContent className="p-6">
+                        <div className="flex items-center gap-3 mb-4">
+                          <Target className="h-6 w-6 text-green-500" />
+                          <h3 className="font-bold text-gray-800 dark:text-gray-200">Quiz Features</h3>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700 dark:text-gray-300">
+                          <div className="space-y-2">
+                            <p>🎯 <strong>Multiple Choice:</strong> Choose the best answer from 4 options</p>
+                            <p>📊 <strong>Instant Results:</strong> See your score and detailed explanations</p>
+                          </div>
+                          <div className="space-y-2">
+                            <p>🔄 <strong>Retry Anytime:</strong> Take quizzes multiple times to improve</p>
+                            <p>📚 <strong>Learn & Test:</strong> Switch between Learn and Quiz tabs easily</p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
                 ) : (
                   <div className="text-center py-12">
-                    <Target className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600 mb-2">Test your knowledge!</p>
-                    <p className="text-sm text-gray-500">
-                      Search for a topic to generate a personalized quiz based on your learning.
+                    <div className="mb-4">
+                      <div className="inline-block p-4 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full shadow-xl">
+                        <Target className="h-8 w-8 text-white" />
+                      </div>
+                    </div>
+                    <p className="text-gray-600 dark:text-gray-300 mb-2 font-medium">🎯 Test your knowledge!</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Search for a topic above to generate a personalized quiz based on your learning.
                     </p>
                   </div>
                 )}
