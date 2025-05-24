@@ -168,7 +168,7 @@ export default function InventoryList({ medicines, onEdit, onDelete }: Inventory
                           e.stopPropagation();
                           onDelete(medicine.id);
                         }}
-                        className="text-destructive h-8 w-8 p-0"
+                        className="text-destructive h-8 w-8 p-0 premium-simple-button"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
