@@ -89,7 +89,7 @@ async function analyzeSymptoms(symptoms: string, userInventory: string[]) {
     
     if (medicineGuides.length === 0 && remedyMatches.length === 0) {
       return {
-        response: "I'd like to help you find the right remedy! 💜 Could you describe your symptoms in a bit more detail? For example, mention when you feel worse or better, or what triggered the symptoms.",
+        response: "I'd love to help you find the right remedy! 💜 The information you're looking for isn't currently in my classical homeopathic database. For the most accurate guidance, I recommend consulting with a qualified homeopath who can take your complete case.\n\nIf you'd like me to access more comprehensive remedy information, you can help by providing an AI API key for enhanced analysis. For now, could you describe your symptoms in more detail? For example, mention when you feel worse or better, or what triggered the symptoms.",
         remedies: []
       };
     }
@@ -392,6 +392,19 @@ async function findRemedySubstitutions(query: string, userInventory: string[]): 
         alternativeTo: targetRemedy
       });
     });
+  } else {
+    // Handle when remedy is not found in database
+    substitutions.push({
+      name: "Information Not Available",
+      potency: "N/A",
+      indication: "The remedy you're asking about isn't in my current classical database. This could be a specialized or newer remedy that requires consultation with a qualified homeopath.",
+      reasoning: "For comprehensive remedy substitutions and interactions, I recommend consulting with a professional homeopath who can access complete materia medica resources.",
+      source: "Database Limitation Notice",
+      confidence: 0,
+      inInventory: false,
+      alternativeTo: query,
+      isNotice: true
+    });
   }
   
   return substitutions;
@@ -464,6 +477,20 @@ async function provideDosageGuidance(query: string, userInventory: string[]): Pr
         confidence: 90,
         inInventory: inStock
       });
+    });
+  } else {
+    // Handle when specific dosage guidance is not available
+    dosageAdvice.push({
+      name: "General Guidance",
+      potency: "30C",
+      dosage: "3-4 pellets",
+      frequency: "2-3 times daily",
+      indication: "The specific dosage information you're looking for isn't in my current database. For precise dosing protocols, please consult with a qualified homeopath.",
+      reasoning: "General homeopathic dosing principles apply. Always start with the lowest effective dose and adjust based on response.",
+      source: "General Homeopathic Guidelines",
+      confidence: 60,
+      inInventory: false,
+      isGeneralGuidance: true
     });
   }
   
@@ -565,30 +592,68 @@ function getSimpleMotivationalMessage(symptoms: string): string {
 
 // AI Learning Assistant Functions
 async function generateLearningContent(topic: string): Promise<any> {
-  try {
-    // TODO: ADD YOUR PERPLEXITY API KEY HERE
-    // Replace 'YOUR_API_KEY_HERE' with your actual Perplexity API key
-    const PERPLEXITY_API_KEY = process.env.PERPLEXITY_API_KEY || 'YOUR_API_KEY_HERE';
-    
-    if (PERPLEXITY_API_KEY === 'YOUR_API_KEY_HERE') {
-      // Fallback to local knowledge when API key is not available
-      const fallbackContent = {
-        id: `learn-${Date.now()}`,
-        title: `Understanding ${topic}`,
-        content: `This is a comprehensive guide about ${topic} in homeopathy. Please add your Perplexity API key to get detailed, authentic learning content from reliable homeopathic sources.`,
-        keyPoints: [
-          "Add your API key to access real homeopathic knowledge",
-          "Content will be sourced from trusted homeopathic literature",
-          "Personalized learning based on classical homeopathy principles"
-        ],
-        examples: [
-          "Example content will be generated when API key is configured",
-          "Real case studies from homeopathic practice"
-        ],
-        difficulty: 'beginner' as const
-      };
-      return fallbackContent;
-    }
+  // Handle greetings in learning context
+  if (isGreeting(topic)) {
+    return {
+      id: `learn-${Date.now()}`,
+      title: "Welcome to Homeopathic Learning!",
+      content: "Hello! I'm here to help you learn about homeopathic remedies and principles. You can search for specific remedies like 'Arnica' or 'Belladonna', or explore symptoms like 'headache' or 'fever' to discover which medicines might help.",
+      keyPoints: [
+        "Search for any homeopathic remedy by name",
+        "Explore symptoms to find matching remedies",
+        "Learn about classical homeopathic principles",
+        "Based on authentic Boericke's Materia Medica"
+      ],
+      examples: [
+        "Try searching: 'Arnica for injuries'",
+        "Try searching: 'Belladonna for fever'",
+        "Try searching: 'Nux Vomica for digestion'"
+      ],
+      difficulty: 'beginner' as const
+    };
+  }
+
+  // Use our comprehensive database first for authentic content
+  const boerickeMatch = findBoerickeRemedies(topic);
+  if (boerickeMatch.length > 0) {
+    const remedy = boerickeMatch[0];
+    return {
+      id: `learn-${Date.now()}`,
+      title: `${remedy.name} - ${remedy.commonName}`,
+      content: `${remedy.name} is a classical homeopathic remedy with specific indications. Key characteristics include: ${remedy.keyIndications.join(', ')}. This remedy is particularly useful when the symptom picture matches the classical description from Boericke's Materia Medica.`,
+      keyPoints: [
+        ...remedy.keyIndications,
+        `Mental symptoms: ${remedy.mentalSymptoms.slice(0, 2).join(', ')}`,
+        `Modalities - Worse: ${remedy.modalities.worse.slice(0, 3).join(', ')}`,
+        `Modalities - Better: ${remedy.modalities.better.slice(0, 3).join(', ')}`
+      ],
+      examples: remedy.clinicalUses,
+      difficulty: 'intermediate' as const,
+      remedy: remedy.name,
+      potency: remedy.potency,
+      source: "Boericke's Materia Medica"
+    };
+  }
+
+  // For topics not in our database, provide helpful guidance
+  return {
+    id: `learn-${Date.now()}`,
+    title: `Learning About: ${topic}`,
+    content: `The specific information about "${topic}" isn't currently available in my classical homeopathic database. My knowledge is based on authentic sources like Boericke's Materia Medica and contains established remedies and principles.`,
+    keyPoints: [
+      "This topic may require consultation with a qualified homeopath",
+      "Consider searching for specific remedy names instead",
+      "Try searching for common symptoms like 'headache', 'fever', or 'anxiety'",
+      "For advanced learning, consult classical homeopathic literature"
+    ],
+    examples: [
+      "Search for established remedies: Arnica, Belladonna, Nux Vomica",
+      "Search by symptoms: 'sudden fever', 'throbbing headache'",
+      "Explore constitutional remedies: Sulphur, Calcarea, Phosphorus"
+    ],
+    difficulty: 'beginner' as const,
+    isNotice: true
+  };
 
     const response = await fetch('https://api.perplexity.ai/chat/completions', {
       method: 'POST',
