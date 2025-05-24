@@ -564,6 +564,110 @@ export default function RemedyLearningSystem({ isOpen, onClose }: RemedyLearning
                 </div>
               </ScrollArea>
             </div>
+          ) : currentView === 'quiz' && currentQuestion ? (
+            // Quiz View
+            <div className="h-full flex flex-col">
+              {/* Quiz Header */}
+              <div className="p-4 border-b bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900">
+                <div className="flex items-center justify-between mb-2">
+                  <Button
+                    variant="ghost"
+                    onClick={backToStudy}
+                    className="text-purple-600 hover:text-purple-700"
+                  >
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Back to Study
+                  </Button>
+                  <Badge className="bg-purple-100 text-purple-800">
+                    Question {remedyQuestions.findIndex(q => q.id === currentQuestion.id) + 1} of {remedyQuestions.length}
+                  </Badge>
+                </div>
+              </div>
+              
+              {/* Quiz Content */}
+              <ScrollArea className="flex-1 p-4">
+                <div className="space-y-6">
+                  <Card>
+                    <CardContent className="pt-6">
+                      <h3 className="text-lg font-semibold mb-4">{currentQuestion.question}</h3>
+                      <div className="space-y-3">
+                        {currentQuestion.options.map((option, index) => (
+                          <div 
+                            key={index}
+                            onClick={() => handleAnswerSelect(index)}
+                            className={`
+                              p-3 rounded-lg border cursor-pointer transition-colors
+                              ${selectedAnswer === index 
+                                ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20' 
+                                : 'border-gray-200 hover:border-purple-200 hover:bg-purple-50/50 dark:border-gray-700 dark:hover:border-purple-700'}
+                              ${showResult && index === currentQuestion.correctAnswer 
+                                ? 'border-green-500 bg-green-50 dark:bg-green-900/20' 
+                                : ''}
+                              ${showResult && selectedAnswer === index && index !== currentQuestion.correctAnswer 
+                                ? 'border-red-500 bg-red-50 dark:bg-red-900/20' 
+                                : ''}
+                            `}
+                          >
+                            <div className="flex items-center">
+                              <div className={`
+                                w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0
+                                ${selectedAnswer === index && !showResult 
+                                  ? 'bg-purple-100 text-purple-800 border border-purple-300' 
+                                  : 'bg-gray-100 text-gray-700 border border-gray-300 dark:bg-gray-800 dark:text-gray-300'}
+                                ${showResult && index === currentQuestion.correctAnswer 
+                                  ? 'bg-green-100 text-green-800 border border-green-300' 
+                                  : ''}
+                                ${showResult && selectedAnswer === index && index !== currentQuestion.correctAnswer 
+                                  ? 'bg-red-100 text-red-800 border border-red-300' 
+                                  : ''}
+                              `}>
+                                {showResult && index === currentQuestion.correctAnswer ? (
+                                  <CheckCircle2 className="h-4 w-4" />
+                                ) : showResult && selectedAnswer === index && index !== currentQuestion.correctAnswer ? (
+                                  <XCircle className="h-4 w-4" />
+                                ) : (
+                                  <span className="text-xs">{String.fromCharCode(65 + index)}</span>
+                                )}
+                              </div>
+                              <span className="text-sm">{option}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      {showResult && (
+                        <div className="mt-6 p-4 bg-blue-50 border border-blue-100 rounded-lg dark:bg-blue-900/20 dark:border-blue-800">
+                          <p className="font-medium text-blue-800 dark:text-blue-300 mb-1">Explanation:</p>
+                          <p className="text-blue-700 dark:text-blue-400 text-sm">{currentQuestion.explanation}</p>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </div>
+              </ScrollArea>
+              
+              {/* Quiz Actions */}
+              <div className="p-4 border-t bg-gray-50 dark:bg-gray-900">
+                {!showResult ? (
+                  <Button 
+                    onClick={checkAnswer}
+                    disabled={selectedAnswer === null}
+                    className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                  >
+                    Check Answer
+                  </Button>
+                ) : (
+                  <Button 
+                    onClick={nextQuestion}
+                    className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                  >
+                    {remedyQuestions.findIndex(q => q.id === currentQuestion.id) < remedyQuestions.length - 1 
+                      ? 'Next Question' 
+                      : 'Finish Quiz'}
+                  </Button>
+                )}
+              </div>
+            </div>
           ) : (
             // Overview
             <ScrollArea className="h-full">
