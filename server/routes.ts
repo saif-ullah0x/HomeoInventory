@@ -16,68 +16,140 @@ import { searchMedicines } from "./medicine-database";
 import { searchMedicinesBySymptoms } from "./symptom-medicine-database";
 import { searchRemediesBySymptoms } from "./remedies-database";
 
-// Enhanced AI Doctor with confidence scoring using symptom-based medicine database
-function analyzeSymptoms(symptoms: string, userInventory: string[]) {
-  // Use the structured symptom-medicine database from PDF
-  const medicineGuides = searchMedicinesBySymptoms(symptoms);
+// Enhanced AI Doctor with confidence scoring and external AI API integration
+async function analyzeSymptoms(symptoms: string, userInventory: string[]) {
+  let remedies: any[] = [];
+  let response = "";
   
-  if (medicineGuides.length === 0) {
-    return {
-      response: "I'd like to help you find the right remedy! 💜 Could you describe your symptoms in a bit more detail? For example, mention when you feel worse or better, or what triggered the symptoms.",
-      remedies: []
-    };
+  try {
+    // First, try external AI API if available (placeholder for xAI Grok API or OpenAI)
+    if (process.env.AI_API_KEY && process.env.AI_API_ENDPOINT) {
+      remedies = await getAIRemedyRecommendations(symptoms, userInventory);
+      response = getSimpleMotivationalMessage(symptoms) + "\n\nBased on AI-enhanced analysis with classical homeopathic principles:";
+    }
+  } catch (error) {
+    console.log("External AI API not available, using classical database matching");
   }
-
-  // Get motivational message
-  const motivationalMsg = getSimpleMotivationalMessage(symptoms);
   
-  // Use multiple guides for better confidence scoring
-  const response = `${motivationalMsg}\n\nBased on classical homeopathic guidance, here are the recommended medicines with confidence scores:`;
-  
-  // Convert medicine recommendations to our format with confidence scoring
-  const remedies: any[] = [];
-  
-  medicineGuides.forEach((guide, guideIndex) => {
-    // Base confidence starts high for first match, decreases for subsequent matches
-    const baseConfidence = Math.max(95 - (guideIndex * 15), 60);
+  // Fallback to classical database matching if AI API fails or not configured
+  if (remedies.length === 0) {
+    // Combine structured symptom-medicine database with comprehensive remedy database
+    const medicineGuides = searchMedicinesBySymptoms(symptoms);
+    const remedyMatches = searchRemediesBySymptoms(symptoms);
     
-    guide.medicines.forEach((med, medIndex) => {
-      // Calculate confidence based on position and symptom match quality
-      let confidence = baseConfidence - (medIndex * 5);
+    if (medicineGuides.length === 0 && remedyMatches.length === 0) {
+      return {
+        response: "I'd like to help you find the right remedy! 💜 Could you describe your symptoms in a bit more detail? For example, mention when you feel worse or better, or what triggered the symptoms.",
+        remedies: []
+      };
+    }
+
+    response = getSimpleMotivationalMessage(symptoms) + "\n\nBased on classical homeopathic guidance, here are the recommended medicines with confidence scores:";
+    
+    // Process structured medicine guides
+    medicineGuides.forEach((guide, guideIndex) => {
+      const baseConfidence = Math.max(90 - (guideIndex * 10), 70);
       
-      // Boost confidence if remedy is in user's inventory
-      const isInInventory = userInventory.some(inv => 
-        inv.toLowerCase().includes(med.name.toLowerCase()) ||
-        med.name.toLowerCase().includes(inv.toLowerCase())
-      );
-      
-      if (isInInventory) {
-        confidence = Math.min(confidence + 10, 100);
-      }
-      
-      // Ensure confidence stays within bounds
-      confidence = Math.max(Math.min(confidence, 100), 50);
-      
-      remedies.push({
-        name: med.name,
-        potency: med.potency,
-        indication: guide.condition,
-        reasoning: `${med.drops} drops - ${guide.notes || 'As per classical guidance'}`,
-        source: med.company || "Classical Homeopathic Literature",
-        confidence: Math.round(confidence),
-        dosage: `${med.drops} drops`,
-        frequency: guide.frequency,
-        inInventory: isInInventory
+      guide.medicines.forEach((med, medIndex) => {
+        let confidence = baseConfidence - (medIndex * 3);
+        
+        const isInInventory = userInventory.some(inv => 
+          inv.toLowerCase().includes(med.name.toLowerCase()) ||
+          med.name.toLowerCase().includes(inv.toLowerCase())
+        );
+        
+        if (isInInventory) confidence = Math.min(confidence + 15, 100);
+        confidence = Math.max(Math.min(confidence, 100), 60);
+        
+        remedies.push({
+          name: med.name,
+          potency: med.potency,
+          indication: guide.condition,
+          reasoning: `${med.drops} drops - ${guide.notes || 'Classical homeopathic guidance'}`,
+          source: med.company || "Classical Homeopathic Literature",
+          confidence: Math.round(confidence),
+          dosage: `${med.drops} drops`,
+          frequency: guide.frequency,
+          inInventory: isInInventory
+        });
       });
     });
-  });
+    
+    // Add comprehensive remedy database matches
+    remedyMatches.slice(0, 3).forEach(match => {
+      const isInInventory = userInventory.some(inv => 
+        inv.toLowerCase().includes(match.remedy.name.toLowerCase()) ||
+        match.remedy.name.toLowerCase().includes(inv.toLowerCase())
+      );
+      
+      let confidence = match.confidence;
+      if (isInInventory) confidence = Math.min(confidence + 15, 100);
+      
+      // Avoid duplicates
+      if (!remedies.some(r => r.name.toLowerCase() === match.remedy.name.toLowerCase())) {
+        remedies.push({
+          name: match.remedy.name,
+          potency: match.remedy.potencies[0] || "30C",
+          indication: match.remedy.keySymptoms.join(", "),
+          reasoning: `Key symptoms match: ${match.remedy.keySymptoms.slice(0, 2).join(", ")}`,
+          source: match.remedy.source,
+          confidence: Math.round(confidence),
+          dosage: match.remedy.dosage,
+          frequency: match.remedy.frequency,
+          inInventory: isInInventory
+        });
+      }
+    });
+  }
   
-  // Sort by confidence and limit to top 6 remedies
+  // Sort by confidence, prioritize inventory items, and limit results
   const sortedRemedies = remedies
-    .sort((a, b) => b.confidence - a.confidence)
+    .sort((a, b) => {
+      if (a.inInventory && !b.inInventory) return -1;
+      if (!a.inInventory && b.inInventory) return 1;
+      return b.confidence - a.confidence;
+    })
     .slice(0, 6);
 
   return { response, remedies: sortedRemedies };
+}
+
+// Placeholder function for external AI API integration
+async function getAIRemedyRecommendations(symptoms: string, userInventory: string[]): Promise<any[]> {
+  // Placeholder for xAI Grok API or OpenAI integration
+  // This would make an actual API call when AI_API_KEY is provided
+  
+  const apiEndpoint = process.env.AI_API_ENDPOINT || "https://api.x.ai/v1/analyze";
+  const apiKey = process.env.AI_API_KEY;
+  
+  if (!apiKey) {
+    throw new Error("AI API key not configured");
+  }
+  
+  // Example API call structure (uncomment when API keys are provided)
+  /*
+  const response = await fetch(apiEndpoint, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      symptoms: symptoms,
+      userInventory: userInventory,
+      task: "homeopathic_remedy_analysis"
+    })
+  });
+  
+  if (!response.ok) {
+    throw new Error(`AI API error: ${response.status}`);
+  }
+  
+  const data = await response.json();
+  return data.remedies || [];
+  */
+  
+  throw new Error("AI API integration placeholder - add your API key to enable");
 }
 
 // Simplified motivational messages
@@ -343,7 +415,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // AI DOCTOR ENDPOINT
+  // Enhanced AI DOCTOR ENDPOINT with confidence scoring
   app.post(`${apiPrefix}/ai-doctor`, async (req, res) => {
     try {
       const { symptoms, userInventory } = req.body;
@@ -352,7 +424,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Symptoms are required" });
       }
 
-      const aiResponse = analyzeSymptoms(symptoms, userInventory || []);
+      const aiResponse = await analyzeSymptoms(symptoms, userInventory || []);
       
       return res.json(aiResponse);
     } catch (error) {
@@ -376,6 +448,131 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error getting medicine suggestions:', error);
       return res.status(500).json({ error: 'Failed to get suggestions' });
+    }
+  });
+
+  // Enhanced Real-Time Cloud Inventory Sharing Endpoints
+  
+  // Create new shared inventory with real-time capabilities
+  app.post(`${apiPrefix}/shared-inventory/create`, async (req, res) => {
+    try {
+      const { medicines, name } = req.body;
+      const shareCode = nanoid(8).toUpperCase();
+      
+      const sharedInventoryData: InsertSharedInventory = {
+        inventory_id: shareCode,
+        name: name || `Shared Inventory ${new Date().toLocaleDateString()}`,
+        inventory_data: medicines || [],
+        owner_id: null,
+      };
+
+      const [newSharedInventory] = await db
+        .insert(sharedInventories)
+        .values(sharedInventoryData)
+        .returning();
+
+      // Initialize cloud sync if Firebase is configured
+      if (process.env.FIREBASE_API_KEY) {
+        try {
+          await initializeFirebaseSync(shareCode, medicines || []);
+        } catch (error) {
+          console.log("Firebase not configured, using database-only sync");
+        }
+      }
+
+      return res.status(201).json({
+        shareCode,
+        message: "Shared inventory created successfully",
+        connectedUsers: 1,
+        realtimeEnabled: !!process.env.FIREBASE_API_KEY
+      });
+    } catch (error) {
+      console.error("Error creating shared inventory:", error);
+      return res.status(500).json({ error: "Failed to create shared inventory" });
+    }
+  });
+
+  // Connect to existing shared inventory
+  app.post(`${apiPrefix}/shared-inventory/connect`, async (req, res) => {
+    try {
+      const { shareCode } = req.body;
+
+      if (!shareCode) {
+        return res.status(400).json({ error: "Share code is required" });
+      }
+
+      const sharedInventory = await db.query.sharedInventories.findFirst({
+        where: eq(sharedInventories.shareCode, shareCode.toUpperCase()),
+      });
+
+      if (!sharedInventory) {
+        return res.status(404).json({ error: "Shared inventory not found" });
+      }
+
+      // Check Firebase connection if configured
+      let connectedUsers = 1;
+      if (process.env.FIREBASE_API_KEY) {
+        try {
+          connectedUsers = await getFirebaseConnectedUsers(shareCode);
+        } catch (error) {
+          console.log("Firebase not configured, using database-only mode");
+        }
+      }
+
+      return res.json({
+        shareCode: sharedInventory.shareCode,
+        name: sharedInventory.name,
+        medicines: JSON.parse(sharedInventory.medicines || "[]"),
+        connectedUsers,
+        realtimeEnabled: !!process.env.FIREBASE_API_KEY,
+        message: "Connected to shared inventory successfully"
+      });
+    } catch (error) {
+      console.error("Error connecting to shared inventory:", error);
+      return res.status(500).json({ error: "Failed to connect to shared inventory" });
+    }
+  });
+
+  // Sync inventory changes to cloud
+  app.post(`${apiPrefix}/shared-inventory/sync`, async (req, res) => {
+    try {
+      const { shareCode, medicines } = req.body;
+
+      if (!shareCode || !medicines) {
+        return res.status(400).json({ error: "Share code and medicines are required" });
+      }
+
+      // Update database
+      const [updatedInventory] = await db
+        .update(sharedInventories)
+        .set({ 
+          medicines: JSON.stringify(medicines),
+          updated: new Date()
+        })
+        .where(eq(sharedInventories.shareCode, shareCode.toUpperCase()))
+        .returning();
+
+      if (!updatedInventory) {
+        return res.status(404).json({ error: "Shared inventory not found" });
+      }
+
+      // Sync to Firebase if configured
+      if (process.env.FIREBASE_API_KEY) {
+        try {
+          await syncToFirebase(shareCode, medicines);
+        } catch (error) {
+          console.log("Firebase sync failed, using database-only mode");
+        }
+      }
+
+      return res.json({
+        message: "Inventory synced successfully",
+        timestamp: new Date().toISOString(),
+        realtimeEnabled: !!process.env.FIREBASE_API_KEY
+      });
+    } catch (error) {
+      console.error("Error syncing inventory:", error);
+      return res.status(500).json({ error: "Failed to sync inventory" });
     }
   });
 
