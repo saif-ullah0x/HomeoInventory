@@ -404,7 +404,7 @@ export default function AILearningAssistant({ isOpen, onClose }: AILearningAssis
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden p-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-0 shadow-2xl">
+      <DialogContent className="max-w-6xl max-h-[95vh] w-[95vw] overflow-hidden p-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-0 shadow-2xl">
         {/* Purple Gradient Header with Glassy Effect */}
         <div className="relative bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 p-6 shadow-lg">
           <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
@@ -421,9 +421,9 @@ export default function AILearningAssistant({ isOpen, onClose }: AILearningAssis
           </DialogHeader>
         </div>
 
-        <div className="flex flex-col h-full p-6 bg-gradient-to-br from-blue-50/50 to-purple-50/50 dark:from-gray-800/50 dark:to-gray-900/50">
+        <div className="flex flex-col h-[calc(95vh-140px)] p-6 bg-gradient-to-br from-blue-50/50 to-purple-50/50 dark:from-gray-800/50 dark:to-gray-900/50">
           {/* Enhanced Search Input */}
-          <div className="mb-6">
+          <div className="mb-4 flex-shrink-0">
             <Label htmlFor="search" className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
               🔍 Search for remedies, conditions, or browse common symptoms below:
             </Label>
@@ -477,7 +477,7 @@ export default function AILearningAssistant({ isOpen, onClose }: AILearningAssis
               </TabsTrigger>
             </TabsList>
 
-            <ScrollArea className="flex-1 mt-6 h-[500px] pr-4 [&>[data-radix-scroll-area-viewport]]:max-h-[500px]">
+            <ScrollArea className="flex-1 mt-4 h-[calc(95vh-320px)] min-h-[600px] pr-4 [&>[data-radix-scroll-area-viewport]]:max-h-[calc(95vh-320px)]">
               <TabsContent value="learn" className="mt-0">
                 {isLoading ? (
                   <div className="flex items-center justify-center h-64">
