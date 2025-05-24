@@ -706,14 +706,14 @@ export default function AILearningAssistant({ isOpen, onClose }: AILearningAssis
                                     {option}
                                   </Button>
                                 ))}
-                                <Button
-                                  onClick={handleNextQuestion}
-                                  disabled={selectedAnswers[currentQuestionIndex] === undefined}
-                                  className="w-full mt-6 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
-                                >
-                                  {currentQuestionIndex === quizQuestions.length - 1 ? "Finish Quiz" : "Next Question"}
-                                </Button>
-                              </CardContent>
+                              </div>
+                              <Button
+                                onClick={handleNextQuestion}
+                                disabled={selectedAnswers[currentQuestionIndex] === undefined}
+                                className="w-full mt-6 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
+                              >
+                                {currentQuestionIndex === quizQuestions.length - 1 ? "Finish Quiz" : "Next Question"}
+                              </Button>
                             </CardContent>
                           </Card>
                         </div>
