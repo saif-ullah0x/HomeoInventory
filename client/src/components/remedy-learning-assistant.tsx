@@ -367,7 +367,7 @@ export default function RemedyLearningAssistant({ isOpen, onClose }: LearningAss
         </div>
 
         {/* Question Area */}
-        <div className="flex-1 p-6 bg-gradient-to-b from-white to-purple-50 dark:from-gray-900 dark:to-gray-800">
+        <div className="flex-1 p-6 bg-gradient-to-b from-white to-purple-50 dark:from-gray-900 dark:to-gray-800 overflow-y-auto">
           {isLoading ? (
             <div className="flex flex-col items-center justify-center h-full">
               <RefreshCw className="h-8 w-8 text-purple-500 animate-spin mb-4" />
@@ -397,14 +397,14 @@ export default function RemedyLearningAssistant({ isOpen, onClose }: LearningAss
                     
                     if (showResult) {
                       if (index === currentQuestion.correctAnswer) {
-                        buttonClass += "border-green-500 bg-green-50 text-green-800";
+                        buttonClass += "border-green-500 bg-green-50 text-green-800 dark:bg-green-900/30 dark:text-green-300";
                       } else if (index === selectedAnswer && index !== currentQuestion.correctAnswer) {
-                        buttonClass += "border-red-500 bg-red-50 text-red-800";
+                        buttonClass += "border-red-500 bg-red-50 text-red-800 dark:bg-red-900/30 dark:text-red-300";
                       } else {
-                        buttonClass += "border-gray-200 bg-gray-50 text-gray-600";
+                        buttonClass += "border-gray-200 bg-gray-50 text-gray-600 dark:bg-gray-800 dark:text-gray-400";
                       }
                     } else {
-                      buttonClass += "border-purple-200 hover:border-purple-400 hover:bg-purple-50 text-gray-800 dark:text-gray-200";
+                      buttonClass += "border-purple-200 hover:border-purple-400 hover:bg-purple-50 hover:text-gray-900 text-gray-800 dark:text-gray-200 dark:hover:bg-purple-900/20 dark:hover:text-gray-100";
                     }
 
                     return (
