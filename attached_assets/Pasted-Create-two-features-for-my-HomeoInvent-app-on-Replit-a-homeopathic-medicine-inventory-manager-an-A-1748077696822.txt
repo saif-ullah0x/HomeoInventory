@@ -1,0 +1,35 @@
+Create two features for my HomeoInvent app on Replit, a homeopathic medicine inventory manager: an AI Symptom-to-Remedy Matcher with Confidence Scoring and Cloud-Based Inventory Sharing. Use my existing project’s language and framework, leaving API key placeholders for security (I’ll add them manually in .env after deployment or upgrading to Replit Core). The app is tested locally via a command-line tunnel, so don’t reference Replit hosting or ports. Follow these requirements:
+
+1. **Symptom-to-Remedy Matcher**:
+   - Users input symptoms (e.g., “sore throat, fever”) via a text field.
+   - Suggest homeopathic remedies with potency, dosage, and confidence scores (e.g., “Belladonna 30C, 80% match, Dosage: 2 pellets 4x/day”) using a remedy database (JSON or cloud) based on Boericke’s Materia Medica.
+   - Prioritize remedies in the user’s inventory, showing a “View Details” button and storage location (e.g., “Shelf A”) for in-stock remedies.
+   - Suggest non-inventory remedies with a note (e.g., “Aconite 30C, 75% match, Not in inventory, Dosage: 2 pellets every 2 hours”).
+   - Use keyword matching for symptom-remedy pairing, with a placeholder for an AI API (e.g., xAI Grok API at https://api.x.ai/v1/analyze) to enhance matching.
+   - Store/fetch remedy data in a cloud database (e.g., Firebase) with a placeholder for the API key.
+
+2. **Cloud-Based Inventory Sharing**:
+   - Enable multiple users to share an inventory (e.g., { name: "Arnica", potency: "30C", quantity: 50, storageLocation: "Shelf A" }) via a cloud database (e.g., Firebase).
+   - When one user adds or deletes a remedy, sync changes in real-time to other connected users’ views.
+   - Include a UI to add/delete remedies, showing updates instantly.
+
+3. **Technical Details**:
+   - File Structure: Create frontend components for symptom input/results and inventory display, a backend file for API endpoints, a static `remedies.json` for fallback data, and `.env` for API keys.
+   - UI/UX: Use a calming palette (#E6F0FA background, #4CAF50 buttons) with glowing button effects (CSS box-shadow, transitions).
+   - Backend: Create POST endpoints for symptom matching (e.g., `/api/match-remedies`) and inventory updates (e.g., `/api/update-inventory`).
+   - APIs: Use placeholders for cloud storage (e.g., Firebase) and AI API (e.g., xAI Grok). Example: `FIREBASE_API_KEY=YOUR_FIREBASE_API_KEY_HERE`, `AI_API_KEY=YOUR_AI_API_KEY_HERE`.
+   - Include input validation and error handling.
+   - Use dependencies compatible with my project (e.g., firebase-admin, dotenv).
+
+4. **Security**:
+   - Store API keys in `.env` with placeholders (e.g., `FIREBASE_API_KEY=YOUR_FIREBASE_API_KEY_HERE`).
+   - Provide clear instructions on where to add keys in `.env` or Replit Secrets after deployment.
+
+5. **Output**:
+   - Generate all necessary files with code, matching my project’s language/framework.
+   - Include a README with setup instructions (e.g., install dependencies, run commands).
+   - Add comments explaining API key placeholders and cloud integration.
+   - Ensure the code is modular, professor-friendly (unique and innovative), and tailored to homeopathy.
+   - Optionally, suggest a Chart.js bar chart for remedy confidence scores (remedy names vs. confidence %) but don’t generate unless requested.
+
+Focus on a homeopathy-specific, user-friendly implementation. Don’t assume a specific language or port. Ensure the code works with my local tunnel setup and is ready for cloud API integration.
