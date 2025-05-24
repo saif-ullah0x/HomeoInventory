@@ -821,10 +821,10 @@ export default function AIEnhancedLearningAssistant({ isOpen, onClose }: AILearn
 
   return (
     <div 
-      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+      className="fixed inset-0 bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 overflow-hidden"
       style={{ zIndex: 99999, position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
     >
-      <div className="w-full max-w-4xl max-h-[90vh] bg-white dark:bg-gray-900 rounded-xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-300">
+      <div className="w-full h-full flex flex-col animate-in fade-in slide-in-from-bottom-5 duration-300">
         {/* Glassy Header with Purple Gradient */}
         <div className="relative bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 p-6 shadow-lg">
           <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
@@ -858,8 +858,8 @@ export default function AIEnhancedLearningAssistant({ isOpen, onClose }: AILearn
         </div>
 
         {/* Content Area with Scroll */}
-        <ScrollArea className="h-[calc(90vh-120px)] bg-gradient-to-br from-blue-50/50 to-purple-50/50 dark:from-gray-800/50 dark:to-gray-900/50">
-          <div className="p-6">
+        <ScrollArea className="flex-1 overflow-y-auto">
+          <div className="p-6 min-h-full">
             <Tabs defaultValue="learn" value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid grid-cols-2 mb-6 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm shadow-lg">
                 <TabsTrigger value="learn" className="flex items-center gap-2 font-medium">
