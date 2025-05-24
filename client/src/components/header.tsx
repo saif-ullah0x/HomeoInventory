@@ -1,11 +1,15 @@
 import * as React from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon, Brain, MessageCircle } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
+import AIHomeopathyChatbot from "@/components/ai-homeopathy-chatbot";
+import RemedyLearningAssistant from "@/components/remedy-learning-assistant";
 
 export default function Header() {
   const { theme, setTheme } = useTheme();
+  const [showAIChatbot, setShowAIChatbot] = React.useState(false);
+  const [showLearningAssistant, setShowLearningAssistant] = React.useState(false);
 
   const toggleTheme = () => {
     // Simply toggle the theme - no animation needed
@@ -23,7 +27,28 @@ export default function Header() {
               </h1>
             </Link>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3">
+            {/* AI Learning Features */}
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setShowAIChatbot(true)}
+              className="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white border-0 flex items-center space-x-1"
+            >
+              <MessageCircle className="h-4 w-4" />
+              <span className="hidden sm:inline font-medium">AI Doctor</span>
+            </Button>
+
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setShowLearningAssistant(true)}
+              className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white border-0 flex items-center space-x-1"
+            >
+              <Brain className="h-4 w-4" />
+              <span className="hidden sm:inline font-medium">Learn</span>
+            </Button>
+            
             <Button 
               variant="outline" 
               size="sm"
@@ -44,6 +69,10 @@ export default function Header() {
           </div>
         </div>
       </div>
+
+      {/* AI Learning Modals */}
+      <AIHomeopathyChatbot isOpen={showAIChatbot} onClose={() => setShowAIChatbot(false)} />
+      <RemedyLearningAssistant isOpen={showLearningAssistant} onClose={() => setShowLearningAssistant(false)} />
     </header>
   );
 }
