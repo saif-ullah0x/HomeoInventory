@@ -414,12 +414,12 @@ export default function AILearningAssistant({ isOpen, onClose }: AILearningAssis
       <div className="relative bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 p-4 shadow-lg">
         <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
         <div className="relative z-10 flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3 flex-1 justify-center">
             <div className="p-1.5 bg-white/20 rounded-lg backdrop-blur-sm shadow-lg">
-              <Brain className="h-5 w-5 text-white drop-shadow-sm" />
+              <Brain className="h-6 w-6 text-white drop-shadow-sm" />
             </div>
-            <div>
-              <h1 className="text-white text-lg font-bold drop-shadow-sm">AI-Enhanced Remedy Learning Assistant</h1>
+            <div className="text-center">
+              <h1 className="text-white text-xl font-black drop-shadow-sm tracking-wide">AI-Enhanced Remedy Learning Assistant</h1>
               <p className="text-purple-100 text-sm drop-shadow-sm">
                 Discover homeopathic remedies for common conditions with classical knowledge
               </p>
@@ -429,16 +429,16 @@ export default function AILearningAssistant({ isOpen, onClose }: AILearningAssis
             onClick={onClose}
             variant="ghost"
             size="sm"
-            className="text-white hover:bg-white/20 rounded-lg"
+            className="text-white hover:bg-white/20 rounded-lg absolute right-4"
           >
             ✕ Close
           </Button>
         </div>
       </div>
 
-      <div className="flex flex-col h-[calc(100vh-100px)] p-4 bg-gradient-to-br from-blue-50/50 to-purple-50/50 dark:from-gray-800/50 dark:to-gray-900/50 overflow-hidden">
+      <div className="flex flex-col h-[calc(100vh-100px)] bg-gradient-to-br from-blue-50/50 to-purple-50/50 dark:from-gray-800/50 dark:to-gray-900/50">
           {/* Enhanced Search Input */}
-          <div className="mb-3 flex-shrink-0">
+          <div className="p-4 pb-2 flex-shrink-0">
             <Label htmlFor="search" className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
               🔍 Search for remedies, conditions, or browse common symptoms below:
             </Label>
@@ -474,26 +474,30 @@ export default function AILearningAssistant({ isOpen, onClose }: AILearningAssis
             </div>
           </div>
 
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col h-full">
-            <TabsList className="grid w-full grid-cols-2 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm p-1 shadow-lg rounded-lg border border-purple-200 dark:border-purple-700 flex-shrink-0">
-              <TabsTrigger 
-                value="learn" 
-                className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white transition-all duration-300 rounded-md"
-              >
-                <BookOpen className="h-4 w-4" />
-                Learn
-              </TabsTrigger>
-              <TabsTrigger 
-                value="quiz" 
-                className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white transition-all duration-300 rounded-md"
-              >
-                <Target className="h-4 w-4" />
-                Quiz
-              </TabsTrigger>
-            </TabsList>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
+            <div className="px-4 pb-2 flex-shrink-0">
+              <TabsList className="grid w-full grid-cols-2 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm p-1 shadow-lg rounded-lg border border-purple-200 dark:border-purple-700">
+                <TabsTrigger 
+                  value="learn" 
+                  className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white transition-all duration-300 rounded-md"
+                >
+                  <BookOpen className="h-4 w-4" />
+                  Learn
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="quiz" 
+                  className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white transition-all duration-300 rounded-md"
+                >
+                  <Target className="h-4 w-4" />
+                  Quiz
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
-            <div className="flex-1 mt-2 overflow-y-auto pr-4" style={{height: 'calc(100vh - 250px)'}}>
-              <TabsContent value="learn" className="mt-0">
+            <div className="flex-1 px-4 pb-4 min-h-0">
+              <ScrollArea className="h-full w-full">
+                <div className="pr-4">
+                  <TabsContent value="learn" className="mt-0">
                 {isLoading ? (
                   <div className="flex items-center justify-center h-64">
                     <div className="text-center">
@@ -928,10 +932,111 @@ export default function AILearningAssistant({ isOpen, onClose }: AILearningAssis
                     </p>
                   </div>
                 )}
-              </TabsContent>
+                  </TabsContent>
+
+                  <TabsContent value="quiz" className="mt-0">
+                    {isLoading ? (
+                      <div className="flex items-center justify-center h-64">
+                        <div className="text-center">
+                          <div className="relative">
+                            <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-200 border-t-purple-600 mx-auto mb-4 shadow-lg"></div>
+                            <div className="absolute inset-0 rounded-full bg-purple-100/50 animate-pulse"></div>
+                          </div>
+                          <p className="text-gray-600 dark:text-gray-300 font-medium">🎯 Preparing your quiz...</p>
+                        </div>
+                      </div>
+                    ) : isQuizStarted && quizQuestions.length > 0 ? (
+                      showResults && quizResult ? (
+                        <div className="space-y-6">
+                          {/* Quiz Results */}
+                          <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-purple-200 dark:border-purple-700 shadow-xl">
+                            <CardHeader className="text-center bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20">
+                              <CardTitle className="flex items-center justify-center gap-3 text-2xl">
+                                <Award className="h-8 w-8 text-yellow-500" />
+                                <span className={`${getScoreColor((quizResult.score / quizResult.total) * 100)} font-bold`}>
+                                  Quiz Complete!
+                                </span>
+                              </CardTitle>
+                              <div className="text-4xl font-bold mt-2">
+                                <span className={getScoreColor((quizResult.score / quizResult.total) * 100)}>
+                                  {quizResult.score}/{quizResult.total}
+                                </span>
+                                <span className="text-sm text-gray-500 ml-2">
+                                  ({Math.round((quizResult.score / quizResult.total) * 100)}%)
+                                </span>
+                              </div>
+                            </CardHeader>
+                            <CardContent className="space-y-4 p-6">
+                              <Button 
+                                onClick={resetQuiz}
+                                className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
+                              >
+                                <Target className="h-4 w-4 mr-2" />
+                                Try Another Quiz
+                              </Button>
+                            </CardContent>
+                          </Card>
+                        </div>
+                      ) : (
+                        <div className="space-y-6">
+                          {/* Current Question */}
+                          <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-purple-200 dark:border-purple-700 shadow-xl">
+                            <CardHeader>
+                              <div className="flex items-center justify-between">
+                                <Badge variant="outline" className="text-sm">
+                                  Question {currentQuestionIndex + 1} of {quizQuestions.length}
+                                </Badge>
+                                <Progress 
+                                  value={((currentQuestionIndex + 1) / quizQuestions.length) * 100} 
+                                  className="w-32"
+                                />
+                              </div>
+                              <CardTitle className="text-lg text-gray-800 dark:text-gray-200 mt-4">
+                                {quizQuestions[currentQuestionIndex]?.question}
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                              {quizQuestions[currentQuestionIndex]?.options.map((option, index) => (
+                                <Button
+                                  key={index}
+                                  onClick={() => handleAnswerSelect(index)}
+                                  variant={selectedAnswers[currentQuestionIndex] === index ? "default" : "outline"}
+                                  className="w-full text-left justify-start p-4 h-auto"
+                                >
+                                  <span className="font-semibold mr-3">{String.fromCharCode(65 + index)}.</span>
+                                  {option}
+                                </Button>
+                              ))}
+                              <Button
+                                onClick={handleNextQuestion}
+                                disabled={selectedAnswers[currentQuestionIndex] === undefined}
+                                className="w-full mt-6 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
+                              >
+                                {currentQuestionIndex === quizQuestions.length - 1 ? "Finish Quiz" : "Next Question"}
+                              </Button>
+                            </CardContent>
+                          </Card>
+                        </div>
+                      )
+                    ) : (
+                      <div className="text-center py-12">
+                        <div className="mb-4">
+                          <div className="inline-block p-4 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full shadow-xl">
+                            <Target className="h-8 w-8 text-white" />
+                          </div>
+                        </div>
+                        <p className="text-gray-600 dark:text-gray-300 mb-2 font-medium">🎯 Test your knowledge!</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          Search for a topic above to generate a personalized quiz based on your learning.
+                        </p>
+                      </div>
+                    )}
+                  </TabsContent>
+                </div>
+              </ScrollArea>
             </div>
           </Tabs>
-        </div>
       </div>
+    </div>
   );
 }
