@@ -164,7 +164,7 @@ export default function InventoryControls({
 
         <Button 
           onClick={onAddClick} 
-          className="gap-2 premium-gradient-button bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white border-0 premium-glow"
+          className="gap-2 premium-gradient-button bg-gradient-to-r from-purple-700 to-purple-500 hover:from-purple-800 hover:to-purple-600 text-white border-0 premium-glow"
         >
           <Plus className="h-4 w-4" />
           Add

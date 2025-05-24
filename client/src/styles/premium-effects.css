@@ -153,28 +153,15 @@
   transform: scaleX(1);
 }
 
-/* Interactive circular floating buttons */
+/* Interactive circular buttons - removed bouncing animation */
 .premium-float-button {
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-  animation: float 3s ease-in-out infinite;
 }
 
 .premium-float-button:hover {
-  transform: translateY(-5px) scale(1.05);
+  transform: scale(1.05);
   box-shadow: 0 15px 25px rgba(0, 0, 0, 0.15);
-}
-
-@keyframes float {
-  0% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-5px);
-  }
-  100% {
-    transform: translateY(0px);
-  }
 }
 
 /* Enhanced gradient text effect */
@@ -199,18 +186,51 @@
 
 /* Button animation effects */
 .pulse-effect {
-  animation: pulse-animation 2s infinite;
+  animation: pulse-animation 3s infinite;
 }
 
 @keyframes pulse-animation {
   0% {
-    box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.7);
+    box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.6);
   }
-  70% {
-    box-shadow: 0 0 0 10px rgba(124, 58, 237, 0);
+  40% {
+    box-shadow: 0 0 0 8px rgba(124, 58, 237, 0);
   }
   100% {
     box-shadow: 0 0 0 0 rgba(124, 58, 237, 0);
+  }
+}
+
+/* Chat/Call animation for AI Doctor button */
+.chat-animation {
+  position: relative;
+}
+
+.chat-animation::after {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border-radius: 50%;
+  border: 2px solid rgba(168, 85, 247, 0.5);
+  opacity: 0;
+  animation: chat-pulse 3s infinite;
+}
+
+@keyframes chat-pulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0;
   }
 }
 
