@@ -252,10 +252,10 @@ export default function AIHomeopathyChatbot({ isOpen, onClose }: AIChatbotProps)
   };
 
   const quickActions = [
-    { label: "Show my trends", icon: TrendingUp, action: () => setInputText("Show my usage trends") },
     { label: "Symptom help", icon: Pill, action: () => setInputText("I have symptoms: ") },
     { label: "Find alternatives", icon: RefreshCw, action: () => setInputText("Find alternatives for ") },
-    { label: "Dosage advice", icon: Archive, action: () => setInputText("What dosage for ") }
+    { label: "Dosage advice", icon: Archive, action: () => setInputText("What dosage for ") },
+    { label: "General guidance", icon: BookOpen, action: () => setInputText("I need help with homeopathic remedies") }
   ];
 
   const renderRemedyCard = (remedy: Remedy, index: number) => {

@@ -2,7 +2,7 @@ import Tabs from "@/components/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useStore } from "@/lib/store";
-import { FileDown, Download, File } from "lucide-react";
+import { FileDown, Download, File, TrendingUp, Calendar, Star, Activity } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
