@@ -1,0 +1,34 @@
+Create two features for my HomeoInvent app on Replit, a homeopathic medicine inventory manager: a unified AI Homeopathy Chatbot and a separate AI-Enhanced Remedy Learning Assistant. Use my project’s setup, keeping it simple for non-coders. Include API placeholders (e.g., Firebase, xAI Grok) with comments like // FIREBASE_API_KEY=YOUR_FIREBASE_API_KEY_HERE; I’ll add keys in .env later. Test locally via tunnel, don’t mention ports. Requirements:
+
+AI Homeopathy Chatbot:
+Tasks:
+Symptom Matching: Users say symptoms (e.g., “sore throat, fever”), suggest inventory remedies (e.g., “Belladonna 30C, 80% match, 2 pellets 4x/day, Shelf A”) or non-stock (e.g., “Aconite 30C, Not in stock”), using Boericke’s Materia Medica.
+Usage Trends: Show usage insights (e.g., “Used Arnica 30C 5x for muscle pain; stock up”).
+Substitution: Suggest alternatives (e.g., “No Aconite? Try Belladonna 30C”).
+Dosage Adjustment: Recommend dosage changes (e.g., “For severe headache, 4 pellets Nux Vomica 3x/day”).
+Look: Match app’s color scheme (purple buttons, calming background). User messages in purple bubbles (right), bot in white (left). Centered, tablet-sized chat with smooth animations.
+Functionality: Understand questions via xAI Grok (// AI_API_KEY=YOUR_AI_API_KEY_HERE). Store data in Firebase (// FIREBASE_API_KEY=YOUR_FIREBASE_API_KEY_HERE). Manage data per my APIs. Friendly, homeopathy-expert tone.
+AI-Enhanced Remedy Learning Assistant (Separate):
+Tasks: Run quizzes on remedies (e.g., “What’s Arnica for? A) Bruises B) Fever”), adapting to performance or used remedies. Give feedback (e.g., “Correct! Arnica is for bruises”).
+Look: Match app’s color scheme. Questions/options in a centered card, tablet-sized, with smooth transitions.
+Functionality: Use Firebase data (// FIREBASE_API_KEY=YOUR_FIREBASE_API_KEY_HERE), optional xAI Grok for questions (// AI_API_KEY=YOUR_AI_API_KEY_HERE). Store quiz results.
+Output:
+Create files for both features, with separate interfaces and data.
+Add a README with setup steps.
+Include API placeholder comments.
+Ensure homeopathy-focused, unique, professor-friendly.
+Keep both features easy, innovative, and styled like my app.
+
+Notes
+Color Scheme: Matches your app’s existing purple buttons and calming background, avoiding specific color suggestions per your request.
+Inventory Sharing: Excluded from the chatbot, as you noted it’s a separate topic.
+APIs: Firebase (cloud storage), xAI Grok (AI). Choose APIs when giving the prompt; the Agent will manage data (remedies, logs, quiz results).
+API Placeholders: Comments like // FIREBASE_API_KEY=YOUR_FIREBASE_API_KEY_HERE in files. Add keys in .env:
+text
+
+Copy
+FIREBASE_API_KEY=your_actual_firebase_key
+AI_API_KEY=your_actual_xai_key
+Source from Firebase Console (https://console.firebase.google.com) and xAI (https://x.ai/api).
+Testing: Follow README to run. Test via tunnel (https://vjh7zf55-5173.asse.devtunnels.ms/). Try chatbot inputs like “I have a fever” or “Show trends,” and quiz functionality.
+Why This Prompt?: Short, non-technical, combines four features in chatbot, separates learning assistant, excludes inventory sharing, and respects your app’s style.

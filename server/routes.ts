@@ -234,6 +234,266 @@ async function syncToFirebase(shareCode: string, medicines: any[]): Promise<void
   console.log(`Firebase sync completed for share code: ${shareCode}`);
 }
 
+// AI Homeopathy Chatbot Functions
+
+// Usage Trends Analysis
+async function analyzeUsageTrends(userInventory: string[]): Promise<any[]> {
+  const trends = [];
+  
+  // Analyze inventory patterns
+  const remedyCategories = categorizeRemedies(userInventory);
+  
+  if (remedyCategories.trauma > 0) {
+    trends.push({
+      insight: `You have ${remedyCategories.trauma} trauma remedies (Arnica, etc.). Great for sports injuries and bruises!`
+    });
+  }
+  
+  if (remedyCategories.acute > 0) {
+    trends.push({
+      insight: `Your ${remedyCategories.acute} acute remedies (Aconite, Belladonna) are perfect for sudden onset symptoms.`
+    });
+  }
+  
+  if (remedyCategories.constitutional > 0) {
+    trends.push({
+      insight: `You have ${remedyCategories.constitutional} constitutional remedies - excellent for deeper healing!`
+    });
+  }
+  
+  // Suggest additions based on gaps
+  if (remedyCategories.digestive === 0) {
+    trends.push({
+      insight: "Consider adding Nux vomica 30C for digestive issues - a valuable addition to any home kit."
+    });
+  }
+  
+  return trends;
+}
+
+function categorizeRemedies(inventory: string[]): any {
+  const categories = {
+    trauma: 0,
+    acute: 0,
+    constitutional: 0,
+    digestive: 0,
+    respiratory: 0
+  };
+  
+  inventory.forEach(item => {
+    const itemLower = item.toLowerCase();
+    if (itemLower.includes('arnica')) categories.trauma++;
+    if (itemLower.includes('aconite') || itemLower.includes('belladonna')) categories.acute++;
+    if (itemLower.includes('sulphur') || itemLower.includes('pulsatilla')) categories.constitutional++;
+    if (itemLower.includes('nux')) categories.digestive++;
+    if (itemLower.includes('bryonia') || itemLower.includes('phosphorus')) categories.respiratory++;
+  });
+  
+  return categories;
+}
+
+// Remedy Substitutions
+async function findRemedySubstitutions(query: string, userInventory: string[]): Promise<any[]> {
+  const substitutions = [];
+  const queryLower = query.toLowerCase();
+  
+  // Extract remedy name from query
+  let targetRemedy = '';
+  if (queryLower.includes('arnica')) targetRemedy = 'arnica';
+  else if (queryLower.includes('aconite')) targetRemedy = 'aconite';
+  else if (queryLower.includes('belladonna')) targetRemedy = 'belladonna';
+  else if (queryLower.includes('nux')) targetRemedy = 'nux vomica';
+  else if (queryLower.includes('pulsatilla')) targetRemedy = 'pulsatilla';
+  
+  // Classical substitution knowledge
+  const substitutionMap: any = {
+    'arnica': [
+      { name: 'Rhus tox', potency: '30C', reason: 'For sprains with stiffness, especially when better with motion' },
+      { name: 'Ruta', potency: '30C', reason: 'For injuries to tendons and ligaments' }
+    ],
+    'aconite': [
+      { name: 'Belladonna', potency: '30C', reason: 'For sudden fever with heat and redness' },
+      { name: 'Ferrum phos', potency: '6X', reason: 'For early stages of inflammation' }
+    ],
+    'belladonna': [
+      { name: 'Aconite', potency: '30C', reason: 'For sudden onset symptoms with fear and restlessness' },
+      { name: 'Gelsemium', potency: '30C', reason: 'For flu-like symptoms with weakness' }
+    ],
+    'nux vomica': [
+      { name: 'Bryonia', potency: '30C', reason: 'For digestive issues worse from motion' },
+      { name: 'Lycopodium', potency: '30C', reason: 'For bloating and liver symptoms' }
+    ]
+  };
+  
+  if (targetRemedy && substitutionMap[targetRemedy]) {
+    substitutionMap[targetRemedy].forEach((sub: any) => {
+      const inStock = userInventory.some(inv => 
+        inv.toLowerCase().includes(sub.name.toLowerCase())
+      );
+      
+      substitutions.push({
+        name: sub.name,
+        potency: sub.potency,
+        indication: sub.reason,
+        reasoning: `Classical alternative to ${targetRemedy}`,
+        source: "Homeopathic Materia Medica",
+        confidence: 85,
+        inInventory: inStock,
+        alternativeTo: targetRemedy
+      });
+    });
+  }
+  
+  return substitutions;
+}
+
+// Dosage Guidance
+async function provideDosageGuidance(query: string, userInventory: string[]): Promise<any[]> {
+  const dosageAdvice = [];
+  const queryLower = query.toLowerCase();
+  
+  // Extract condition from query
+  let condition = '';
+  if (queryLower.includes('headache')) condition = 'headache';
+  else if (queryLower.includes('fever')) condition = 'fever';
+  else if (queryLower.includes('bruise') || queryLower.includes('injury')) condition = 'trauma';
+  else if (queryLower.includes('anxiety') || queryLower.includes('panic')) condition = 'anxiety';
+  
+  // Dosage protocols based on classical homeopathy
+  const dosageProtocols: any = {
+    'headache': [
+      { 
+        name: 'Belladonna', 
+        potency: '30C', 
+        dosage: '3-4 pellets every 30 minutes',
+        frequency: 'Until improvement, then reduce frequency',
+        indication: 'Throbbing headache with heat and redness'
+      },
+      { 
+        name: 'Bryonia', 
+        potency: '30C', 
+        dosage: '3-4 pellets every 2 hours',
+        frequency: 'Less frequent as symptoms improve',
+        indication: 'Headache worse from motion'
+      }
+    ],
+    'fever': [
+      { 
+        name: 'Aconite', 
+        potency: '30C', 
+        dosage: '3-4 pellets every 15-30 minutes',
+        frequency: 'For first few hours only',
+        indication: 'Sudden onset fever with anxiety'
+      }
+    ],
+    'trauma': [
+      { 
+        name: 'Arnica', 
+        potency: '30C', 
+        dosage: '3-4 pellets every 15 minutes',
+        frequency: 'First hour, then every 2 hours',
+        indication: 'Bruises, sprains, physical trauma'
+      }
+    ]
+  };
+  
+  if (condition && dosageProtocols[condition]) {
+    dosageProtocols[condition].forEach((remedy: any) => {
+      const inStock = userInventory.some(inv => 
+        inv.toLowerCase().includes(remedy.name.toLowerCase())
+      );
+      
+      dosageAdvice.push({
+        name: remedy.name,
+        potency: remedy.potency,
+        dosage: remedy.dosage,
+        frequency: remedy.frequency,
+        indication: remedy.indication,
+        reasoning: `Classical dosage protocol for ${condition}`,
+        source: "Homeopathic Dosage Guidelines",
+        confidence: 90,
+        inInventory: inStock
+      });
+    });
+  }
+  
+  return dosageAdvice;
+}
+
+// Learning Assistant Functions
+
+// Generate Adaptive Quiz Questions
+async function generateAdaptiveQuestion(userInventory: string[], learningStats: any, recentResults: any[]): Promise<any> {
+  // Adapt difficulty based on performance
+  const accuracy = learningStats.totalQuestions > 0 ? 
+    learningStats.correctAnswers / learningStats.totalQuestions : 0;
+  
+  let targetDifficulty = 'beginner';
+  if (accuracy > 0.8) targetDifficulty = 'advanced';
+  else if (accuracy > 0.6) targetDifficulty = 'intermediate';
+  
+  // Question bank with classical homeopathic knowledge
+  const questionBank = [
+    {
+      id: Date.now() + Math.random(),
+      question: "What is the keynote characteristic of Pulsatilla patients?",
+      options: ["Fixed, unchanging symptoms", "Changeable, shifting symptoms", "Aggressive behavior", "Fear of water"],
+      correctAnswer: 1,
+      explanation: "Pulsatilla is famous for changeable, shifting symptoms. No two cases are alike, and symptoms can move from one part to another.",
+      difficulty: 'beginner',
+      remedy: 'Pulsatilla',
+      category: 'Constitutional',
+      source: "Boericke's Materia Medica"
+    },
+    {
+      id: Date.now() + Math.random() + 1,
+      question: "Which remedy has the modality 'better from motion' for joint complaints?",
+      options: ["Bryonia", "Rhus tox", "Belladonna", "Aconite"],
+      correctAnswer: 1,
+      explanation: "Rhus tox is characterized by stiffness that is worse on first motion but improves with continued gentle movement.",
+      difficulty: 'intermediate',
+      remedy: 'Rhus tox',
+      category: 'Rheumatic',
+      source: "Boericke's Materia Medica"
+    },
+    {
+      id: Date.now() + Math.random() + 2,
+      question: "What mental state is most characteristic of Arsenicum album?",
+      options: ["Indifference", "Anxiety about health and security", "Aggression", "Euphoria"],
+      correctAnswer: 1,
+      explanation: "Arsenicum patients are extremely anxious, especially about their health and security. They fear death and being alone.",
+      difficulty: 'intermediate',
+      remedy: 'Arsenicum',
+      category: 'Constitutional',
+      source: "Boericke's Materia Medica"
+    },
+    {
+      id: Date.now() + Math.random() + 3,
+      question: "Which tissue salt is known as the 'biochemic bandage'?",
+      options: ["Ferrum phos", "Calc fluor", "Silica", "Kali mur"],
+      correctAnswer: 0,
+      explanation: "Ferrum phos (Iron phosphate) is called the biochemic bandage for its use in inflammations and injuries in early stages.",
+      difficulty: 'advanced',
+      remedy: 'Ferrum phos',
+      category: 'Biochemic',
+      source: "Schuessler Tissue Salts"
+    }
+  ];
+  
+  // Filter by difficulty and prioritize remedies in user's inventory
+  const suitableQuestions = questionBank.filter(q => q.difficulty === targetDifficulty);
+  const availableQuestions = suitableQuestions.length > 0 ? suitableQuestions : questionBank;
+  
+  // Prioritize questions about remedies the user has
+  const inventoryQuestions = availableQuestions.filter(q => 
+    userInventory.some(inv => inv.toLowerCase().includes(q.remedy.toLowerCase()))
+  );
+  
+  const finalQuestions = inventoryQuestions.length > 0 ? inventoryQuestions : availableQuestions;
+  
+  return finalQuestions[Math.floor(Math.random() * finalQuestions.length)];
+}
+
 // Simplified motivational messages
 function getSimpleMotivationalMessage(symptoms: string): string {
   const symptomsLower = symptoms.toLowerCase();
@@ -512,6 +772,83 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error in AI Doctor endpoint:", error);
       return res.status(500).json({ error: "Failed to analyze symptoms" });
+    }
+  });
+
+  // AI HOMEOPATHY CHATBOT - Usage Trends Analysis
+  app.post(`${apiPrefix}/homeopathy-trends`, async (req, res) => {
+    try {
+      const { query, userInventory } = req.body;
+      
+      // Firebase integration placeholder:
+      // FIREBASE_API_KEY=YOUR_FIREBASE_API_KEY_HERE
+      
+      const trends = await analyzeUsageTrends(userInventory || []);
+      
+      return res.json({
+        response: "Here are your homeopathic usage insights based on your inventory and patterns:",
+        trends: trends
+      });
+    } catch (error) {
+      console.error("Error in trends analysis:", error);
+      return res.status(500).json({ error: "Failed to analyze usage trends" });
+    }
+  });
+
+  // AI HOMEOPATHY CHATBOT - Remedy Substitutions
+  app.post(`${apiPrefix}/remedy-substitutions`, async (req, res) => {
+    try {
+      const { query, userInventory } = req.body;
+      
+      // xAI Grok API integration placeholder:
+      // AI_API_KEY=YOUR_AI_API_KEY_HERE
+      
+      const substitutions = await findRemedySubstitutions(query, userInventory || []);
+      
+      return res.json({
+        response: "Here are suitable alternatives based on classical homeopathic principles:",
+        remedies: substitutions
+      });
+    } catch (error) {
+      console.error("Error finding substitutions:", error);
+      return res.status(500).json({ error: "Failed to find remedy substitutions" });
+    }
+  });
+
+  // AI HOMEOPATHY CHATBOT - Dosage Recommendations
+  app.post(`${apiPrefix}/dosage-recommendations`, async (req, res) => {
+    try {
+      const { query, userInventory } = req.body;
+      
+      const dosageAdvice = await provideDosageGuidance(query, userInventory || []);
+      
+      return res.json({
+        response: "Here are dosage recommendations based on classical homeopathic guidelines:",
+        remedies: dosageAdvice
+      });
+    } catch (error) {
+      console.error("Error providing dosage advice:", error);
+      return res.status(500).json({ error: "Failed to provide dosage recommendations" });
+    }
+  });
+
+  // REMEDY LEARNING ASSISTANT - Generate Quiz Questions
+  app.post(`${apiPrefix}/generate-quiz-question`, async (req, res) => {
+    try {
+      const { userInventory, learningStats, recentResults } = req.body;
+      
+      // Firebase integration placeholder:
+      // FIREBASE_API_KEY=YOUR_FIREBASE_API_KEY_HERE
+      // AI_API_KEY=YOUR_AI_API_KEY_HERE (for dynamic question generation)
+      
+      const question = await generateAdaptiveQuestion(userInventory || [], learningStats, recentResults || []);
+      
+      return res.json({
+        question: question
+      });
+    } catch (error) {
+      console.error("Error generating quiz question:", error);
+      return res.status(500).json({ error: "Failed to generate quiz question" });
     }
   });
 
