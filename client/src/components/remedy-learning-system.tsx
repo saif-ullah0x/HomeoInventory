@@ -24,6 +24,23 @@ interface RemedyLearningSystemProps {
   onClose: () => void;
 }
 
+interface Question {
+  id: number;
+  question: string;
+  options: string[];
+  correctAnswer: number;
+  explanation: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+}
+
+interface UserProgress {
+  completedRemedies: number[];
+  totalQuestions: number;
+  correctAnswers: number;
+  level: string;
+  streak: number;
+}
+
 interface Remedy {
   id: number;
   name: string;
@@ -45,6 +62,62 @@ interface Remedy {
 }
 
 // Homeopathic remedies database
+// Sample quiz questions for each remedy
+const QUESTIONS: Question[] = [
+  {
+    id: 1,
+    question: "What is the primary indication for Arnica Montana?",
+    options: [
+      "Fever with thirst",
+      "Trauma and bruising",
+      "Headache with nausea",
+      "Anxiety with restlessness"
+    ],
+    correctAnswer: 1,
+    explanation: "Arnica Montana is primarily indicated for trauma, bruising, and physical injuries. It helps with the shock and soreness that follows injuries.",
+    difficulty: "beginner"
+  },
+  {
+    id: 2,
+    question: "Which of the following is a characteristic mental symptom of Arnica?",
+    options: [
+      "Fear of death",
+      "Irritability and anger",
+      "Saying 'I am fine' when clearly injured",
+      "Confusion about identity"
+    ],
+    correctAnswer: 2,
+    explanation: "A characteristic mental symptom of Arnica is that the patient often says they are fine or refuses help when they are clearly injured.",
+    difficulty: "intermediate"
+  },
+  {
+    id: 3,
+    question: "What condition is Aconitum Napellus best known for treating?",
+    options: [
+      "Chronic joint pain",
+      "Sudden illness with fear after exposure to cold wind",
+      "Digestive disorders",
+      "Skin conditions"
+    ],
+    correctAnswer: 1,
+    explanation: "Aconitum is best known for treating sudden, violent onset of symptoms, particularly after exposure to cold, dry wind. Fear and restlessness are key symptoms.",
+    difficulty: "beginner"
+  },
+  {
+    id: 4,
+    question: "Which of these is a key modality for Belladonna?",
+    options: [
+      "Better from cold applications",
+      "Worse from light and noise",
+      "Better from eating",
+      "Worse from rest"
+    ],
+    correctAnswer: 1,
+    explanation: "Belladonna symptoms are typically worse from light, noise, touch, and jarring. The affected parts are often hot, red, and throbbing.",
+    difficulty: "intermediate"
+  }
+];
+
 const REMEDIES_DATABASE: Remedy[] = [
   {
     id: 1,
@@ -168,18 +241,96 @@ const REMEDIES_DATABASE: Remedy[] = [
 export default function RemedyLearningSystem({ isOpen, onClose }: RemedyLearningSystemProps) {
   const [selectedRemedyId, setSelectedRemedyId] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState("overview");
+  const [currentView, setCurrentView] = useState<'study' | 'quiz'>('study');
+  const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
+  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const [showResult, setShowResult] = useState(false);
+  const [userProgress, setUserProgress] = useState<UserProgress>({
+    completedRemedies: [],
+    totalQuestions: 0,
+    correctAnswers: 0,
+    level: 'beginner',
+    streak: 0
+  });
 
   // Get the selected remedy
   const selectedRemedy = selectedRemedyId 
     ? REMEDIES_DATABASE.find(r => r.id === selectedRemedyId) 
     : null;
+    
+  // Get questions for the selected remedy
+  const remedyQuestions = selectedRemedyId
+    ? QUESTIONS.filter(q => q.question.includes(REMEDIES_DATABASE.find(r => r.id === selectedRemedyId)?.name || ''))
+    : [];
 
   const startStudy = (remedy: Remedy) => {
     setSelectedRemedyId(remedy.id);
+    setCurrentView('study');
+  };
+
+  const startQuiz = () => {
+    if (remedyQuestions.length > 0) {
+      setCurrentQuestion(remedyQuestions[0]);
+      setSelectedAnswer(null);
+      setShowResult(false);
+      setCurrentView('quiz');
+    }
   };
 
   const backToOverview = () => {
     setSelectedRemedyId(null);
+    setCurrentView('study');
+  };
+  
+  const backToStudy = () => {
+    setCurrentView('study');
+    setCurrentQuestion(null);
+  };
+
+  const handleAnswerSelect = (index: number) => {
+    if (!showResult) {
+      setSelectedAnswer(index);
+    }
+  };
+
+  const checkAnswer = () => {
+    if (selectedAnswer !== null) {
+      setShowResult(true);
+      if (currentQuestion && selectedAnswer === currentQuestion.correctAnswer) {
+        setUserProgress(prev => ({
+          ...prev,
+          correctAnswers: prev.correctAnswers + 1,
+          totalQuestions: prev.totalQuestions + 1,
+          streak: prev.streak + 1
+        }));
+      } else {
+        setUserProgress(prev => ({
+          ...prev,
+          totalQuestions: prev.totalQuestions + 1,
+          streak: 0
+        }));
+      }
+    }
+  };
+
+  const nextQuestion = () => {
+    if (currentQuestion) {
+      const currentIndex = remedyQuestions.findIndex(q => q.id === currentQuestion.id);
+      if (currentIndex < remedyQuestions.length - 1) {
+        setCurrentQuestion(remedyQuestions[currentIndex + 1]);
+        setSelectedAnswer(null);
+        setShowResult(false);
+      } else {
+        // Quiz completed
+        if (selectedRemedyId && !userProgress.completedRemedies.includes(selectedRemedyId)) {
+          setUserProgress(prev => ({
+            ...prev,
+            completedRemedies: [...prev.completedRemedies, selectedRemedyId]
+          }));
+        }
+        setCurrentView('study');
+      }
+    }
   };
 
   return (
@@ -397,6 +548,17 @@ export default function RemedyLearningSystem({ isOpen, onClose }: RemedyLearning
                           </p>
                         </CardContent>
                       </Card>
+                      
+                      {/* Test Your Knowledge Button */}
+                      <div className="mt-6 flex justify-center">
+                        <Button 
+                          onClick={startQuiz}
+                          className="bg-purple-600 hover:bg-purple-700 text-white"
+                        >
+                          <Brain className="mr-2 h-4 w-4" />
+                          Test Your Knowledge
+                        </Button>
+                      </div>
                     </div>
                   )}
                 </div>
