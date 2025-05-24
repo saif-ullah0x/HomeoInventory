@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -248,15 +248,10 @@ const QUESTIONS_DATABASE: Question[] = [
 ];
 
 export default function RemedyLearningSystem({ isOpen, onClose }: RemedyLearningSystemProps) {
-  const [currentView, setCurrentView] = useState<'overview' | 'study' | 'quiz'>('overview');
-  const [selectedRemedy, setSelectedRemedy] = useState<Remedy | null>(null);
-  const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
-  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
-  const [showResult, setShowResult] = useState(false);
-  const [userProgress, setUserProgress] = useState<UserProgress>({
-    currentRemedy: 0,
+  const [selectedRemedyId, setSelectedRemedyId] = useState<number | null>(null);
+  const [activeTab, setActiveTab] = useState('overview');
+  const [userProgress, setUserProgress] = useState({
     completedRemedies: [],
-    currentScore: 0,
     totalQuestions: 0,
     correctAnswers: 0,
     level: 'beginner',
@@ -433,8 +428,8 @@ export default function RemedyLearningSystem({ isOpen, onClose }: RemedyLearning
     return (
       <div className="h-full flex flex-col">
         {/* Header */}
-        <div className="p-6 border-b bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900">
-          <div className="flex items-center justify-between mb-4">
+        <div className="p-4 border-b bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900">
+          <div className="flex items-center justify-between mb-2">
             <Button
               variant="ghost"
               onClick={() => setCurrentView('overview')}
@@ -443,39 +438,273 @@ export default function RemedyLearningSystem({ isOpen, onClose }: RemedyLearning
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Overview
             </Button>
-            <Badge className="bg-purple-100 text-purple-800">
-              {selectedRemedy.category}
-            </Badge>
+            <div className="flex space-x-2">
+              <Button variant="outline" size="sm" onClick={startQuiz} className="bg-purple-100 text-purple-800 border-purple-300 hover:bg-purple-200">
+                <Brain className="h-4 w-4 mr-1" />
+                Start Quiz
+              </Button>
+              <Badge className="bg-purple-100 text-purple-800">
+                {selectedRemedy.category}
+              </Badge>
+            </div>
           </div>
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+          <div className="space-y-1">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
               {selectedRemedy.name}
             </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-400 italic">
+            <p className="text-sm text-gray-600 dark:text-gray-400 italic">
               {selectedRemedy.fullName}
             </p>
           </div>
         </div>
 
-        {/* Content */}
-        <ScrollArea className="flex-1">
-          <div className="p-6 space-y-6">
-            {/* Description */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Lightbulb className="h-5 w-5 text-yellow-500" />
-                  Overview
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                  {selectedRemedy.description}
-                </p>
-              </CardContent>
-            </Card>
+        {/* Content with Tabs */}
+        <div className="border-b">
+          <div className="flex overflow-x-auto">
+            <TabsList className="bg-transparent p-0 h-auto">
+              <TabsTrigger 
+                value="overview" 
+                onClick={() => setActiveTab('overview')}
+                className={`px-4 py-2 rounded-none border-b-2 ${activeTab === 'overview' ? 'border-purple-600 text-purple-700' : 'border-transparent'}`}
+              >
+                Overview
+              </TabsTrigger>
+              <TabsTrigger 
+                value="symptoms" 
+                onClick={() => setActiveTab('symptoms')}
+                className={`px-4 py-2 rounded-none border-b-2 ${activeTab === 'symptoms' ? 'border-purple-600 text-purple-700' : 'border-transparent'}`}
+              >
+                Symptoms
+              </TabsTrigger>
+              <TabsTrigger 
+                value="modalities" 
+                onClick={() => setActiveTab('modalities')}
+                className={`px-4 py-2 rounded-none border-b-2 ${activeTab === 'modalities' ? 'border-purple-600 text-purple-700' : 'border-transparent'}`}
+              >
+                Modalities
+              </TabsTrigger>
+              <TabsTrigger 
+                value="practice" 
+                onClick={() => setActiveTab('practice')}
+                className={`px-4 py-2 rounded-none border-b-2 ${activeTab === 'practice' ? 'border-purple-600 text-purple-700' : 'border-transparent'}`}
+              >
+                Practice Quiz
+              </TabsTrigger>
+            </TabsList>
+          </div>
+        </div>
+        
+        {/* Scrollable Content Area */}
+        <ScrollArea className="flex-1 overflow-auto">
+          <div className="p-4 space-y-4">
+            {activeTab === 'overview' && (
+              <>
+                {/* Description */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Lightbulb className="h-5 w-5 text-yellow-500" />
+                      Overview
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                      {selectedRemedy.description}
+                    </p>
+                  </CardContent>
+                </Card>
 
-            {/* Key Uses */}
+                {/* Key Uses */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <CheckCircle2 className="h-5 w-5 text-green-500" />
+                      Key Uses
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      {selectedRemedy.keyUses.map((use, index) => (
+                        <div key={index} className="flex items-start gap-2">
+                          <div className="bg-green-100 text-green-800 rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <CheckCircle2 className="h-3 w-3" />
+                          </div>
+                          <span className="text-gray-700 dark:text-gray-300">{use}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </>
+            )}
+
+            {activeTab === 'symptoms' && (
+              <div className="space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Heart className="h-5 w-5 text-red-500" />
+                      Mental & Emotional Symptoms
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {selectedRemedy.mentalSymptoms.map((symptom, index) => (
+                        <div key={index} className="flex items-start gap-2">
+                          <div className="bg-red-100 text-red-800 rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <span className="text-xs">{index + 1}</span>
+                          </div>
+                          <span className="text-gray-700 dark:text-gray-300">{symptom}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Leaf className="h-5 w-5 text-blue-500" />
+                      Physical Symptoms
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {selectedRemedy.physicalSymptoms.map((symptom, index) => (
+                        <div key={index} className="flex items-start gap-2">
+                          <div className="bg-blue-100 text-blue-800 rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <span className="text-xs">{index + 1}</span>
+                          </div>
+                          <span className="text-gray-700 dark:text-gray-300">{symptom}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
+            {activeTab === 'modalities' && (
+              <div className="space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <XCircle className="h-5 w-5 text-red-500" />
+                      Worse From
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {selectedRemedy.modalities.worse.map((item, index) => (
+                        <Badge key={index} variant="outline" className="mr-2 mb-2 bg-red-50 text-red-800 border-red-200">
+                          {item}
+                        </Badge>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <CheckCircle2 className="h-5 w-5 text-green-500" />
+                      Better From
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {selectedRemedy.modalities.better.map((item, index) => (
+                        <Badge key={index} variant="outline" className="mr-2 mb-2 bg-green-50 text-green-800 border-green-200">
+                          {item}
+                        </Badge>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Star className="h-5 w-5 text-yellow-500" />
+                      Potencies & Dosage
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    <div className="flex flex-wrap gap-2">
+                      {selectedRemedy.potencies.map((potency, index) => (
+                        <Badge key={index} className="bg-purple-100 text-purple-800">
+                          {potency}
+                        </Badge>
+                      ))}
+                    </div>
+                    <p className="text-gray-700 dark:text-gray-300 mt-2">
+                      <span className="font-medium">Recommended dosage:</span> {selectedRemedy.dosage}
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
+            {activeTab === 'practice' && (
+              <div className="space-y-4">
+                <Card className="bg-purple-50 dark:bg-gray-800 border-purple-200">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Brain className="h-5 w-5 text-purple-600" />
+                      Practice Questions
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <p className="text-gray-700 dark:text-gray-300">
+                      Test your knowledge about {selectedRemedy.name} with these practice questions.
+                    </p>
+                    <Button 
+                      onClick={startQuiz}
+                      className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
+                    >
+                      <Brain className="h-4 w-4 mr-2" />
+                      Start Quiz
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {getRemedyQuestions(selectedRemedy.id).length > 0 ? (
+                  <div className="space-y-2">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Sample question preview:
+                    </p>
+                    <Card className="border-purple-200">
+                      <CardContent className="pt-4">
+                        <p className="font-medium text-gray-800 dark:text-gray-200 mb-2">
+                          {getRemedyQuestions(selectedRemedy.id)[0].question}
+                        </p>
+                        <div className="space-y-2 mt-3">
+                          {getRemedyQuestions(selectedRemedy.id)[0].options.map((option, index) => (
+                            <div 
+                              key={index}
+                              className="flex items-center p-2 rounded-md border border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
+                            >
+                              <div className="w-6 h-6 rounded-full border-2 border-purple-500 flex items-center justify-center mr-2">
+                                <span className="text-xs">{index + 1}</span>
+                              </div>
+                              <span>{option}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                ) : (
+                  <Card>
+                    <CardContent className="pt-4">
+                      <div className="text-center text-gray-500 dark:text-gray-400">
+                        No practice questions available for this remedy yet.
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            )}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">

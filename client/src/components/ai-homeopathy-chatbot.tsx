@@ -90,7 +90,7 @@ export default function AIHomeopathyChatbot({ isOpen, onClose }: AIChatbotProps)
     if (isOpen && messages.length === 0) {
       setMessages([{
         type: 'ai',
-        content: "Hello! I'm Dr. Harmony, your AI Homeopathy Assistant! 🌿\n\nI can help you with:\n• 💊 **Symptom matching** - Tell me your symptoms\n• 📊 **Usage trends** - Ask 'show my trends'\n• 🔄 **Remedy substitutions** - Ask 'alternatives for [remedy]'\n• ⚖️ **Dosage adjustments** - Ask 'dosage for [condition]'\n\nWhat would you like to explore today?",
+        content: "Welcome to HomeoInvent AI Helper! 🌿\n\nI can assist you with:\n• 📊 **Usage trends** - Ask 'show my trends'\n• 🔄 **Remedy substitutions** - Ask 'alternatives for [remedy]'\n• ⚖️ **Dosage adjustments** - Ask 'dosage for [condition]'\n\nFor symptom-based remedy recommendations, please use the AI Doctor button. How can I help you today?",
         messageType: 'general',
         timestamp: new Date()
       }]);
@@ -391,18 +391,18 @@ export default function AIHomeopathyChatbot({ isOpen, onClose }: AIChatbotProps)
         </div>
 
         {/* Navigation Tabs */}
-        <div className="p-4 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 border-b">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+        <div className="p-3 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 border-b">
+          <div className="flex justify-between space-x-2">
             {quickActions.map((action, index) => (
               <Button
                 key={index}
                 variant="ghost"
                 size="sm"
                 onClick={action.action}
-                className="justify-center text-xs bg-white/60 hover:bg-white border border-purple-200 hover:border-purple-300 text-purple-700 hover:text-purple-800 dark:bg-gray-800/60 dark:hover:bg-gray-700 dark:text-purple-300"
+                className="flex-1 justify-center py-2 text-xs bg-white/60 hover:bg-white border border-purple-200 hover:border-purple-300 text-purple-700 hover:text-purple-800 dark:bg-gray-800/60 dark:hover:bg-gray-700 dark:text-purple-300"
               >
-                <action.icon className="h-4 w-4 mb-1" />
-                <span className="block text-center">{action.label}</span>
+                <action.icon className="h-4 w-4 mr-1.5" />
+                <span>{action.label}</span>
               </Button>
             ))}
           </div>
