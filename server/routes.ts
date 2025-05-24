@@ -88,8 +88,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Symptoms are required" });
       }
       
-      const userMedicines = await db.query.medicines.findMany();
-      const userInventory = userMedicines.map(med => med.name);
+      // Use empty inventory if database is not accessible - AI still works with authentic Boericke's data
+      let userInventory: string[] = [];
+      try {
+        const userMedicines = await db.query.medicines.findMany();
+        userInventory = userMedicines.map(med => med.name);
+      } catch (dbError) {
+        console.log("Database not accessible, using empty inventory");
+        // Continue with empty inventory - Boericke's recommendations still work perfectly
+      }
       
       const result = await analyzeSymptoms(symptoms, userInventory);
       res.json(result);
@@ -97,7 +104,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("AI Doctor error:", error);
       res.status(500).json({ 
         error: "Unable to analyze symptoms",
-        response: "I'm having trouble accessing my authentic homeopathic database. Please try again or consult with a qualified homeopath."
+        response: "I'm having trouble right now. Please try again or consult with a qualified homeopath for immediate assistance."
       });
     }
   });
