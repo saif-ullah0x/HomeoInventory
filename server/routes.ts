@@ -513,6 +513,289 @@ function getSimpleMotivationalMessage(symptoms: string): string {
   return "🌸 Natural remedies can support your body's healing!";
 }
 
+// AI Learning Assistant Functions
+async function generateLearningContent(topic: string): Promise<any> {
+  try {
+    // TODO: ADD YOUR PERPLEXITY API KEY HERE
+    // Replace 'YOUR_API_KEY_HERE' with your actual Perplexity API key
+    const PERPLEXITY_API_KEY = process.env.PERPLEXITY_API_KEY || 'YOUR_API_KEY_HERE';
+    
+    if (PERPLEXITY_API_KEY === 'YOUR_API_KEY_HERE') {
+      // Fallback to local knowledge when API key is not available
+      const fallbackContent = {
+        id: `learn-${Date.now()}`,
+        title: `Understanding ${topic}`,
+        content: `This is a comprehensive guide about ${topic} in homeopathy. Please add your Perplexity API key to get detailed, authentic learning content from reliable homeopathic sources.`,
+        keyPoints: [
+          "Add your API key to access real homeopathic knowledge",
+          "Content will be sourced from trusted homeopathic literature",
+          "Personalized learning based on classical homeopathy principles"
+        ],
+        examples: [
+          "Example content will be generated when API key is configured",
+          "Real case studies from homeopathic practice"
+        ],
+        difficulty: 'beginner' as const
+      };
+      return fallbackContent;
+    }
+
+    const response = await fetch('https://api.perplexity.ai/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${PERPLEXITY_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'llama-3.1-sonar-small-128k-online',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a knowledgeable homeopathic educator. Provide detailed, accurate learning content about homeopathic remedies and conditions. Structure your response as educational material suitable for students learning homeopathy.'
+          },
+          {
+            role: 'user',
+            content: `Create comprehensive learning content about "${topic}" in homeopathy. Include: 1) Detailed explanation, 2) Key learning points (5-7 points), 3) Practical examples (3-4 examples), 4) Difficulty level (beginner/intermediate/advanced). Focus on classical homeopathy principles and authentic sources like Boericke's Materia Medica.`
+          }
+        ],
+        max_tokens: 1000,
+        temperature: 0.3,
+        top_p: 0.9,
+        return_images: false,
+        return_related_questions: false,
+        search_recency_filter: 'month',
+        stream: false
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const content = data.choices[0].message.content;
+
+    // Parse the AI response into structured learning content
+    const learningContent = {
+      id: `learn-${Date.now()}`,
+      title: `Understanding ${topic}`,
+      content: content,
+      keyPoints: extractKeyPoints(content),
+      examples: extractExamples(content),
+      difficulty: determineDifficulty(topic)
+    };
+
+    return learningContent;
+  } catch (error) {
+    console.error('Error generating learning content:', error);
+    throw error;
+  }
+}
+
+async function generateQuizQuestions(topic: string): Promise<any> {
+  try {
+    // TODO: ADD YOUR PERPLEXITY API KEY HERE
+    // Replace 'YOUR_API_KEY_HERE' with your actual Perplexity API key
+    const PERPLEXITY_API_KEY = process.env.PERPLEXITY_API_KEY || 'YOUR_API_KEY_HERE';
+    
+    if (PERPLEXITY_API_KEY === 'YOUR_API_KEY_HERE') {
+      // Fallback quiz when API key is not available
+      const fallbackQuiz = {
+        questions: [
+          {
+            id: `q1-${Date.now()}`,
+            question: `What is the primary use of ${topic} in homeopathy?`,
+            options: [
+              "Please configure your API key to get authentic quiz questions",
+              "Real homeopathic knowledge requires API access",
+              "Authentic content from trusted sources",
+              "Professional-grade learning materials"
+            ],
+            correctAnswer: 0,
+            explanation: "Add your Perplexity API key to access real quiz questions based on classical homeopathy.",
+            remedy: topic
+          }
+        ]
+      };
+      return fallbackQuiz;
+    }
+
+    const response = await fetch('https://api.perplexity.ai/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${PERPLEXITY_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'llama-3.1-sonar-small-128k-online',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a homeopathic education specialist. Create accurate, educational quiz questions about homeopathic remedies and principles. Use authentic sources and classical homeopathy knowledge.'
+          },
+          {
+            role: 'user',
+            content: `Create 5 multiple-choice quiz questions about "${topic}" in homeopathy. Each question should have 4 options with only one correct answer. Include detailed explanations for the correct answers. Focus on practical knowledge, indications, potencies, and classical homeopathic principles. Base questions on reliable sources like Boericke's Materia Medica.`
+          }
+        ],
+        max_tokens: 1200,
+        temperature: 0.2,
+        top_p: 0.9,
+        return_images: false,
+        return_related_questions: false,
+        search_recency_filter: 'month',
+        stream: false
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const content = data.choices[0].message.content;
+
+    // Parse the AI response into structured quiz questions
+    const questions = parseQuizQuestions(content, topic);
+    
+    return { questions };
+  } catch (error) {
+    console.error('Error generating quiz questions:', error);
+    throw error;
+  }
+}
+
+// Helper functions for parsing AI responses
+function extractKeyPoints(content: string): string[] {
+  // Extract key points from AI response
+  const keyPointsMatch = content.match(/(?:key points?|important|remember):\s*(.*?)(?:\n\n|\n(?=[A-Z])|$)/gis);
+  if (keyPointsMatch) {
+    return keyPointsMatch[0]
+      .split(/\n/)
+      .filter(line => line.trim())
+      .map(line => line.replace(/^[-•*]\s*/, '').trim())
+      .filter(line => line.length > 10)
+      .slice(0, 7);
+  }
+  
+  // Fallback: extract bullet points
+  const bulletPoints = content.match(/^[-•*]\s*(.+)$/gm);
+  if (bulletPoints) {
+    return bulletPoints
+      .map(point => point.replace(/^[-•*]\s*/, '').trim())
+      .filter(point => point.length > 10)
+      .slice(0, 7);
+  }
+  
+  return [
+    "Classical homeopathy principles apply",
+    "Individualization is key to remedy selection",
+    "Potency selection based on case sensitivity",
+    "Monitor response and adjust as needed"
+  ];
+}
+
+function extractExamples(content: string): string[] {
+  // Extract examples from AI response
+  const examplesMatch = content.match(/(?:examples?|cases?|scenarios?):\s*(.*?)(?:\n\n|\n(?=[A-Z])|$)/gis);
+  if (examplesMatch) {
+    return examplesMatch[0]
+      .split(/\n/)
+      .filter(line => line.trim())
+      .map(line => line.replace(/^[-•*]\s*/, '').trim())
+      .filter(line => line.length > 20)
+      .slice(0, 4);
+  }
+  
+  return [
+    "Case study examples will be generated with API access",
+    "Practical applications in daily practice",
+    "Patient scenarios and remedy selection"
+  ];
+}
+
+function determineDifficulty(topic: string): 'beginner' | 'intermediate' | 'advanced' {
+  const beginnerTerms = ['arnica', 'belladonna', 'aconite', 'chamomilla', 'pulsatilla'];
+  const advancedTerms = ['miasms', 'constitutional', 'repertory', 'materia medica'];
+  
+  const lowerTopic = topic.toLowerCase();
+  
+  if (advancedTerms.some(term => lowerTopic.includes(term))) {
+    return 'advanced';
+  }
+  if (beginnerTerms.some(term => lowerTopic.includes(term))) {
+    return 'beginner';
+  }
+  return 'intermediate';
+}
+
+function parseQuizQuestions(content: string, topic: string): any[] {
+  // Parse AI response into structured quiz questions
+  // This is a simplified parser - in production, you'd want more robust parsing
+  const questions = [];
+  const questionBlocks = content.split(/\d+\.\s+/).filter(block => block.trim());
+  
+  questionBlocks.forEach((block, index) => {
+    if (index === 0) return; // Skip the intro text
+    
+    const lines = block.split('\n').filter(line => line.trim());
+    if (lines.length < 5) return;
+    
+    const questionText = lines[0].replace(/\?.*$/, '?').trim();
+    const options = [];
+    let correctAnswer = 0;
+    let explanation = '';
+    
+    // Extract options (A, B, C, D)
+    for (let i = 1; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (line.match(/^[A-D][\.)]\s*/)) {
+        const optionText = line.replace(/^[A-D][\.)]\s*/, '').trim();
+        options.push(optionText);
+        
+        // Check if this is marked as correct
+        if (line.toLowerCase().includes('correct') || 
+            (i + 1 < lines.length && lines[i + 1].toLowerCase().includes('correct'))) {
+          correctAnswer = options.length - 1;
+        }
+      } else if (line.toLowerCase().includes('explanation') || 
+                 line.toLowerCase().includes('answer')) {
+        explanation = line.replace(/^(explanation|answer):\s*/i, '').trim();
+      }
+    }
+    
+    if (options.length >= 4 && questionText) {
+      questions.push({
+        id: `q${index}-${Date.now()}`,
+        question: questionText,
+        options: options.slice(0, 4),
+        correctAnswer,
+        explanation: explanation || `The correct answer relates to classical homeopathic principles for ${topic}.`,
+        remedy: topic
+      });
+    }
+  });
+  
+  // Ensure we have at least one question
+  if (questions.length === 0) {
+    questions.push({
+      id: `fallback-${Date.now()}`,
+      question: `What is the primary therapeutic use of ${topic} in homeopathy?`,
+      options: [
+        "Configure your API key for authentic questions",
+        "Real homeopathic knowledge awaits",
+        "Professional learning content",
+        "Classical homeopathy principles"
+      ],
+      correctAnswer: 0,
+      explanation: "Add your Perplexity API key to access real quiz questions based on classical homeopathy.",
+      remedy: topic
+    });
+  }
+  
+  return questions.slice(0, 5); // Limit to 5 questions
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Medicine API routes
   // Prefix all routes with /api
@@ -754,6 +1037,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting shared inventory:", error);
       return res.status(500).json({ error: "Failed to delete shared inventory" });
+    }
+  });
+
+  // AI Learning Assistant routes
+  app.post(`${apiPrefix}/learning/content`, async (req, res) => {
+    try {
+      const { topic } = req.body;
+      
+      if (!topic) {
+        return res.status(400).json({ error: 'Topic is required' });
+      }
+
+      const learningContent = await generateLearningContent(topic);
+      res.json(learningContent);
+    } catch (error) {
+      console.error('Error generating learning content:', error);
+      res.status(500).json({ 
+        error: 'Failed to generate learning content',
+        message: 'Please ensure your API key is configured correctly'
+      });
+    }
+  });
+
+  app.post(`${apiPrefix}/learning/quiz`, async (req, res) => {
+    try {
+      const { topic } = req.body;
+      
+      if (!topic) {
+        return res.status(400).json({ error: 'Topic is required' });
+      }
+
+      const quizData = await generateQuizQuestions(topic);
+      res.json(quizData);
+    } catch (error) {
+      console.error('Error generating quiz questions:', error);
+      res.status(500).json({ 
+        error: 'Failed to generate quiz questions',
+        message: 'Please ensure your API key is configured correctly'
+      });
     }
   });
 
