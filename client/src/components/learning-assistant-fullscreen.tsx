@@ -242,27 +242,16 @@ export default function LearningAssistantFullscreen({ isOpen, onClose }: Learnin
     <div 
       className="fixed inset-0 bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900"
       style={{ 
-        zIndex: 9999999,
+        zIndex: 2147483647,
         position: 'fixed',
         top: 0,
         left: 0,
         right: 0,
         bottom: 0,
         width: '100vw',
-        height: '100vh',
-        isolation: 'isolate'
+        height: '100vh'
       }}
     >
-      {/* Invisible backdrop to block all pointer events */}
-      <div 
-        className="absolute inset-0 w-full h-full"
-        style={{
-          zIndex: -1,
-          pointerEvents: 'auto',
-          background: 'transparent'
-        }}
-      />
-    
       <div className="w-full h-full flex flex-col">
         {/* Purple Gradient Header with Glassy Effects */}
         <div className="relative bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 p-6 shadow-lg">
