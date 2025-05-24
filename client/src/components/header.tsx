@@ -28,6 +28,17 @@ export default function Header() {
             </Link>
           </div>
           <div className="flex items-center space-x-3">
+            {/* AI Helper */}
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setShowAIChatbot(true)}
+              className="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white border-0 flex items-center space-x-1"
+            >
+              <MessageCircle className="h-4 w-4" />
+              <span className="hidden sm:inline font-medium">AI Helper</span>
+            </Button>
+
             {/* AI Learning Feature */}
             <Button 
               variant="outline" 
