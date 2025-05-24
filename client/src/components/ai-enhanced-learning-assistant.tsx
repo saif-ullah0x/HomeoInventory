@@ -822,7 +822,16 @@ export default function AIEnhancedLearningAssistant({ isOpen, onClose }: AILearn
   return (
     <div 
       className="fixed inset-0 bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 overflow-hidden"
-      style={{ zIndex: 99999, position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
+      style={{ 
+        zIndex: 999999, 
+        position: 'fixed', 
+        top: 0, 
+        left: 0, 
+        right: 0, 
+        bottom: 0,
+        width: '100vw',
+        height: '100vh'
+      }}
     >
       <div className="w-full h-full flex flex-col animate-in fade-in slide-in-from-bottom-5 duration-300">
         {/* Glassy Header with Purple Gradient */}
