@@ -463,7 +463,7 @@ export default function AILearningAssistant({ isOpen, onClose }: AILearningAssis
                   placeholder="e.g., Arnica for bruises, fever remedies, Nux Vomica..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && (activeTab === 'learn' ? handleLearnSearch() : handleStartQuiz())}
+                  onKeyDown={(e) => e.key === 'Enter' && (activeTab === 'learn' ? handleLearnSearch() : handleStartQuiz())}
                   className="pl-4 pr-12 h-12 text-base bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border-purple-200 dark:border-purple-700 focus:border-purple-400 dark:focus:border-purple-500 shadow-lg transition-all duration-300 hover:shadow-xl focus:shadow-xl"
                 />
                 <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
