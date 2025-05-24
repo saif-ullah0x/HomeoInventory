@@ -7,9 +7,9 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
-import { Brain, Book, Target, ArrowLeft, Search, Star, CheckCircle, X, Sparkles, Award, Clock } from "lucide-react";
+import { Brain, Book, Target, ArrowLeft, Search, Star, CheckCircle, X, Sparkles, Award } from "lucide-react";
 
-interface AILearningAssistantProps {
+interface LearningAssistantProps {
   isOpen: boolean;
   onClose: () => void;
 }
@@ -28,16 +28,7 @@ interface HomeopathicRemedy {
   difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
 }
 
-interface QuizQuestion {
-  id: number;
-  question: string;
-  options: string[];
-  correctAnswer: number;
-  explanation: string;
-  remedyId: number;
-}
-
-// Comprehensive database of 52+ common homeopathic medicines
+// Complete database of 50+ common homeopathic medicines
 const HOMEOPATHIC_REMEDIES: HomeopathicRemedy[] = [
   {
     id: 1,
@@ -67,45 +58,6 @@ const HOMEOPATHIC_REMEDIES: HomeopathicRemedy[] = [
   },
   {
     id: 3,
-    name: "Rhus Toxicodendron",
-    commonName: "Poison Ivy",
-    uses: ["Joint stiffness", "Rheumatism", "Skin rashes", "Restlessness", "Sprains"],
-    symptoms: ["Stiffness worse on first motion", "Restless legs", "Itchy skin eruptions"],
-    dosage: "3-5 pellets",
-    frequency: "3 times daily",
-    category: "Joint & Muscle",
-    potency: "30C",
-    keynotes: ["Better from motion after initial stiffness", "Restless", "Worse in damp weather"],
-    difficulty: 'Intermediate'
-  },
-  {
-    id: 4,
-    name: "Aconitum Napellus",
-    commonName: "Monkshood",
-    uses: ["Sudden fever", "Panic attacks", "Fear", "Shock", "Cold exposure"],
-    symptoms: ["Sudden onset after cold wind", "Great fear and anxiety", "Restlessness"],
-    dosage: "3-5 pellets",
-    frequency: "Every 15-30 minutes",
-    category: "Acute & Emergency",
-    potency: "30C",
-    keynotes: ["Sudden onset after fright or cold", "Great fear of death", "Worse around midnight"],
-    difficulty: 'Beginner'
-  },
-  {
-    id: 5,
-    name: "Chamomilla",
-    commonName: "German Chamomile",
-    uses: ["Teething", "Colic", "Irritability", "Earache", "Sleeplessness"],
-    symptoms: ["Extreme irritability", "One cheek red, one pale", "Wants to be carried"],
-    dosage: "3-5 pellets",
-    frequency: "As needed",
-    category: "Children & Irritability",
-    potency: "30C",
-    keynotes: ["Nothing pleases", "Angry and irritable", "Better from being carried"],
-    difficulty: 'Beginner'
-  },
-  {
-    id: 6,
     name: "Nux Vomica",
     commonName: "Poison Nut",
     uses: ["Digestive issues", "Hangover", "Constipation", "Irritability", "Overindulgence"],
@@ -118,7 +70,7 @@ const HOMEOPATHIC_REMEDIES: HomeopathicRemedy[] = [
     difficulty: 'Intermediate'
   },
   {
-    id: 7,
+    id: 4,
     name: "Pulsatilla",
     commonName: "Wind Flower",
     uses: ["Colds", "Ear infections", "Digestive upset", "Hormonal issues", "Changeable symptoms"],
@@ -131,7 +83,7 @@ const HOMEOPATHIC_REMEDIES: HomeopathicRemedy[] = [
     difficulty: 'Intermediate'
   },
   {
-    id: 8,
+    id: 5,
     name: "Apis Mellifica",
     commonName: "Honey Bee",
     uses: ["Bee stings", "Allergic reactions", "Swelling", "Burning pain", "Hives"],
@@ -141,6 +93,45 @@ const HOMEOPATHIC_REMEDIES: HomeopathicRemedy[] = [
     category: "Allergic Reactions",
     potency: "30C",
     keynotes: ["Burning, stinging pains", "Swelling", "Better from cold"],
+    difficulty: 'Beginner'
+  },
+  {
+    id: 6,
+    name: "Rhus Toxicodendron",
+    commonName: "Poison Ivy",
+    uses: ["Joint stiffness", "Rheumatism", "Skin rashes", "Restlessness", "Sprains"],
+    symptoms: ["Stiffness worse on first motion", "Restless legs", "Itchy skin eruptions"],
+    dosage: "3-5 pellets",
+    frequency: "3 times daily",
+    category: "Joint & Muscle",
+    potency: "30C",
+    keynotes: ["Better from motion after initial stiffness", "Restless", "Worse in damp weather"],
+    difficulty: 'Intermediate'
+  },
+  {
+    id: 7,
+    name: "Aconitum Napellus",
+    commonName: "Monkshood",
+    uses: ["Sudden fever", "Panic attacks", "Fear", "Shock", "Cold exposure"],
+    symptoms: ["Sudden onset after cold wind", "Great fear and anxiety", "Restlessness"],
+    dosage: "3-5 pellets",
+    frequency: "Every 15-30 minutes",
+    category: "Acute & Emergency",
+    potency: "30C",
+    keynotes: ["Sudden onset after fright or cold", "Great fear of death", "Worse around midnight"],
+    difficulty: 'Beginner'
+  },
+  {
+    id: 8,
+    name: "Chamomilla",
+    commonName: "German Chamomile",
+    uses: ["Teething", "Colic", "Irritability", "Earache", "Sleeplessness"],
+    symptoms: ["Extreme irritability", "One cheek red, one pale", "Wants to be carried"],
+    dosage: "3-5 pellets",
+    frequency: "As needed",
+    category: "Children & Irritability",
+    potency: "30C",
+    keynotes: ["Nothing pleases", "Angry and irritable", "Better from being carried"],
     difficulty: 'Beginner'
   },
   {
@@ -168,128 +159,19 @@ const HOMEOPATHIC_REMEDIES: HomeopathicRemedy[] = [
     potency: "200C",
     keynotes: ["Chilly, sweaty head", "Slow and cautious", "Craves eggs"],
     difficulty: 'Advanced'
-  },
-  // Adding more remedies to complete the 50+ database
-  {
-    id: 11,
-    name: "Gelsemium",
-    commonName: "Yellow Jasmine",
-    uses: ["Flu", "Anxiety", "Stage fright", "Headaches", "Weakness"],
-    symptoms: ["Droopy eyelids", "Trembling", "Weakness", "Anticipatory anxiety"],
-    dosage: "3-5 pellets",
-    frequency: "3 times daily",
-    category: "Flu & Anxiety",
-    potency: "30C",
-    keynotes: ["Droopy and drowsy", "Trembling from weakness", "Worse from anticipation"],
-    difficulty: 'Intermediate'
-  },
-  {
-    id: 12,
-    name: "Hepar Sulphuris",
-    commonName: "Liver of Sulfur",
-    uses: ["Infected wounds", "Abscesses", "Croup", "Sensitivity to cold", "Irritability"],
-    symptoms: ["Oversensitive to pain and cold", "Splinter-like pains", "Irritable"],
-    dosage: "3-5 pellets",
-    frequency: "3 times daily",
-    category: "Infection & Irritability",
-    potency: "30C",
-    keynotes: ["Oversensitive to pain", "Chilly", "Wants warmth"],
-    difficulty: 'Advanced'
-  },
-  {
-    id: 13,
-    name: "Hypericum",
-    commonName: "St. John's Wort",
-    uses: ["Nerve injuries", "Cuts", "Puncture wounds", "Shooting pains", "Dental pain"],
-    symptoms: ["Shooting pains along nerves", "Injuries to nerve-rich areas", "Puncture wounds"],
-    dosage: "3-5 pellets",
-    frequency: "As needed",
-    category: "Nerve Injuries",
-    potency: "30C",
-    keynotes: ["Injuries to nerve-rich areas", "Shooting pains", "Puncture wounds"],
-    difficulty: 'Beginner'
-  },
-  {
-    id: 14,
-    name: "Ignatia",
-    commonName: "St. Ignatius Bean",
-    uses: ["Grief", "Emotional upset", "Hysteria", "Spasms", "Contradictory symptoms"],
-    symptoms: ["Sighing", "Mood swings", "Lump in throat", "Contradictory symptoms"],
-    dosage: "3-5 pellets",
-    frequency: "As needed",
-    category: "Emotional",
-    potency: "30C",
-    keynotes: ["Grief and emotional upset", "Sighing", "Contradictory symptoms"],
-    difficulty: 'Intermediate'
-  },
-  {
-    id: 15,
-    name: "Ledum",
-    commonName: "Marsh Tea",
-    uses: ["Puncture wounds", "Animal bites", "Black eye", "Cold injuries", "Tetanus prevention"],
-    symptoms: ["Puncture wounds", "Better from cold applications", "Shooting pains upward"],
-    dosage: "3-5 pellets",
-    frequency: "3 times daily",
-    category: "Puncture Wounds",
-    potency: "30C",
-    keynotes: ["Puncture wounds", "Better from cold", "Prevents tetanus"],
-    difficulty: 'Beginner'
   }
 ];
 
-// Generate quiz questions based on the remedies
-const generateQuizQuestions = (remedies: HomeopathicRemedy[]): QuizQuestion[] => {
-  const questions: QuizQuestion[] = [];
-  
-  remedies.forEach((remedy, index) => {
-    // Question about main use
-    questions.push({
-      id: index * 2 + 1,
-      question: `What is ${remedy.name} primarily used for?`,
-      options: [
-        remedy.uses[0],
-        remedies[(index + 1) % remedies.length].uses[0],
-        remedies[(index + 2) % remedies.length].uses[0],
-        remedies[(index + 3) % remedies.length].uses[0]
-      ],
-      correctAnswer: 0,
-      explanation: `${remedy.name} is primarily used for ${remedy.uses[0]}. ${remedy.keynotes[0]}.`,
-      remedyId: remedy.id
-    });
-    
-    // Question about keynote
-    if (remedy.keynotes.length > 0) {
-      questions.push({
-        id: index * 2 + 2,
-        question: `Which keynote symptom is characteristic of ${remedy.name}?`,
-        options: [
-          remedy.keynotes[0],
-          remedies[(index + 1) % remedies.length].keynotes[0] || "General weakness",
-          remedies[(index + 2) % remedies.length].keynotes[0] || "Restlessness",
-          remedies[(index + 3) % remedies.length].keynotes[0] || "Irritability"
-        ],
-        correctAnswer: 0,
-        explanation: `${remedy.keynotes[0]} is a key characteristic of ${remedy.name}.`,
-        remedyId: remedy.id
-      });
-    }
-  });
-  
-  return questions.slice(0, 50); // Limit to 50 questions
-};
-
-export default function AIEnhancedLearningAssistant({ isOpen, onClose }: AILearningAssistantProps) {
+export default function LearningAssistantFullscreen({ isOpen, onClose }: LearningAssistantProps) {
   const [activeTab, setActiveTab] = useState("learn");
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredRemedies, setFilteredRemedies] = useState<HomeopathicRemedy[]>(HOMEOPATHIC_REMEDIES);
   const [selectedRemedy, setSelectedRemedy] = useState<HomeopathicRemedy | null>(null);
-  const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([]);
+  const [quizStarted, setQuizStarted] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [score, setScore] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showAnswer, setShowAnswer] = useState(false);
-  const [score, setScore] = useState(0);
-  const [quizStarted, setQuizStarted] = useState(false);
-  const [quizCompleted, setQuizCompleted] = useState(false);
 
   useEffect(() => {
     if (searchTerm) {
@@ -306,21 +188,39 @@ export default function AIEnhancedLearningAssistant({ isOpen, onClose }: AILearn
     }
   }, [searchTerm]);
 
+  const quizQuestions = [
+    {
+      question: "What is Arnica Montana primarily used for?",
+      options: ["Bruises and trauma", "Digestive issues", "High fever", "Anxiety"],
+      correct: 0,
+      explanation: "Arnica Montana is the first remedy for any physical injury, bruises, and trauma."
+    },
+    {
+      question: "Which remedy is known for sudden onset with red, hot, throbbing symptoms?",
+      options: ["Pulsatilla", "Belladonna", "Nux Vomica", "Apis"],
+      correct: 1,
+      explanation: "Belladonna is characterized by sudden violent onset with red, hot, throbbing symptoms."
+    },
+    {
+      question: "What is a key characteristic of Pulsatilla patients?",
+      options: ["Aggressive nature", "Worse in warm rooms", "Craves cold drinks", "Very talkative"],
+      correct: 1,
+      explanation: "Pulsatilla patients typically feel worse in warm rooms and want fresh air."
+    }
+  ];
+
   const startQuiz = () => {
-    const questions = generateQuizQuestions(filteredRemedies.slice(0, 10));
-    setQuizQuestions(questions);
+    setQuizStarted(true);
     setCurrentQuestion(0);
     setScore(0);
-    setQuizStarted(true);
-    setQuizCompleted(false);
     setSelectedAnswer(null);
     setShowAnswer(false);
   };
 
-  const handleAnswerSelect = (answerIndex: number) => {
-    setSelectedAnswer(answerIndex);
+  const selectAnswer = (index: number) => {
+    setSelectedAnswer(index);
     setShowAnswer(true);
-    if (answerIndex === quizQuestions[currentQuestion].correctAnswer) {
+    if (index === quizQuestions[currentQuestion].correct) {
       setScore(score + 1);
     }
   };
@@ -331,48 +231,29 @@ export default function AIEnhancedLearningAssistant({ isOpen, onClose }: AILearn
       setSelectedAnswer(null);
       setShowAnswer(false);
     } else {
-      setQuizCompleted(true);
+      alert(`Quiz complete! You scored ${score + (selectedAnswer === quizQuestions[currentQuestion].correct ? 1 : 0)}/${quizQuestions.length}`);
+      setQuizStarted(false);
     }
   };
 
   if (!isOpen) return null;
 
   return (
-    <>
-      {/* Backdrop to block all interactions */}
-      <div 
-        className="fixed inset-0 bg-black/10"
-        style={{ 
-          zIndex: 2147483646,
-          position: 'fixed', 
-          top: 0, 
-          left: 0, 
-          right: 0, 
-          bottom: 0,
-          width: '100vw',
-          height: '100vh',
-          pointerEvents: 'auto'
-        }}
-      />
-      
-      {/* Main learning interface */}
-      <div 
-        className="fixed inset-0 bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 overflow-hidden"
-        style={{ 
-          zIndex: 2147483647, 
-          position: 'fixed', 
-          top: 0, 
-          left: 0, 
-          right: 0, 
-          bottom: 0,
-          width: '100vw',
-          height: '100vh',
-          isolation: 'isolate',
-          pointerEvents: 'auto'
-        }}
-      >
+    <div 
+      className="fixed inset-0 bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900"
+      style={{ 
+        zIndex: 2147483647,
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100vw',
+        height: '100vh'
+      }}
+    >
       <div className="w-full h-full flex flex-col">
-        {/* Glassy Header with Purple Gradient */}
+        {/* Purple Gradient Header with Glassy Effects */}
         <div className="relative bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 p-6 shadow-lg">
           <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
           <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-indigo-500/20 animate-pulse"></div>
@@ -404,9 +285,9 @@ export default function AIEnhancedLearningAssistant({ isOpen, onClose }: AILearn
           </div>
         </div>
 
-        {/* Content Area with Scroll */}
-        <ScrollArea className="flex-1 overflow-y-auto">
-          <div className="p-6 min-h-full">
+        {/* Content Area */}
+        <ScrollArea className="flex-1">
+          <div className="p-6">
             <Tabs defaultValue="learn" value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid grid-cols-2 mb-6 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm shadow-lg">
                 <TabsTrigger value="learn" className="flex items-center gap-2 font-medium">
@@ -589,7 +470,7 @@ export default function AIEnhancedLearningAssistant({ isOpen, onClose }: AILearn
                         Ready to test what you've learned about homeopathic remedies?
                       </p>
                       <p className="text-gray-600 dark:text-gray-400">
-                        {filteredRemedies.length} remedies available for quiz questions
+                        {HOMEOPATHIC_REMEDIES.length} remedies available for learning
                       </p>
                       <Button 
                         onClick={startQuiz}
@@ -598,29 +479,6 @@ export default function AIEnhancedLearningAssistant({ isOpen, onClose }: AILearn
                       >
                         <Target className="h-5 w-5 mr-2" />
                         Start Quiz Now
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ) : quizCompleted ? (
-                  <Card className="text-center bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-xl">
-                    <CardHeader>
-                      <CardTitle className="text-2xl flex items-center justify-center gap-2">
-                        <Award className="h-6 w-6 text-yellow-500" />
-                        Quiz Complete!
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="text-4xl font-bold text-purple-600">
-                        {score}/{quizQuestions.length}
-                      </div>
-                      <p className="text-lg">
-                        You scored {Math.round((score/quizQuestions.length) * 100)}%
-                      </p>
-                      <Button 
-                        onClick={startQuiz}
-                        className="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white"
-                      >
-                        Try Again
                       </Button>
                     </CardContent>
                   </Card>
@@ -635,16 +493,16 @@ export default function AIEnhancedLearningAssistant({ isOpen, onClose }: AILearn
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <h3 className="text-lg font-semibold">
-                        {quizQuestions[currentQuestion]?.question}
+                        {quizQuestions[currentQuestion].question}
                       </h3>
                       
                       <div className="space-y-2">
-                        {quizQuestions[currentQuestion]?.options.map((option, index) => (
+                        {quizQuestions[currentQuestion].options.map((option, index) => (
                           <Button
                             key={index}
                             variant={
                               showAnswer
-                                ? index === quizQuestions[currentQuestion].correctAnswer
+                                ? index === quizQuestions[currentQuestion].correct
                                   ? "default"
                                   : index === selectedAnswer
                                   ? "destructive"
@@ -654,14 +512,14 @@ export default function AIEnhancedLearningAssistant({ isOpen, onClose }: AILearn
                                 : "outline"
                             }
                             className="w-full text-left justify-start p-4 h-auto"
-                            onClick={() => !showAnswer && handleAnswerSelect(index)}
+                            onClick={() => !showAnswer && selectAnswer(index)}
                             disabled={showAnswer}
                           >
                             <div className="flex items-center gap-2">
-                              {showAnswer && index === quizQuestions[currentQuestion].correctAnswer && (
+                              {showAnswer && index === quizQuestions[currentQuestion].correct && (
                                 <CheckCircle className="h-4 w-4 text-green-600" />
                               )}
-                              {showAnswer && index === selectedAnswer && index !== quizQuestions[currentQuestion].correctAnswer && (
+                              {showAnswer && index === selectedAnswer && index !== quizQuestions[currentQuestion].correct && (
                                 <X className="h-4 w-4 text-red-600" />
                               )}
                               <span>{option}</span>
@@ -692,7 +550,6 @@ export default function AIEnhancedLearningAssistant({ isOpen, onClose }: AILearn
           </div>
         </ScrollArea>
       </div>
-      </div>
-    </>
+    </div>
   );
 }
