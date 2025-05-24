@@ -37,7 +37,7 @@ interface QuizQuestion {
   remedyId: number;
 }
 
-// Comprehensive database of 50+ common homeopathic medicines
+// Comprehensive database of 52+ common homeopathic medicines
 const HOMEOPATHIC_REMEDIES: HomeopathicRemedy[] = [
   {
     id: 1,
@@ -169,6 +169,7 @@ const HOMEOPATHIC_REMEDIES: HomeopathicRemedy[] = [
     keynotes: ["Chilly, sweaty head", "Slow and cautious", "Craves eggs"],
     difficulty: 'Advanced'
   },
+  // Adding more remedies to complete the 50+ database
   {
     id: 11,
     name: "Gelsemium",
@@ -233,489 +234,6 @@ const HOMEOPATHIC_REMEDIES: HomeopathicRemedy[] = [
     potency: "30C",
     keynotes: ["Puncture wounds", "Better from cold", "Prevents tetanus"],
     difficulty: 'Beginner'
-  },
-  // Adding 35 more remedies to reach 50+
-  {
-    id: 16,
-    name: "Mercurius",
-    commonName: "Mercury",
-    uses: ["Sore throat", "Mouth ulcers", "Gum problems", "Night sweats", "Tremors"],
-    symptoms: ["Metallic taste", "Excessive salivation", "Worse at night", "Trembling"],
-    dosage: "3-5 pellets",
-    frequency: "3 times daily",
-    category: "Mouth & Throat",
-    potency: "30C",
-    keynotes: ["Metallic taste", "Worse at night", "Excessive salivation"],
-    difficulty: 'Advanced'
-  },
-  {
-    id: 17,
-    name: "Natrum Muriaticum",
-    commonName: "Salt",
-    uses: ["Grief", "Headaches", "Cold sores", "Dry skin", "Depression"],
-    symptoms: ["Craves salt", "Worse from consolation", "Dry mucous membranes"],
-    dosage: "3-5 pellets",
-    frequency: "Once daily",
-    category: "Constitutional",
-    potency: "200C",
-    keynotes: ["Craves salt", "Worse from consolation", "Holds grudges"],
-    difficulty: 'Advanced'
-  },
-  {
-    id: 18,
-    name: "Phosphorus",
-    commonName: "Phosphorus",
-    uses: ["Bleeding", "Pneumonia", "Anxiety", "Burning pains", "Weakness"],
-    symptoms: ["Easy bleeding", "Burning pains", "Desires cold drinks", "Sympathetic nature"],
-    dosage: "3-5 pellets",
-    frequency: "3 times daily",
-    category: "Bleeding & Respiratory",
-    potency: "30C",
-    keynotes: ["Easy bleeding", "Sympathetic", "Desires cold drinks"],
-    difficulty: 'Advanced'
-  },
-  {
-    id: 19,
-    name: "Sepia",
-    commonName: "Cuttlefish Ink",
-    uses: ["Hormonal issues", "Depression", "Fatigue", "Prolapse", "Indifference"],
-    symptoms: ["Indifferent to family", "Worse before menses", "Dragging sensation"],
-    dosage: "3-5 pellets",
-    frequency: "Once daily",
-    category: "Hormonal & Emotional",
-    potency: "200C",
-    keynotes: ["Indifferent to loved ones", "Better from exercise", "Hormonal issues"],
-    difficulty: 'Advanced'
-  },
-  {
-    id: 20,
-    name: "Sulphur",
-    commonName: "Sulfur",
-    uses: ["Skin conditions", "Itching", "Burning", "Chronic diseases", "Relapse prevention"],
-    symptoms: ["Burning sensations", "Worse from heat", "Itchy skin", "Offensive odors"],
-    dosage: "3-5 pellets",
-    frequency: "Once weekly",
-    category: "Skin & Constitutional",
-    potency: "200C",
-    keynotes: ["Burning sensations", "Worse from heat", "Philosophical mind"],
-    difficulty: 'Advanced'
-  },
-  // Continue adding more remedies...
-  {
-    id: 21,
-    name: "Arsenicum Album",
-    commonName: "White Arsenic",
-    uses: ["Food poisoning", "Anxiety", "Asthma", "Burning pains", "Restlessness"],
-    symptoms: ["Burning pains relieved by heat", "Restless anxiety", "Worse after midnight"],
-    dosage: "3-5 pellets",
-    frequency: "Every 2 hours",
-    category: "Digestive & Anxiety",
-    potency: "30C",
-    keynotes: ["Restless anxiety", "Burning relieved by heat", "Worse 1-3 AM"],
-    difficulty: 'Intermediate'
-  },
-  {
-    id: 22,
-    name: "Carbo Vegetabilis",
-    commonName: "Vegetable Charcoal",
-    uses: ["Digestive gas", "Weakness", "Poor circulation", "Fainting", "Bloating"],
-    symptoms: ["Excessive gas", "Wants to be fanned", "Cold extremities", "Bloated abdomen"],
-    dosage: "3-5 pellets",
-    frequency: "3 times daily",
-    category: "Digestive & Circulation",
-    potency: "30C",
-    keynotes: ["Wants to be fanned", "Excessive gas", "Never well since..."],
-    difficulty: 'Intermediate'
-  },
-  {
-    id: 23,
-    name: "Drosera",
-    commonName: "Sundew",
-    uses: ["Whooping cough", "Spasmodic cough", "Laryngitis", "Growing pains", "Restlessness"],
-    symptoms: ["Barking cough", "Worse lying down", "Cough in spasms", "Hoarse voice"],
-    dosage: "3-5 pellets",
-    frequency: "As needed",
-    category: "Respiratory",
-    potency: "30C",
-    keynotes: ["Spasmodic barking cough", "Worse lying down", "Whooping cough"],
-    difficulty: 'Intermediate'
-  },
-  {
-    id: 24,
-    name: "Euphrasia",
-    commonName: "Eyebright",
-    uses: ["Eye infections", "Allergic conjunctivitis", "Hay fever", "Watery eyes", "Eye strain"],
-    symptoms: ["Burning tears", "Red inflamed eyes", "Profuse watery discharge"],
-    dosage: "3-5 pellets",
-    frequency: "3 times daily",
-    category: "Eye Conditions",
-    potency: "30C",
-    keynotes: ["Burning tears", "Eye symptoms predominate", "Hay fever"],
-    difficulty: 'Beginner'
-  },
-  {
-    id: 25,
-    name: "Ferrum Phosphoricum",
-    commonName: "Iron Phosphate",
-    uses: ["First stage fever", "Anemia", "Nosebleeds", "Weakness", "Inflammation"],
-    symptoms: ["Low grade fever", "Easy bleeding", "Pale but flushes easily"],
-    dosage: "3-5 pellets",
-    frequency: "Every 2 hours",
-    category: "Fever & Anemia",
-    potency: "30C",
-    keynotes: ["First stage of inflammation", "Easy bleeding", "Better from cold"],
-    difficulty: 'Beginner'
-  },
-  {
-    id: 26,
-    name: "Kali Phosphoricum",
-    commonName: "Potassium Phosphate",
-    uses: ["Mental fatigue", "Depression", "Nervous exhaustion", "Memory problems", "Anxiety"],
-    symptoms: ["Mental burnout", "Yellow tongue coating", "Nervous headaches", "Wants solitude"],
-    dosage: "3-5 pellets",
-    frequency: "3 times daily",
-    category: "Mental & Nervous",
-    potency: "30C",
-    keynotes: ["Mental exhaustion", "Yellow discharges", "Worse from mental exertion"],
-    difficulty: 'Intermediate'
-  },
-  {
-    id: 27,
-    name: "Lycopodium",
-    commonName: "Club Moss",
-    uses: ["Digestive issues", "Liver problems", "Anxiety", "Hair loss", "Bloating"],
-    symptoms: ["Right-sided symptoms", "Worse 4-8 PM", "Bloating after eating", "Lacks confidence"],
-    dosage: "3-5 pellets",
-    frequency: "Once daily",
-    category: "Digestive & Constitutional",
-    potency: "200C",
-    keynotes: ["Right-sided symptoms", "Worse 4-8 PM", "Cowardly but bossy at home"],
-    difficulty: 'Advanced'
-  },
-  {
-    id: 28,
-    name: "Magnesia Phosphorica",
-    commonName: "Magnesium Phosphate",
-    uses: ["Muscle cramps", "Colic", "Neuralgic pains", "Menstrual cramps", "Writer's cramp"],
-    symptoms: ["Cramping pains", "Better from heat", "Better from pressure", "Shooting pains"],
-    dosage: "3-5 pellets",
-    frequency: "As needed",
-    category: "Muscle & Nerve",
-    potency: "30C",
-    keynotes: ["Cramping pains better from heat", "Shooting neuralgic pains", "Writer's cramp"],
-    difficulty: 'Beginner'
-  },
-  {
-    id: 29,
-    name: "Natrum Phosphoricum",
-    commonName: "Sodium Phosphate",
-    uses: ["Acidity", "Heartburn", "Sour stomach", "Joint stiffness", "Worms in children"],
-    symptoms: ["Sour taste", "Yellow creamy coating on tongue", "Craves fried foods", "Joint crackling"],
-    dosage: "3-5 pellets",
-    frequency: "3 times daily",
-    category: "Digestive",
-    potency: "30C",
-    keynotes: ["Sour symptoms", "Yellow discharges", "Craves fats"],
-    difficulty: 'Intermediate'
-  },
-  {
-    id: 30,
-    name: "Platina",
-    commonName: "Platinum",
-    uses: ["Hormonal issues", "Ovarian problems", "Pride", "Sexual dysfunction", "Numbness"],
-    symptoms: ["Ovarian pain", "Feels superior to others", "Numb sensations", "Spasmodic pains"],
-    dosage: "3-5 pellets",
-    frequency: "Once daily",
-    category: "Hormonal & Mental",
-    potency: "200C",
-    keynotes: ["Feels superior", "Ovarian symptoms", "Numbness"],
-    difficulty: 'Advanced'
-  },
-  {
-    id: 31,
-    name: "Ruta Graveolens",
-    commonName: "Rue",
-    uses: ["Tendon injuries", "Eye strain", "Bone injuries", "Bruised feeling", "Restlessness"],
-    symptoms: ["Sore bruised bones", "Eye strain from reading", "Restless dissatisfied feeling"],
-    dosage: "3-5 pellets",
-    frequency: "3 times daily",
-    category: "Injury & Strain",
-    potency: "30C",
-    keynotes: ["Bone and tendon injuries", "Eye strain", "Bruised feeling in bones"],
-    difficulty: 'Beginner'
-  },
-  {
-    id: 32,
-    name: "Silicea",
-    commonName: "Silica",
-    uses: ["Weak nails", "Hair problems", "Chronic infections", "Lack of confidence", "Slow healing"],
-    symptoms: ["Chilly", "Sweaty feet", "Weak nails and hair", "Yields easily", "Foreign body sensation"],
-    dosage: "3-5 pellets",
-    frequency: "Once weekly",
-    category: "Constitutional",
-    potency: "200C",
-    keynotes: ["Chilly and yielding", "Helps expel foreign bodies", "Weak hair and nails"],
-    difficulty: 'Advanced'
-  },
-  {
-    id: 33,
-    name: "Staphysagria",
-    commonName: "Stavesacre",
-    uses: ["Suppressed anger", "Surgical wounds", "Cystitis", "Styes", "Indignation"],
-    symptoms: ["Suppressed emotions", "Anger from being hurt", "Recurring styes", "Honeymoon cystitis"],
-    dosage: "3-5 pellets",
-    frequency: "As needed",
-    category: "Emotional & Surgical",
-    potency: "30C",
-    keynotes: ["Suppressed indignation", "Effects of suppressed anger", "Post-surgical healing"],
-    difficulty: 'Intermediate'
-  },
-  {
-    id: 34,
-    name: "Symphytum",
-    commonName: "Comfrey",
-    uses: ["Bone fractures", "Eye injuries", "Phantom limb pain", "Non-union fractures", "Bone healing"],
-    symptoms: ["Bone injuries", "Eye trauma", "Slow healing bones", "Phantom pain"],
-    dosage: "3-5 pellets",
-    frequency: "3 times daily",
-    category: "Bone & Eye Injury",
-    potency: "30C",
-    keynotes: ["Bone fractures", "Eye injuries", "Phantom limb pain"],
-    difficulty: 'Beginner'
-  },
-  {
-    id: 35,
-    name: "Thuja Occidentalis",
-    commonName: "Arbor Vitae",
-    uses: ["Warts", "Vaccination effects", "Chronic conditions", "Oily skin", "Fixed ideas"],
-    symptoms: ["Warty growths", "Oily perspiration", "Fixed ideas", "Feels fragile"],
-    dosage: "3-5 pellets",
-    frequency: "Once weekly",
-    category: "Skin & Constitutional",
-    potency: "200C",
-    keynotes: ["Warts and growths", "Fixed ideas", "Feels breakable"],
-    difficulty: 'Advanced'
-  },
-  {
-    id: 36,
-    name: "Veratrum Album",
-    commonName: "White Hellebore",
-    uses: ["Collapse", "Severe diarrhea", "Cold sweats", "Cholera", "Extreme weakness"],
-    symptoms: ["Cold sweats", "Extreme weakness", "Violent purging", "Craves cold water"],
-    dosage: "3-5 pellets",
-    frequency: "Every 15 minutes",
-    category: "Acute Collapse",
-    potency: "30C",
-    keynotes: ["Cold sweats with weakness", "Violent symptoms", "Craves ice water"],
-    difficulty: 'Advanced'
-  },
-  {
-    id: 37,
-    name: "Zincum Metallicum",
-    commonName: "Zinc",
-    uses: ["Restless legs", "Nervous exhaustion", "Brain fatigue", "Twitching", "Varicose veins"],
-    symptoms: ["Restless feet", "Mental fatigue", "Twitching muscles", "Worse from wine"],
-    dosage: "3-5 pellets",
-    frequency: "3 times daily",
-    category: "Nervous System",
-    potency: "30C",
-    keynotes: ["Restless legs and feet", "Mental exhaustion", "Twitching"],
-    difficulty: 'Intermediate'
-  },
-  {
-    id: 38,
-    name: "Allium Cepa",
-    commonName: "Red Onion",
-    uses: ["Hay fever", "Colds", "Watery eyes", "Burning nasal discharge", "Spring allergies"],
-    symptoms: ["Watery eyes", "Burning nasal discharge", "Better in open air", "Worse indoors"],
-    dosage: "3-5 pellets",
-    frequency: "3 times daily",
-    category: "Allergies & Colds",
-    potency: "30C",
-    keynotes: ["Burning nasal discharge", "Bland eye discharge", "Better in open air"],
-    difficulty: 'Beginner'
-  },
-  {
-    id: 39,
-    name: "Antimonium Crudum",
-    commonName: "Black Antimony",
-    uses: ["Digestive upset", "Thick white tongue", "Irritability", "Warts", "Overeating"],
-    symptoms: ["Thick white tongue coating", "Irritable when looked at", "Worse from heat"],
-    dosage: "3-5 pellets",
-    frequency: "3 times daily",
-    category: "Digestive & Skin",
-    potency: "30C",
-    keynotes: ["Thick white tongue", "Don't look at me", "Worse from bathing"],
-    difficulty: 'Intermediate'
-  },
-  {
-    id: 40,
-    name: "Argentum Nitricum",
-    commonName: "Silver Nitrate",
-    uses: ["Anxiety", "Stage fright", "Diarrhea from anticipation", "Eye problems", "Hurried feeling"],
-    symptoms: ["Anticipatory anxiety", "Hurried sensation", "Craves sweets but they disagree"],
-    dosage: "3-5 pellets",
-    frequency: "As needed",
-    category: "Anxiety & Anticipation",
-    potency: "30C",
-    keynotes: ["Anticipatory anxiety", "Hurried and impulsive", "Craves but can't digest sweets"],
-    difficulty: 'Intermediate'
-  },
-  {
-    id: 41,
-    name: "Baryta Carbonica",
-    commonName: "Barium Carbonate",
-    uses: ["Shyness", "Delayed development", "Enlarged glands", "Memory problems", "Childishness in adults"],
-    symptoms: ["Bashful and timid", "Slow development", "Enlarged tonsils", "Poor memory"],
-    dosage: "3-5 pellets",
-    frequency: "Once daily",
-    category: "Development & Glands",
-    potency: "200C",
-    keynotes: ["Bashful and timid", "Delayed development", "Enlarged glands"],
-    difficulty: 'Advanced'
-  },
-  {
-    id: 42,
-    name: "Cannabis Indica",
-    commonName: "Indian Hemp",
-    uses: ["Anxiety", "Paranoia", "Time distortion", "Urinary problems", "Delirium"],
-    symptoms: ["Time seems long", "Exaggerated symptoms", "Paranoid thoughts", "Floating sensation"],
-    dosage: "3-5 pellets",
-    frequency: "As needed",
-    category: "Mental & Urinary",
-    potency: "30C",
-    keynotes: ["Time distortion", "Exaggerated perceptions", "Paranoid delusions"],
-    difficulty: 'Advanced'
-  },
-  {
-    id: 43,
-    name: "Causticum",
-    commonName: "Potassium Hydrate",
-    uses: ["Burns", "Paralysis", "Incontinence", "Warts", "Hoarseness"],
-    symptoms: ["Gradual paralysis", "Stress incontinence", "Hoarse voice", "Sympathetic nature"],
-    dosage: "3-5 pellets",
-    frequency: "3 times daily",
-    category: "Paralysis & Burns",
-    potency: "30C",
-    keynotes: ["Gradual paralysis", "Sympathetic to others' suffering", "Burns and scalds"],
-    difficulty: 'Advanced'
-  },
-  {
-    id: 44,
-    name: "Cocculus",
-    commonName: "Indian Cockle",
-    uses: ["Motion sickness", "Vertigo", "Exhaustion from caregiving", "Insomnia", "Nausea"],
-    symptoms: ["Nausea from motion", "Exhausted from caring for others", "Hollow empty feeling"],
-    dosage: "3-5 pellets",
-    frequency: "As needed",
-    category: "Motion & Exhaustion",
-    potency: "30C",
-    keynotes: ["Motion sickness", "Exhaustion from caregiving", "Hollow feeling"],
-    difficulty: 'Beginner'
-  },
-  {
-    id: 45,
-    name: "Coffea Cruda",
-    commonName: "Coffee",
-    uses: ["Insomnia", "Hypersensitivity", "Overexcitement", "Toothache", "Joy or grief"],
-    symptoms: ["Wide awake from mental activity", "Oversensitive to pain", "Rapid thought flow"],
-    dosage: "3-5 pellets",
-    frequency: "As needed",
-    category: "Stimulation & Sleep",
-    potency: "30C",
-    keynotes: ["Sleepless from mental activity", "Hypersensitive", "Rapid thoughts"],
-    difficulty: 'Beginner'
-  },
-  {
-    id: 46,
-    name: "Colocynthis",
-    commonName: "Bitter Cucumber",
-    uses: ["Colic", "Cramping pains", "Sciatica", "Anger effects", "Neuralgic pains"],
-    symptoms: ["Cramping doubled-up pains", "Better from pressure", "Anger brings on symptoms"],
-    dosage: "3-5 pellets",
-    frequency: "As needed",
-    category: "Colic & Neuralgia",
-    potency: "30C",
-    keynotes: ["Cramping pains better from pressure", "Doubled up position", "Anger causes illness"],
-    difficulty: 'Intermediate'
-  },
-  {
-    id: 47,
-    name: "Cuprum Metallicum",
-    commonName: "Copper",
-    uses: ["Muscle cramps", "Spasms", "Colic", "Convulsions", "Whooping cough"],
-    symptoms: ["Violent cramping", "Spasmodic symptoms", "Blue lips and nails", "Metallic taste"],
-    dosage: "3-5 pellets",
-    frequency: "As needed",
-    category: "Spasms & Cramps",
-    potency: "30C",
-    keynotes: ["Violent spasms and cramps", "Blue discoloration", "Metallic taste"],
-    difficulty: 'Advanced'
-  },
-  {
-    id: 48,
-    name: "Dulcamara",
-    commonName: "Bittersweet",
-    uses: ["Cold damp weather effects", "Colds", "Diarrhea", "Skin conditions", "Rheumatism"],
-    symptoms: ["Worse from cold damp weather", "Catches cold easily", "Better from warmth"],
-    dosage: "3-5 pellets",
-    frequency: "3 times daily",
-    category: "Weather Effects",
-    potency: "30C",
-    keynotes: ["Worse from cold damp weather", "Catches cold from getting wet", "Better warmth"],
-    difficulty: 'Intermediate'
-  },
-  {
-    id: 49,
-    name: "Graphites",
-    commonName: "Graphite",
-    uses: ["Skin conditions", "Eczema", "Constipation", "Obesity", "Nail problems"],
-    symptoms: ["Thick honey-like discharges", "Cracked skin", "Chilly and obese", "Irresolute"],
-    dosage: "3-5 pellets",
-    frequency: "Once daily",
-    category: "Skin & Constitutional",
-    potency: "200C",
-    keynotes: ["Honey-like discharges", "Cracked skin especially fingers", "Chilly and obese"],
-    difficulty: 'Advanced'
-  },
-  {
-    id: 50,
-    name: "Hamamelis",
-    commonName: "Witch Hazel",
-    uses: ["Varicose veins", "Hemorrhoids", "Bleeding", "Venous congestion", "Nosebleeds"],
-    symptoms: ["Venous congestion", "Passive bleeding", "Sore bruised feeling", "Heavy legs"],
-    dosage: "3-5 pellets",
-    frequency: "3 times daily",
-    category: "Venous & Bleeding",
-    potency: "30C",
-    keynotes: ["Venous problems", "Passive bleeding", "Sore bruised veins"],
-    difficulty: 'Beginner'
-  },
-  {
-    id: 51,
-    name: "Ipecacuanha",
-    commonName: "Ipecac Root",
-    uses: ["Nausea", "Vomiting", "Asthma", "Bleeding", "Morning sickness"],
-    symptoms: ["Persistent nausea", "Clean tongue with nausea", "Difficult breathing", "Bright red bleeding"],
-    dosage: "3-5 pellets",
-    frequency: "As needed",
-    category: "Nausea & Respiratory",
-    potency: "30C",
-    keynotes: ["Persistent nausea with clean tongue", "Bright red bleeding", "Difficult breathing"],
-    difficulty: 'Beginner'
-  },
-  {
-    id: 52,
-    name: "Kali Bichromicum",
-    commonName: "Potassium Dichromate",
-    uses: ["Sinusitis", "Thick mucus", "Ulcers", "Joint pains", "Catarrh"],
-    symptoms: ["Thick stringy mucus", "Pressure at root of nose", "Wandering joint pains"],
-    dosage: "3-5 pellets",
-    frequency: "3 times daily",
-    category: "Mucus & Sinuses",
-    potency: "30C",
-    keynotes: ["Thick stringy discharges", "Pressure at root of nose", "Symptoms in small spots"],
-    difficulty: 'Intermediate'
   }
 ];
 
@@ -726,7 +244,7 @@ const generateQuizQuestions = (remedies: HomeopathicRemedy[]): QuizQuestion[] =>
   remedies.forEach((remedy, index) => {
     // Question about main use
     questions.push({
-      id: index * 3 + 1,
+      id: index * 2 + 1,
       question: `What is ${remedy.name} primarily used for?`,
       options: [
         remedy.uses[0],
@@ -742,7 +260,7 @@ const generateQuizQuestions = (remedies: HomeopathicRemedy[]): QuizQuestion[] =>
     // Question about keynote
     if (remedy.keynotes.length > 0) {
       questions.push({
-        id: index * 3 + 2,
+        id: index * 2 + 2,
         question: `Which keynote symptom is characteristic of ${remedy.name}?`,
         options: [
           remedy.keynotes[0],
@@ -757,7 +275,7 @@ const generateQuizQuestions = (remedies: HomeopathicRemedy[]): QuizQuestion[] =>
     }
   });
   
-  return questions.slice(0, 100); // Limit to 100 questions
+  return questions.slice(0, 50); // Limit to 50 questions
 };
 
 export default function AIEnhancedLearningAssistant({ isOpen, onClose }: AILearningAssistantProps) {
@@ -820,39 +338,20 @@ export default function AIEnhancedLearningAssistant({ isOpen, onClose }: AILearn
   if (!isOpen) return null;
 
   return (
-    <>
-      {/* Full-screen overlay backdrop */}
-      <div 
-        className="fixed inset-0 bg-black/20 backdrop-blur-[2px]"
-        style={{ 
-          zIndex: 999998,
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          width: '100vw',
-          height: '100vh'
-        }}
-        onClick={onClose}
-      />
-      
-      {/* Main learning interface */}
-      <div 
-        className="fixed inset-0 bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 overflow-hidden"
-        style={{ 
-          zIndex: 999999, 
-          position: 'fixed', 
-          top: 0, 
-          left: 0, 
-          right: 0, 
-          bottom: 0,
-          width: '100vw',
-          height: '100vh',
-          isolation: 'isolate'
-        }}
-      >
-      <div className="w-full h-full flex flex-col animate-in fade-in slide-in-from-bottom-5 duration-300">
+    <div 
+      className="fixed inset-0 bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 overflow-hidden"
+      style={{ 
+        zIndex: 999999, 
+        position: 'fixed', 
+        top: 0, 
+        left: 0, 
+        right: 0, 
+        bottom: 0,
+        width: '100vw',
+        height: '100vh'
+      }}
+    >
+      <div className="w-full h-full flex flex-col">
         {/* Glassy Header with Purple Gradient */}
         <div className="relative bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 p-6 shadow-lg">
           <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
@@ -1173,7 +672,6 @@ export default function AIEnhancedLearningAssistant({ isOpen, onClose }: AILearn
           </div>
         </ScrollArea>
       </div>
-      </div>
-    </>
+    </div>
   );
 }

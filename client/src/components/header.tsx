@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Sun, Moon, Brain, MessageCircle } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
 import AIHomeopathyChatbot from "@/components/ai-homeopathy-chatbot";
-import AIEnhancedLearningAssistant from "@/components/ai-enhanced-learning-assistant";
+import AIEnhancedLearningAssistant from "@/components/ai-enhanced-learning-assistant-fixed";
 
 export default function Header() {
   const { theme, setTheme } = useTheme();
