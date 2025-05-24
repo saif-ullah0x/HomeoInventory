@@ -220,6 +220,20 @@ export default function AILearningAssistant({ isOpen, onClose }: AILearningAssis
   const [showDefaultContent, setShowDefaultContent] = useState(true);
   const [selectedSymptom, setSelectedSymptom] = useState<CommonSymptom | null>(null);
 
+  // Hide/show body scroll when modal opens/closes
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    // Cleanup when component unmounts
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
   // Initialize with default content on first load
   useEffect(() => {
     if (isOpen && showDefaultContent) {
