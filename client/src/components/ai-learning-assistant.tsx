@@ -492,7 +492,7 @@ export default function AILearningAssistant({ isOpen, onClose }: AILearningAssis
               </TabsTrigger>
             </TabsList>
 
-            <ScrollArea className="flex-1 mt-2 h-[calc(100vh-180px)] pr-4">
+            <div className="flex-1 mt-2 h-[calc(100vh-180px)] overflow-y-auto pr-4">
               <TabsContent value="learn" className="mt-0">
                 {isLoading ? (
                   <div className="flex items-center justify-center h-64">
@@ -929,9 +929,9 @@ export default function AILearningAssistant({ isOpen, onClose }: AILearningAssis
                   </div>
                 )}
               </TabsContent>
-            </ScrollArea>
+            </div>
           </Tabs>
+        </div>
       </div>
-    </div>
   );
 }
