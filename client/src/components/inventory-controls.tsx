@@ -122,7 +122,7 @@ export default function InventoryControls({
             }}
             className="gap-2 premium-simple-button smooth-transition"
           >
-            <FileDown className="h-4 w-4" />
+            <FileUp className="h-4 w-4" />
             Export
           </Button>
           <div 
@@ -158,7 +158,7 @@ export default function InventoryControls({
           onClick={onImportClick} 
           className="gap-2 premium-simple-button smooth-transition"
         >
-          <FileUp className="h-4 w-4" />
+          <FileDown className="h-4 w-4" />
           Import
         </Button>
 

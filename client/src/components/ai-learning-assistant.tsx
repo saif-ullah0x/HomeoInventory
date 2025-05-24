@@ -220,20 +220,6 @@ export default function AILearningAssistant({ isOpen, onClose }: AILearningAssis
   const [showDefaultContent, setShowDefaultContent] = useState(true);
   const [selectedSymptom, setSelectedSymptom] = useState<CommonSymptom | null>(null);
 
-  // Hide/show body scroll when modal opens/closes
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-
-    // Cleanup when component unmounts
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [isOpen]);
-
   // Initialize with default content on first load
   useEffect(() => {
     if (isOpen && showDefaultContent) {
@@ -420,37 +406,36 @@ export default function AILearningAssistant({ isOpen, onClose }: AILearningAssis
     setSearchTerm("");
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 bg-white dark:bg-gray-900">
-      {/* Purple Gradient Header with Glassy Effect */}
-      <div className="relative bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 p-4 shadow-lg">
-        <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
-        <div className="relative z-10 flex items-center justify-between">
-          <div className="flex items-center gap-3 flex-1 justify-center">
-            <div className="p-1.5 bg-white/20 rounded-lg backdrop-blur-sm shadow-lg">
-              <Brain className="h-6 w-6 text-white drop-shadow-sm" />
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-5xl p-0 overflow-hidden bg-white dark:bg-gray-900">
+        {/* Purple Gradient Header with Glassy Effect */}
+        <div className="relative bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 p-4 shadow-lg">
+          <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+          <div className="relative z-10 flex items-center justify-between">
+            <div className="flex items-center gap-3 flex-1 justify-center">
+              <div className="p-1.5 bg-white/20 rounded-lg backdrop-blur-sm shadow-lg">
+                <Brain className="h-6 w-6 text-white drop-shadow-sm" />
+              </div>
+              <div className="text-center">
+                <h1 className="text-white text-xl font-bold drop-shadow-sm tracking-wide">AI-Enhanced Remedy Learning Assistant</h1>
+                <p className="text-purple-100 text-sm drop-shadow-sm">
+                  Discover homeopathic remedies for common conditions with classical knowledge
+                </p>
+              </div>
             </div>
-            <div className="text-center">
-              <h1 className="text-white text-xl font-black drop-shadow-sm tracking-wide">AI-Enhanced Remedy Learning Assistant</h1>
-              <p className="text-purple-100 text-sm drop-shadow-sm">
-                Discover homeopathic remedies for common conditions with classical knowledge
-              </p>
-            </div>
+            <Button
+              onClick={onClose}
+              variant="ghost"
+              size="sm"
+              className="text-white hover:bg-white/20 rounded-lg"
+            >
+              ✕ Close
+            </Button>
           </div>
-          <Button
-            onClick={onClose}
-            variant="ghost"
-            size="sm"
-            className="text-white hover:bg-white/20 rounded-lg absolute right-4"
-          >
-            ✕ Close
-          </Button>
         </div>
-      </div>
-
-      <div className="flex flex-col h-[calc(100vh-100px)] bg-gradient-to-br from-blue-50/50 to-purple-50/50 dark:from-gray-800/50 dark:to-gray-900/50">
+        
+        <div className="flex flex-col h-[calc(90vh-120px)] overflow-auto bg-gradient-to-br from-blue-50/50 to-purple-50/50 dark:from-gray-800/50 dark:to-gray-900/50">
           {/* Enhanced Search Input */}
           <div className="p-4 pb-2 flex-shrink-0">
             <Label htmlFor="search" className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
