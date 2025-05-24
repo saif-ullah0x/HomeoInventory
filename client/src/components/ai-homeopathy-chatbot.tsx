@@ -391,19 +391,19 @@ export default function AIHomeopathyChatbot({ isOpen, onClose }: AIChatbotProps)
           </div>
         </div>
 
-        {/* Quick Actions */}
-        <div className="p-3 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 border-b">
-          <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+        {/* Navigation Tabs */}
+        <div className="p-4 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 border-b">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
             {quickActions.map((action, index) => (
               <Button
                 key={index}
-                variant="outline"
+                variant="ghost"
                 size="sm"
                 onClick={action.action}
-                className="whitespace-nowrap text-xs border-purple-200 hover:bg-purple-100 flex-shrink-0"
+                className="justify-center text-xs bg-white/60 hover:bg-white border border-purple-200 hover:border-purple-300 text-purple-700 hover:text-purple-800 dark:bg-gray-800/60 dark:hover:bg-gray-700 dark:text-purple-300"
               >
-                <action.icon className="h-3 w-3 mr-1" />
-                {action.label}
+                <action.icon className="h-4 w-4 mb-1" />
+                <span className="block text-center">{action.label}</span>
               </Button>
             ))}
           </div>

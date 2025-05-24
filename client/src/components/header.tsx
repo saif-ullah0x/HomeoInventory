@@ -4,12 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Sun, Moon, Brain, MessageCircle } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
 import AIHomeopathyChatbot from "@/components/ai-homeopathy-chatbot";
-import RemedyLearningAssistant from "@/components/remedy-learning-assistant";
+import RemedyLearningSystem from "@/components/remedy-learning-system";
 
 export default function Header() {
   const { theme, setTheme } = useTheme();
   const [showAIChatbot, setShowAIChatbot] = React.useState(false);
-  const [showLearningAssistant, setShowLearningAssistant] = React.useState(false);
+  const [showLearningSystem, setShowLearningSystem] = React.useState(false);
 
   const toggleTheme = () => {
     // Simply toggle the theme - no animation needed
@@ -42,7 +42,7 @@ export default function Header() {
             <Button 
               variant="outline" 
               size="sm"
-              onClick={() => setShowLearningAssistant(true)}
+              onClick={() => setShowLearningSystem(true)}
               className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white border-0 flex items-center space-x-1"
             >
               <Brain className="h-4 w-4" />
@@ -72,7 +72,7 @@ export default function Header() {
 
       {/* AI Learning Modals */}
       <AIHomeopathyChatbot isOpen={showAIChatbot} onClose={() => setShowAIChatbot(false)} />
-      <RemedyLearningAssistant isOpen={showLearningAssistant} onClose={() => setShowLearningAssistant(false)} />
+      <RemedyLearningSystem isOpen={showLearningSystem} onClose={() => setShowLearningSystem(false)} />
     </header>
   );
 }

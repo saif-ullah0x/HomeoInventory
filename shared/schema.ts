@@ -71,3 +71,92 @@ export const selectSharedInventorySchema = createSelectSchema(sharedInventories)
 // Export types for use in the application
 export type InsertSharedInventory = z.infer<typeof insertSharedInventorySchema>;
 export type SharedInventory = z.infer<typeof selectSharedInventorySchema>;
+
+// Homeopathic Remedies Learning System Tables
+export const remedies = pgTable("remedies", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  fullName: text("full_name").notNull(),
+  category: text("category").notNull(),
+  description: text("description").notNull(),
+  keyUses: text("key_uses").array().notNull().default([]),
+  symptoms: text("symptoms").array().notNull().default([]),
+  mentalSymptoms: text("mental_symptoms").array().notNull().default([]),
+  physicalSymptoms: text("physical_symptoms").array().notNull().default([]),
+  modalitiesWorse: text("modalities_worse").array().notNull().default([]),
+  modalitiesBetter: text("modalities_better").array().notNull().default([]),
+  potencies: text("potencies").array().notNull().default([]),
+  dosage: text("dosage").notNull(),
+  source: text("source").notNull(),
+  imageUrl: text("image_url"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull()
+});
+
+export const learningQuestions = pgTable("learning_questions", {
+  id: serial("id").primaryKey(),
+  remedyId: integer("remedy_id").references(() => remedies.id).notNull(),
+  question: text("question").notNull(),
+  options: text("options").array().notNull(),
+  correctAnswer: integer("correct_answer").notNull(),
+  explanation: text("explanation").notNull(),
+  difficulty: text("difficulty").notNull().default("beginner"), // beginner, intermediate, advanced
+  category: text("category").notNull().default("general"), // symptoms, uses, modalities, potency
+  createdAt: timestamp("created_at").defaultNow().notNull()
+});
+
+export const userProgress = pgTable("user_progress", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").notNull(), // Will connect to user system when available
+  remedyId: integer("remedy_id").references(() => remedies.id).notNull(),
+  completed: boolean("completed").default(false),
+  score: integer("score").default(0),
+  totalQuestions: integer("total_questions").default(0),
+  correctAnswers: integer("correct_answers").default(0),
+  currentLevel: text("current_level").notNull().default("beginner"),
+  streak: integer("streak").default(0),
+  lastStudied: timestamp("last_studied").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull()
+});
+
+// Define relations for the learning system
+export const remediesRelations = relations(remedies, ({ many }) => ({
+  questions: many(learningQuestions),
+  userProgress: many(userProgress)
+}));
+
+export const learningQuestionsRelations = relations(learningQuestions, ({ one }) => ({
+  remedy: one(remedies, { fields: [learningQuestions.remedyId], references: [remedies.id] })
+}));
+
+export const userProgressRelations = relations(userProgress, ({ one }) => ({
+  remedy: one(remedies, { fields: [userProgress.remedyId], references: [remedies.id] })
+}));
+
+// Schemas for validation
+export const insertRemedySchema = createInsertSchema(remedies, {
+  name: (schema) => schema.min(1, "Name is required"),
+  fullName: (schema) => schema.min(1, "Full name is required"),
+  category: (schema) => schema.min(1, "Category is required"),
+  description: (schema) => schema.min(10, "Description must be at least 10 characters")
+});
+
+export const selectRemedySchema = createSelectSchema(remedies);
+export type InsertRemedy = z.infer<typeof insertRemedySchema>;
+export type Remedy = z.infer<typeof selectRemedySchema>;
+
+export const insertLearningQuestionSchema = createInsertSchema(learningQuestions, {
+  question: (schema) => schema.min(5, "Question must be at least 5 characters"),
+  options: (schema) => schema.min(2, "At least 2 options required"),
+  explanation: (schema) => schema.min(5, "Explanation must be at least 5 characters")
+});
+
+export const selectLearningQuestionSchema = createSelectSchema(learningQuestions);
+export type InsertLearningQuestion = z.infer<typeof insertLearningQuestionSchema>;
+export type LearningQuestion = z.infer<typeof selectLearningQuestionSchema>;
+
+export const insertUserProgressSchema = createInsertSchema(userProgress);
+export const selectUserProgressSchema = createSelectSchema(userProgress);
+export type InsertUserProgress = z.infer<typeof insertUserProgressSchema>;
+export type UserProgress = z.infer<typeof selectUserProgressSchema>;
