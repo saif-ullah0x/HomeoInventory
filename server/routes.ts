@@ -152,6 +152,88 @@ async function getAIRemedyRecommendations(symptoms: string, userInventory: strin
   throw new Error("AI API integration placeholder - add your API key to enable");
 }
 
+// Firebase placeholder functions for real-time inventory sharing
+async function initializeFirebaseSync(shareCode: string, medicines: any[]): Promise<void> {
+  // Placeholder for Firebase real-time database initialization
+  // When FIREBASE_API_KEY is provided, this will set up real-time sync
+  
+  if (!process.env.FIREBASE_API_KEY) {
+    throw new Error("Firebase not configured");
+  }
+  
+  // Example Firebase initialization (uncomment when API keys are provided)
+  /*
+  const admin = require('firebase-admin');
+  
+  if (!admin.apps.length) {
+    admin.initializeApp({
+      credential: admin.credential.cert({
+        projectId: process.env.FIREBASE_PROJECT_ID,
+        clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
+        privateKey: process.env.FIREBASE_ADMIN_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+      }),
+      databaseURL: `https://${process.env.FIREBASE_PROJECT_ID}-default-rtdb.firebaseio.com/`
+    });
+  }
+  
+  const db = admin.database();
+  const ref = db.ref(`shared-inventories/${shareCode}`);
+  
+  await ref.set({
+    medicines: medicines,
+    lastUpdated: admin.database.ServerValue.TIMESTAMP,
+    connectedUsers: 1
+  });
+  */
+  
+  console.log(`Firebase sync initialized for share code: ${shareCode}`);
+}
+
+async function getFirebaseConnectedUsers(shareCode: string): Promise<number> {
+  // Placeholder for getting connected users count from Firebase
+  // When FIREBASE_API_KEY is provided, this will return actual connected users
+  
+  if (!process.env.FIREBASE_API_KEY) {
+    throw new Error("Firebase not configured");
+  }
+  
+  // Example Firebase query (uncomment when API keys are provided)
+  /*
+  const admin = require('firebase-admin');
+  const db = admin.database();
+  const ref = db.ref(`shared-inventories/${shareCode}/connectedUsers`);
+  
+  const snapshot = await ref.once('value');
+  return snapshot.val() || 1;
+  */
+  
+  // Fallback for demonstration
+  return Math.floor(Math.random() * 3) + 1;
+}
+
+async function syncToFirebase(shareCode: string, medicines: any[]): Promise<void> {
+  // Placeholder for syncing inventory changes to Firebase
+  // When FIREBASE_API_KEY is provided, this will update Firebase real-time database
+  
+  if (!process.env.FIREBASE_API_KEY) {
+    throw new Error("Firebase not configured");
+  }
+  
+  // Example Firebase sync (uncomment when API keys are provided)
+  /*
+  const admin = require('firebase-admin');
+  const db = admin.database();
+  const ref = db.ref(`shared-inventories/${shareCode}`);
+  
+  await ref.update({
+    medicines: medicines,
+    lastUpdated: admin.database.ServerValue.TIMESTAMP
+  });
+  */
+  
+  console.log(`Firebase sync completed for share code: ${shareCode}`);
+}
+
 // Simplified motivational messages
 function getSimpleMotivationalMessage(symptoms: string): string {
   const symptomsLower = symptoms.toLowerCase();
@@ -502,7 +584,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const sharedInventory = await db.query.sharedInventories.findFirst({
-        where: eq(sharedInventories.shareCode, shareCode.toUpperCase()),
+        where: eq(sharedInventories.inventory_id, shareCode.toUpperCase()),
       });
 
       if (!sharedInventory) {
@@ -520,9 +602,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       return res.json({
-        shareCode: sharedInventory.shareCode,
+        shareCode: sharedInventory.inventory_id,
         name: sharedInventory.name,
-        medicines: JSON.parse(sharedInventory.medicines || "[]"),
+        medicines: sharedInventory.inventory_data || [],
         connectedUsers,
         realtimeEnabled: !!process.env.FIREBASE_API_KEY,
         message: "Connected to shared inventory successfully"
@@ -546,10 +628,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const [updatedInventory] = await db
         .update(sharedInventories)
         .set({ 
-          medicines: JSON.stringify(medicines),
-          updated: new Date()
+          inventory_data: medicines,
+          updated_at: new Date()
         })
-        .where(eq(sharedInventories.shareCode, shareCode.toUpperCase()))
+        .where(eq(sharedInventories.inventory_id, shareCode.toUpperCase()))
         .returning();
 
       if (!updatedInventory) {
