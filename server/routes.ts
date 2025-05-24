@@ -15,6 +15,13 @@ import { findRemediesBySymptoms, generateHomeopathicResponse } from "./homeopath
 import { searchMedicines } from "./medicine-database";
 import { searchMedicinesBySymptoms } from "./symptom-medicine-database";
 import { searchRemediesBySymptoms } from "./remedies-database";
+import { 
+  COMPREHENSIVE_MEDICINES, 
+  COMPREHENSIVE_SYMPTOMS, 
+  findMedicineByName as findComprehensiveMedicine,
+  findSymptomByName as findComprehensiveSymptom,
+  searchMedicinesBySymptom as searchComprehensiveMedicines
+} from "./comprehensive-homeopathy-database";
 
 // Enhanced AI Doctor with confidence scoring and external AI API integration
 async function analyzeSymptoms(symptoms: string, userInventory: string[]) {
