@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent } from "@/components/ui/card";
+import { useLocation } from "wouter";
 import { 
   Search, 
   BookOpen, 
@@ -36,7 +37,9 @@ import {
   XCircle,
   RotateCcw,
   ChevronDown,
-  Filter
+  Filter,
+  X,
+  Home
 } from "lucide-react";
 
 // Interfaces for medicine data
@@ -365,6 +368,9 @@ const generateQuizQuestions = (medicines: HomeopathicMedicine[]): QuizQuestion[]
 const QUIZ_QUESTIONS = generateQuizQuestions(ALL_MEDICINES);
 
 export default function ImprovedLearningPage() {
+  // Navigation
+  const [_, setLocation] = useLocation();
+  
   // State management
   const [activeTab, setActiveTab] = useState<'learn' | 'quiz'>('learn');
   const [searchTerm, setSearchTerm] = useState("");
@@ -524,6 +530,24 @@ export default function ImprovedLearningPage() {
         {/* Background effects */}
         <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-indigo-600/20 backdrop-blur-sm"></div>
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB4PSIwIiB5PSIwIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxjaXJjbGUgY3g9IjEwIiBjeT0iMTAiIHI9IjEuNSIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjEpIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI3BhdHRlcm4pIi8+PC9zdmc+')] opacity-20"></div>
+        
+        {/* Close button to exit the Learning Assistant */}
+        <button 
+          onClick={() => setLocation('/')}
+          className="absolute top-4 right-4 z-20 p-2 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm transition-all duration-300"
+          aria-label="Close Learning Assistant"
+        >
+          <X className="h-5 w-5 text-white" />
+        </button>
+        
+        {/* Home button to return to main app */}
+        <button 
+          onClick={() => setLocation('/')}
+          className="absolute top-4 left-4 z-20 p-2 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm transition-all duration-300"
+          aria-label="Return to Home"
+        >
+          <Home className="h-5 w-5 text-white" />
+        </button>
         
         {/* Centered title with animation */}
         <div className="relative flex items-center justify-center z-10 mb-1">
