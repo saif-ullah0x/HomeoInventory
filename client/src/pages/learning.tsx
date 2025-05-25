@@ -376,8 +376,8 @@ export default function LearningPage() {
                 variant="ghost" 
                 size="lg"
                 className="text-white hover:bg-white/20 rounded-2xl border-2 border-white/30 backdrop-blur-md 
-                          transition-all duration-300 hover:scale-105 hover:shadow-2xl px-6 py-3 group
-                          bg-white/10 hover:bg-white/25"
+                          transition-all duration-300 hover:scale-105 hover:shadow-2xl px-6 py-6 group
+                          bg-white/20 hover:bg-white/30 shadow-lg"
               >
                 <Home className="h-5 w-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
                 <span className="font-medium">Return to App</span>
