@@ -339,11 +339,11 @@ export default function AIEnhancedLearningAssistant({ isOpen, onClose }: AILearn
 
   return (
     <>
-      {/* Backdrop to block all interactions */}
+      {/* Enhanced backdrop with blur effect */}
       <div 
-        className="fixed inset-0 bg-black/10"
+        className="fixed inset-0 bg-black/30 backdrop-blur-sm"
         style={{ 
-          zIndex: 2147483646,
+          zIndex: 9999998,
           position: 'fixed', 
           top: 0, 
           left: 0, 
@@ -353,13 +353,14 @@ export default function AIEnhancedLearningAssistant({ isOpen, onClose }: AILearn
           height: '100vh',
           pointerEvents: 'auto'
         }}
+        onClick={onClose}
       />
       
-      {/* Main learning interface */}
+      {/* Main learning interface with enhanced gradient background */}
       <div 
-        className="fixed inset-0 bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 overflow-hidden"
+        className="fixed inset-0 overflow-hidden"
         style={{ 
-          zIndex: 2147483647, 
+          zIndex: 9999999, 
           position: 'fixed', 
           top: 0, 
           left: 0, 
@@ -368,25 +369,26 @@ export default function AIEnhancedLearningAssistant({ isOpen, onClose }: AILearn
           width: '100vw',
           height: '100vh',
           isolation: 'isolate',
-          pointerEvents: 'auto'
+          pointerEvents: 'auto',
+          background: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 25%, #6D28D9 50%, #5B21B6 75%, #4C1D95 100%)'
         }}
       >
       <div className="w-full h-full flex flex-col">
-        {/* Glassy Header with Purple Gradient */}
-        <div className="relative bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 p-6 shadow-lg">
-          <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-indigo-500/20 animate-pulse"></div>
+        {/* Enhanced Header with Beautiful Purple Gradient */}
+        <div className="relative p-6 shadow-xl">
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-500/30 via-violet-500/30 to-purple-600/30 backdrop-blur-md"></div>
+          <div className="absolute inset-0 bg-white/5"></div>
           
           <div className="relative z-10 flex items-center justify-between">
             <div className="flex items-center gap-4 flex-1">
-              <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm shadow-lg border border-white/30 animate-bounce">
+              <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm shadow-lg border border-white/30">
                 <Brain className="h-8 w-8 text-white drop-shadow-lg" />
               </div>
               <div>
                 <h1 className="text-white text-2xl font-bold tracking-wide drop-shadow-lg">
                   AI-Enhanced Remedy Learning Assistant
                 </h1>
-                <p className="text-purple-100 text-sm flex items-center gap-2">
+                <p className="text-white/90 text-sm flex items-center gap-2 mt-1">
                   <Sparkles className="h-4 w-4" />
                   Master homeopathic remedies with interactive learning and quizzes
                 </p>
@@ -396,7 +398,7 @@ export default function AIEnhancedLearningAssistant({ isOpen, onClose }: AILearn
               onClick={onClose}
               variant="ghost"
               size="sm"
-              className="text-white hover:bg-white/20 rounded-lg border border-white/30 backdrop-blur-sm transition-all duration-200 hover:scale-105"
+              className="text-white hover:bg-white/20 rounded-xl border border-white/30 backdrop-blur-sm transition-all duration-200 hover:scale-105 px-4 py-2"
             >
               <X className="h-4 w-4 mr-2" />
               Close
@@ -404,20 +406,24 @@ export default function AIEnhancedLearningAssistant({ isOpen, onClose }: AILearn
           </div>
         </div>
 
-        {/* Content Area with Scroll */}
-        <ScrollArea className="flex-1 overflow-y-auto">
-          <div className="p-6 min-h-full">
-            <Tabs defaultValue="learn" value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid grid-cols-2 mb-6 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm shadow-lg">
-                <TabsTrigger value="learn" className="flex items-center gap-2 font-medium">
-                  <Book className="h-4 w-4" />
-                  Learn Remedies
-                </TabsTrigger>
-                <TabsTrigger value="quiz" className="flex items-center gap-2 font-medium">
-                  <Target className="h-4 w-4" />
-                  Test Knowledge
-                </TabsTrigger>
-              </TabsList>
+        {/* Content Area with Enhanced Background */}
+        <div className="flex-1 relative">
+          {/* Beautiful gradient background for content area */}
+          <div className="absolute inset-0 bg-gradient-to-br from-white/95 via-purple-50/90 to-violet-100/85 backdrop-blur-sm"></div>
+          
+          <ScrollArea className="flex-1 overflow-y-auto relative z-10 h-full">
+            <div className="p-6 min-h-full">
+              <Tabs defaultValue="learn" value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <TabsList className="grid grid-cols-2 mb-6 bg-white/80 backdrop-blur-md shadow-xl border border-white/40 rounded-2xl p-1">
+                  <TabsTrigger value="learn" className="flex items-center gap-2 font-medium rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-lg transition-all duration-200">
+                    <Book className="h-4 w-4" />
+                    Learn Remedies
+                  </TabsTrigger>
+                  <TabsTrigger value="quiz" className="flex items-center gap-2 font-medium rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-lg transition-all duration-200">
+                    <Target className="h-4 w-4" />
+                    Test Knowledge
+                  </TabsTrigger>
+                </TabsList>
 
               {/* Search Bar */}
               <div className="mb-6">
