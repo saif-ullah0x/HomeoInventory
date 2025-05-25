@@ -376,9 +376,32 @@ export default function LearningPage() {
   const [score, setScore] = useState(0);
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([]);
+  const [searchBarVisible, setSearchBarVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   // Get unique categories for filtering
   const categories = Array.from(new Set(['all', ...ALL_MEDICINES.map(m => m.category)]));
+  
+  // Handle scroll events to show/hide search bar
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const scrollContainer = e.currentTarget;
+    const currentScrollY = scrollContainer.scrollTop;
+    
+    if (currentScrollY > 100) { // Only apply after scrolling down a bit
+      if (currentScrollY > lastScrollY) {
+        // Scrolling down - hide search bar
+        setSearchBarVisible(false);
+      } else {
+        // Scrolling up - show search bar
+        setSearchBarVisible(true);
+      }
+    } else {
+      // At the top - always show search bar
+      setSearchBarVisible(true);
+    }
+    
+    setLastScrollY(currentScrollY);
+  };
 
   // Filter medicines based on search and category
   const filteredMedicines = ALL_MEDICINES.filter(medicine => {
@@ -456,46 +479,45 @@ export default function LearningPage() {
     <>
       {/* Full Page Layout (Analytics Style) */}
       <div className="flex flex-col h-screen bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800">
-        {/* Compact Header with beautiful gradient */}
-        <div className="flex items-center justify-between py-3 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
-          <div className="flex items-center gap-2">
-            <div className="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-              <BookOpen className="h-4 w-4 text-white" />
+        {/* Stylish Header with beautiful gradient */}
+        <div className="relative flex flex-col items-center justify-center py-4 px-4 bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 text-white overflow-hidden">
+          {/* Background effects */}
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-indigo-600/20 backdrop-blur-sm"></div>
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB4PSIwIiB5PSIwIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxjaXJjbGUgY3g9IjEwIiBjeT0iMTAiIHI9IjEuNSIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjEpIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI3BhdHRlcm4pIi8+PC9zdmc+')] opacity-20"></div>
+          
+          {/* Centered title with animation */}
+          <div className="relative flex items-center justify-center z-10 mb-1">
+            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm mr-3 shadow-lg animate-pulse">
+              <BookOpen className="h-5 w-5 text-white" />
             </div>
-            <div>
-              <h1 className="text-lg font-bold text-white">Learning Assistant</h1>
-              <p className="text-xs text-purple-100">150+ Authentic Homeopathic Medicines</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Badge className="bg-white/20 text-white border-white/30 px-3 py-1 text-xs">
-              {filteredMedicines.length} Medicines
-            </Badge>
+            <h1 className="text-2xl font-bold text-white text-center animate-fadeIn">
+              Learning Assistant
+            </h1>
           </div>
         </div>
 
-        {/* Tab Navigation */}
+        {/* Enhanced Tab Navigation */}
         <div className="flex border-b bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900">
           <button
             onClick={() => setActiveTab('learn')}
-            className={`flex-1 px-8 py-4 font-medium transition-all duration-200 ${
+            className={`flex-1 px-8 py-4 font-medium transition-all duration-300 ${
               activeTab === 'learn'
-                ? 'text-purple-600 border-b-2 border-purple-600 bg-white dark:bg-gray-800'
-                : 'text-gray-600 hover:text-purple-600'
+                ? 'text-purple-600 border-b-2 border-purple-600 bg-gradient-to-b from-white to-purple-50/40 dark:from-gray-800 dark:to-purple-900/20'
+                : 'text-gray-600 hover:text-purple-600 hover:bg-purple-50/30 dark:hover:bg-purple-900/10'
             }`}
           >
-            <BookOpen className="h-5 w-5 inline mr-2" />
+            <BookOpen className={`h-5 w-5 inline mr-2 transition-transform duration-300 ${activeTab === 'learn' ? 'scale-110' : ''}`} />
             Learn Remedies
           </button>
           <button
             onClick={() => setActiveTab('quiz')}
-            className={`flex-1 px-8 py-4 font-medium transition-all duration-200 ${
+            className={`flex-1 px-8 py-4 font-medium transition-all duration-300 ${
               activeTab === 'quiz'
-                ? 'text-purple-600 border-b-2 border-purple-600 bg-white dark:bg-gray-800'
-                : 'text-gray-600 hover:text-purple-600'
+                ? 'text-purple-600 border-b-2 border-purple-600 bg-gradient-to-b from-white to-purple-50/40 dark:from-gray-800 dark:to-purple-900/20'
+                : 'text-gray-600 hover:text-purple-600 hover:bg-purple-50/30 dark:hover:bg-purple-900/10'
             }`}
           >
-            <Award className="h-5 w-5 inline mr-2" />
+            <Award className={`h-5 w-5 inline mr-2 transition-transform duration-300 ${activeTab === 'quiz' ? 'scale-110' : ''}`} />
             Test Knowledge
           </button>
         </div>
