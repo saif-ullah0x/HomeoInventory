@@ -361,6 +361,14 @@ export default function AIHomeopathyChatbot({ isOpen, onClose }: AIChatbotProps)
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={clearChat}
+              className="text-white hover:bg-white/20"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
