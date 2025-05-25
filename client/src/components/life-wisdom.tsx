@@ -710,26 +710,28 @@ export default function LifeWisdom() {
 
   return (
     <div className={`
-      mb-6 transition-all duration-1000 transform
+      mb-6 transition-all duration-500 transform
       ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
     `}>
-      <Card className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg border-purple-200/50 dark:border-purple-700/50 shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden group">
-        {/* Animated background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 via-indigo-500/5 to-pink-500/5 animate-pulse"></div>
+      <Card className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg border-purple-200/50 dark:border-purple-700/50 shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden group relative">
+        {/* Enhanced animated background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-indigo-500/10 to-pink-500/10 animate-pulse"></div>
+        <div className="absolute inset-0 bg-white/20 dark:bg-purple-900/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         
         <CardContent className="relative p-6">
           <div className="flex items-start gap-4">
-            {/* Icon with gradient background */}
+            {/* Icon with enhanced gradient background and glow effect */}
             <div className={`
               p-3 rounded-xl bg-gradient-to-br ${currentWisdom.color} shadow-lg 
-              transform transition-all duration-500 group-hover:scale-110 group-hover:rotate-12
-              flex-shrink-0
-            `}>
-              <IconComponent className="h-6 w-6 text-white drop-shadow-sm" />
+              transform transition-all duration-300 group-hover:scale-110 group-hover:rotate-3
+              flex-shrink-0 relative overflow-hidden
+            `} style={{ boxShadow: '0 0 15px rgba(124, 58, 237, 0.5)' }}>
+              <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
+              <IconComponent className="h-6 w-6 text-white drop-shadow-lg relative z-10" />
             </div>
 
-            {/* Content */}
-            <div className="flex-1 space-y-3">
+            {/* Content with fixed height to prevent layout shifts */}
+            <div className="flex-1 space-y-2 min-h-[120px] flex flex-col justify-between">
               {/* Type and Category badges */}
               <div className="flex items-center gap-2 flex-wrap">
                 <Badge className={`${getTypeBadgeColor(currentWisdom.type)} text-xs font-medium`}>
@@ -740,14 +742,16 @@ export default function LifeWisdom() {
                 </Badge>
               </div>
 
-              {/* Main content */}
-              <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-sm font-medium">
-                {currentWisdom.content}
-              </p>
+              {/* Main content with fixed height to standardize quote sizes */}
+              <div className="h-[60px] overflow-y-auto custom-scrollbar">
+                <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-sm font-medium">
+                  {currentWisdom.content}
+                </p>
+              </div>
 
               {/* Source attribution */}
               {currentWisdom.source && (
-                <p className="text-xs text-purple-600 dark:text-purple-400 font-medium flex items-center gap-1">
+                <p className="text-xs text-purple-600 dark:text-purple-400 font-medium flex items-center gap-1 mt-auto">
                   <BookOpen className="h-3 w-3" />
                   — {currentWisdom.source}
                 </p>
@@ -755,9 +759,12 @@ export default function LifeWisdom() {
             </div>
           </div>
 
-          {/* Decorative elements */}
-          <div className="absolute top-2 right-2 opacity-20">
+          {/* Enhanced decorative elements */}
+          <div className="absolute top-2 right-2 opacity-30 group-hover:opacity-60 transition-opacity duration-300">
             <Clock className="h-4 w-4 text-purple-500 animate-spin" style={{ animationDuration: '8s' }} />
+          </div>
+          <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-30 transition-opacity duration-300">
+            <Sparkles className="h-4 w-4 text-indigo-500" />
           </div>
         </CardContent>
       </Card>

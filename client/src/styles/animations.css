@@ -1,0 +1,220 @@
+/* 
+ * HomeoInvent Enhanced Animation Effects
+ * This file contains custom animations, effects, and styling for a premium UI experience
+ */
+
+/* Glowing border effect for interactive elements */
+.premium-glow {
+  box-shadow: 0 0 15px rgba(124, 58, 237, 0.4);
+  transition: all 0.3s ease;
+}
+
+.premium-glow:hover {
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.6), 0 0 40px rgba(124, 58, 237, 0.2);
+}
+
+/* Gradient text effect for premium elements */
+.premium-gradient-text {
+  background: linear-gradient(to right, #9333ea, #6366f1);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: bold;
+  text-shadow: 0 2px 10px rgba(147, 51, 234, 0.2);
+}
+
+/* Enhanced gradient buttons */
+.premium-gradient-button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.premium-gradient-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    rgba(255, 255, 255, 0) 0%, 
+    rgba(255, 255, 255, 0.2) 50%, 
+    rgba(255, 255, 255, 0) 100%
+  );
+  transition: all 0.6s ease;
+}
+
+.premium-gradient-button:hover::before {
+  left: 100%;
+}
+
+/* Glassy effect for card and container elements */
+.glass-effect {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+}
+
+.dark .glass-effect {
+  background: rgba(30, 30, 45, 0.7);
+  border: 1px solid rgba(48, 58, 117, 0.3);
+}
+
+/* Floating button animation */
+.premium-float-button {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+    box-shadow: 0 8px 16px rgba(124, 58, 237, 0.3), 0 0 0 2px rgba(255, 255, 255, 0.1) inset;
+  }
+  50% {
+    transform: translateY(-7px);
+    box-shadow: 0 15px 24px rgba(124, 58, 237, 0.4), 0 0 0 2px rgba(255, 255, 255, 0.15) inset;
+  }
+  100% {
+    transform: translateY(0px);
+    box-shadow: 0 8px 16px rgba(124, 58, 237, 0.3), 0 0 0 2px rgba(255, 255, 255, 0.1) inset;
+  }
+}
+
+/* Slide-up and fade-in animation */
+.slide-up-fade-in {
+  animation: slideUpFadeIn 0.5s ease forwards;
+}
+
+@keyframes slideUpFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Pulse glow effect */
+.pulse-glow {
+  animation: pulseGlow 2s infinite;
+}
+
+@keyframes pulseGlow {
+  0% {
+    box-shadow: 0 0 8px rgba(124, 58, 237, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(124, 58, 237, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 8px rgba(124, 58, 237, 0.3);
+  }
+}
+
+/* 3D effect for logo */
+.premium-logo {
+  position: relative;
+  text-shadow: 
+    0 1px 0 rgba(255, 255, 255, 0.4),
+    0 2px 0 rgba(124, 58, 237, 0.2);
+  transition: all 0.3s ease;
+}
+
+.premium-logo:hover {
+  text-shadow: 
+    0 1px 0 rgba(255, 255, 255, 0.4),
+    0 2px 0 rgba(124, 58, 237, 0.2),
+    0 3px 10px rgba(124, 58, 237, 0.3);
+  transform: translateY(-1px);
+}
+
+/* Chat animation for AI features */
+.chat-animation {
+  position: relative;
+}
+
+.chat-animation::after {
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.7);
+  top: 4px;
+  right: 4px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(255, 255, 255, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
+}
+
+/* Custom scrollbar for fixed height containers */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(124, 58, 237, 0.1);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(124, 58, 237, 0.3);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(124, 58, 237, 0.5);
+}
+
+/* Medicine container standardized height */
+.medicine-container {
+  height: 120px;
+  overflow-y: auto;
+}
+
+/* Shimmer effect for loading elements */
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Button press effect */
+.button-press {
+  transition: transform 0.15s ease;
+}
+
+.button-press:active {
+  transform: scale(0.95);
+}

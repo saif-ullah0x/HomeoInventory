@@ -77,7 +77,7 @@ export default function InventoryList({ medicines, onEdit, onDelete }: Inventory
 
   return (
     <div className="relative">
-      <div className="bg-card shadow-sm overflow-hidden rounded-lg mb-6 premium-card light-reflection">
+      <div className="bg-card shadow-xl overflow-hidden rounded-lg mb-6 premium-card glass-effect pulse-glow">
         <Table>
           <TableHeader>
             <TableRow className="bg-gradient-to-r from-purple-50/40 to-indigo-50/40 dark:from-purple-900/10 dark:to-indigo-900/10">
@@ -132,11 +132,13 @@ export default function InventoryList({ medicines, onEdit, onDelete }: Inventory
                   />
                 </TableCell>
                 <TableCell>
-                  <div className="font-medium">{medicine.name}</div>
-                  <div className="text-sm text-muted-foreground">{medicine.potency}</div>
-                  {medicine.bottleSize && (
-                    <div className="text-xs text-muted-foreground">{medicine.bottleSize}</div>
-                  )}
+                  <div className="font-medium medicine-container">
+                    <span className="premium-gradient-text">{medicine.name}</span>
+                    <div className="text-sm text-muted-foreground">{medicine.potency}</div>
+                    {medicine.bottleSize && (
+                      <div className="text-xs text-muted-foreground">{medicine.bottleSize}</div>
+                    )}
+                  </div>
                 </TableCell>
                 <TableCell>{medicine.company}</TableCell>
                 <TableCell>
@@ -157,7 +159,7 @@ export default function InventoryList({ medicines, onEdit, onDelete }: Inventory
                           e.stopPropagation();
                           onEdit(medicine.id);
                         }}
-                        className="text-secondary h-8 w-8 p-0 mr-1 premium-simple-button"
+                        className="text-secondary h-8 w-8 p-0 mr-1 premium-simple-button premium-glow button-press"
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
@@ -168,7 +170,7 @@ export default function InventoryList({ medicines, onEdit, onDelete }: Inventory
                           e.stopPropagation();
                           onDelete(medicine.id);
                         }}
-                        className="text-destructive h-8 w-8 p-0 premium-simple-button"
+                        className="text-destructive h-8 w-8 p-0 premium-simple-button premium-glow button-press"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
