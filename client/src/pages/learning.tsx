@@ -747,21 +747,29 @@ export default function LearningPage() {
                     )}
                   </div>
 
-                  {/* Action Buttons */}
+                  {/* Enhanced Action Buttons with Purple Gradient */}
                   <div className="flex gap-4 justify-center">
                     <Button 
                       onClick={startQuiz}
                       className="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 
-                                text-white shadow-xl rounded-xl transition-all duration-300 hover:scale-105"
+                                text-white shadow-2xl rounded-2xl transition-all duration-300 hover:scale-105 
+                                hover:shadow-purple-500/30 border-2 border-white/20 backdrop-blur-sm
+                                relative overflow-hidden group px-6 py-3"
                     >
-                      Take Quiz Again
+                      <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 
+                                     -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                      <span className="font-semibold relative z-10">Take Quiz Again</span>
                     </Button>
                     <Button 
                       onClick={() => setActiveTab("learn")}
-                      variant="outline"
-                      className="border-purple-300 text-purple-700 hover:bg-purple-50 dark:border-purple-600 dark:text-purple-300 dark:hover:bg-purple-900/20"
+                      className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 
+                                text-white shadow-2xl rounded-2xl transition-all duration-300 hover:scale-105 
+                                hover:shadow-indigo-500/30 border-2 border-white/20 backdrop-blur-sm
+                                relative overflow-hidden group px-6 py-3"
                     >
-                      Back to Learning
+                      <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 
+                                     -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                      <span className="font-semibold relative z-10">Back to Learning</span>
                     </Button>
                   </div>
                 </CardHeader>
