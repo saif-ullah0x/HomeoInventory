@@ -456,20 +456,20 @@ export default function LearningPage() {
     <>
       {/* Full Page Layout (Analytics Style) */}
       <div className="flex flex-col h-screen bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800">
-        {/* Header with beautiful gradient */}
-        <div className="flex items-center justify-between p-6 bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-              <BookOpen className="h-6 w-6 text-white" />
+        {/* Compact Header with beautiful gradient */}
+        <div className="flex items-center justify-between py-3 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
+          <div className="flex items-center gap-2">
+            <div className="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+              <BookOpen className="h-4 w-4 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">Learning Assistant</h1>
-              <p className="text-sm text-purple-100">150+ Authentic Homeopathic Medicines • Interactive Learning</p>
+              <h1 className="text-lg font-bold text-white">Learning Assistant</h1>
+              <p className="text-xs text-purple-100">150+ Authentic Homeopathic Medicines</p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <Badge className="bg-white/20 text-white border-white/30 px-4 py-2">
-              {filteredMedicines.length} Medicines Available
+          <div className="flex items-center gap-2">
+            <Badge className="bg-white/20 text-white border-white/30 px-3 py-1 text-xs">
+              {filteredMedicines.length} Medicines
             </Badge>
           </div>
         </div>
@@ -504,26 +504,26 @@ export default function LearningPage() {
         {activeTab === 'learn' && (
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* Search and Filter Controls - Improved Spacing */}
-            <div className="p-8 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 border-b">
+            <div className="py-3 px-4 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 border-b">
               <div className="max-w-4xl mx-auto">
-                <div className="flex gap-4 mb-6">
-                  {/* Smaller Search Bar */}
-                  <div className="w-80 relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <div className="flex gap-2 items-center">
+                  {/* Compact Search Bar */}
+                  <div className="w-56 relative flex-grow-0">
+                    <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-gray-400" />
                     <Input
                       placeholder="Search medicines, uses, or symptoms..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10 bg-white/80 backdrop-blur-sm border-purple-200 focus:border-purple-400"
+                      className="pl-7 py-1 h-8 text-sm bg-white/80 backdrop-blur-sm border-purple-200 focus:border-purple-400"
                     />
                   </div>
-                  {/* Category Filter */}
-                  <div className="relative w-48">
-                    <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  {/* Compact Category Filter */}
+                  <div className="relative w-40 flex-shrink-0">
+                    <Filter className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-gray-400" />
                     <select
                       value={selectedCategory}
                       onChange={(e) => setSelectedCategory(e.target.value)}
-                      className="w-full pl-10 pr-8 py-2 border border-purple-200 rounded-md bg-white/80 backdrop-blur-sm focus:border-purple-400 appearance-none"
+                      className="w-full pl-7 pr-7 py-1 h-8 text-sm border border-purple-200 rounded-md bg-white/80 backdrop-blur-sm focus:border-purple-400 appearance-none"
                     >
                       {categories.map(category => (
                         <option key={category} value={category}>
@@ -531,7 +531,15 @@ export default function LearningPage() {
                         </option>
                       ))}
                     </select>
-                    <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                    <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-gray-400 pointer-events-none" />
+                  </div>
+                  
+                  {/* Medicine Count Badge */}
+                  <div className="text-xs text-purple-700 dark:text-purple-300 ml-auto">
+                    <span className="font-medium">{displayedMedicines.length}</span>
+                    <span> of </span>
+                    <span className="font-medium">{filteredMedicines.length}</span>
+                    <span> medicines</span>
                   </div>
                   {/* Start Quiz Button */}
                   <Button
