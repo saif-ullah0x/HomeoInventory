@@ -8,9 +8,9 @@
  * Output: Creates homeoInvent-database-export-YYYY-MM-DD.zip
  */
 
-const fs = require('fs').promises;
-const path = require('path');
-const { Pool } = require('pg');
+import { promises as fs } from 'fs';
+import path from 'path';
+import { Pool } from 'pg';
 
 // Import enhanced databases
 const WISDOM_DATABASE = require('./client/src/components/life-wisdom.tsx');
