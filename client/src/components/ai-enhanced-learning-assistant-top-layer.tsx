@@ -219,42 +219,22 @@ export default function AIEnhancedLearningAssistantTopLayer({ isOpen, onClose }:
   if (!isOpen) return null;
 
   return (
-    <>
-      {/* Full coverage backdrop */}
-      <div 
-        className="fixed inset-0"
-        style={{ 
-          zIndex: 2147483646,
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          width: '100vw',
-          height: '100vh',
-          backgroundColor: '#000000',
-          pointerEvents: 'auto'
-        }}
-        onClick={onClose}
-      />
-      
-      {/* Learning interface */}
-      <div 
-        className="fixed inset-0"
-        style={{ 
-          zIndex: 2147483647,
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          width: '100vw',
-          height: '100vh',
-          overflow: 'hidden',
-          pointerEvents: 'auto',
-          background: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 25%, #6D28D9 50%, #5B21B6 75%, #4C1D95 100%)'
-        }}
-      >
+    <div 
+      className="fixed inset-0"
+      style={{ 
+        zIndex: 2147483647,
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100vw',
+        height: '100vh',
+        overflow: 'hidden',
+        pointerEvents: 'auto',
+        background: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 25%, #6D28D9 50%, #5B21B6 75%, #4C1D95 100%)'
+      }}
+    >
       <div className="w-full h-full flex flex-col">
         {/* Enhanced Header with Beautiful Purple Gradient */}
         <div className="relative p-6 shadow-xl">
@@ -561,7 +541,6 @@ export default function AIEnhancedLearningAssistantTopLayer({ isOpen, onClose }:
           </ScrollArea>
         </div>
       </div>
-      </div>
-    </>
+    </div>
   );
 }
