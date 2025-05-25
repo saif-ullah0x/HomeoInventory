@@ -297,6 +297,14 @@ export default function LearningPage() {
               <Lightbulb className="w-4 h-4 mr-1 text-amber-500" />
               Interactive Learning
             </Badge>
+            <Button 
+              variant="outline" 
+              onClick={() => window.location.href = '/'}
+              className="bg-white/70 dark:bg-gray-800/70 hover:bg-white dark:hover:bg-gray-700 border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 hover:text-purple-800 dark:hover:text-purple-200 px-4 py-2 rounded-full shadow-sm transition-all duration-200 hover:shadow-md"
+            >
+              <span className="mr-2">↩</span>
+              Return to App
+            </Button>
           </div>
         </div>
       </div>
