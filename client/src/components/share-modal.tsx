@@ -235,18 +235,20 @@ export default function ShareModal({ isOpen, onClose }: ShareModalProps) {
   
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] bg-gradient-to-b from-white/90 to-white/60 dark:from-gray-900/90 dark:to-gray-900/60 backdrop-blur-md border border-purple-100/30 dark:border-purple-900/30 glass-effect">
         <DialogHeader>
-          <DialogTitle>Family Access Sharing</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-xl font-medium bg-gradient-to-r from-purple-700 to-purple-500 bg-clip-text text-transparent">
+            Family Access Sharing
+          </DialogTitle>
+          <DialogDescription className="text-gray-600 dark:text-gray-300">
             Share your medicine inventory with family members or access a shared inventory.
           </DialogDescription>
         </DialogHeader>
         
         <Tabs defaultValue="create" value={activeTab} onValueChange={setActiveTab} className="mt-2">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="create">Share My Inventory</TabsTrigger>
-            <TabsTrigger value="use">Access Shared Inventory</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 bg-purple-100/50 dark:bg-purple-900/20">
+            <TabsTrigger value="create" className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800 data-[state=active]:text-purple-700 dark:data-[state=active]:text-purple-400 data-[state=active]:shadow-sm">Share My Inventory</TabsTrigger>
+            <TabsTrigger value="use" className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800 data-[state=active]:text-purple-700 dark:data-[state=active]:text-purple-400 data-[state=active]:shadow-sm">Access Shared Inventory</TabsTrigger>
           </TabsList>
           
           <TabsContent value="create" className="space-y-4 py-4">
