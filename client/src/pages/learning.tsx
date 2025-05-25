@@ -436,13 +436,14 @@ export default function LearningPage() {
                         backdrop-blur-sm group/tab"
             >
               <div className="p-2 rounded-xl bg-white/20 data-[state=active]:bg-white/30 
-                             group-hover/tab:bg-white/30 transition-all duration-200">
+                             group-hover/tab:bg-white/30 transition-all duration-200 shadow-lg shadow-purple-500/20 group-data-[state=active]/tab:shadow-white/30">
                 <Book className="h-5 w-5 group-hover/tab:scale-110 transition-transform duration-200" />
               </div>
-              <span className="text-lg">Learn Remedies</span>
-              {/* Subtle glow effect */}
+              <span className="text-lg group-data-[state=active]/tab:font-bold">Learn Remedies</span>
+              {/* Enhanced glow effect */}
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-500/0 via-purple-500/10 to-purple-500/0 
-                             opacity-0 group-hover/tab:opacity-100 transition-opacity duration-300"></div>
+                             opacity-0 group-hover/tab:opacity-100 group-data-[state=active]/tab:opacity-100 
+                             transition-opacity duration-300 animate-pulse"></div>
             </TabsTrigger>
             
             <TabsTrigger 
@@ -457,13 +458,14 @@ export default function LearningPage() {
                         backdrop-blur-sm group/tab"
             >
               <div className="p-2 rounded-xl bg-white/20 data-[state=active]:bg-white/30 
-                             group-hover/tab:bg-white/30 transition-all duration-200">
+                             group-hover/tab:bg-white/30 transition-all duration-200 shadow-lg shadow-indigo-500/20 group-data-[state=active]/tab:shadow-white/30">
                 <Target className="h-5 w-5 group-hover/tab:scale-110 transition-transform duration-200" />
               </div>
-              <span className="text-lg">Test Knowledge</span>
-              {/* Subtle glow effect */}
+              <span className="text-lg group-data-[state=active]/tab:font-bold">Test Knowledge</span>
+              {/* Enhanced glow effect */}
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-indigo-500/0 via-indigo-500/10 to-indigo-500/0 
-                             opacity-0 group-hover/tab:opacity-100 transition-opacity duration-300"></div>
+                             opacity-0 group-hover/tab:opacity-100 group-data-[state=active]/tab:opacity-100 
+                             transition-opacity duration-300 animate-pulse"></div>
             </TabsTrigger>
           </TabsList>
 
@@ -507,9 +509,11 @@ export default function LearningPage() {
                     </select>
                   </div>
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-4">
-                  Found {filteredRemedies.length} remedies matching your criteria
-                </p>
+                {searchTerm || difficulty !== "all" ? (
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-4">
+                    Found {filteredRemedies.length} remedies matching your criteria
+                  </p>
+                ) : null}
               </CardContent>
             </Card>
 
