@@ -11,6 +11,7 @@
  */
 
 import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,7 +35,10 @@ import {
   XCircle,
   RotateCcw,
   ChevronDown,
-  Filter
+  Filter,
+  X,
+  Home,
+  Sparkles
 } from "lucide-react";
 
 interface HomeopathicMedicine {
@@ -362,6 +366,9 @@ const generateQuizQuestions = (medicines: HomeopathicMedicine[]): QuizQuestion[]
 const QUIZ_QUESTIONS = generateQuizQuestions(ALL_MEDICINES);
 
 export default function LearningPage() {
+  // Navigation
+  const [, setLocation] = useLocation();
+  
   // State management
   const [activeTab, setActiveTab] = useState<'learn' | 'quiz'>('learn');
   const [searchTerm, setSearchTerm] = useState("");
@@ -372,6 +379,11 @@ export default function LearningPage() {
   // Search bar visibility state for scroll behavior
   const [isSearchVisible, setIsSearchVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+
+  // Return to home function
+  const returnToHome = () => {
+    setLocation('/');
+  };
   
   // Quiz state
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -480,26 +492,47 @@ export default function LearningPage() {
     <>
       {/* Full Page Layout (Analytics Style) */}
       <div className="flex flex-col h-screen bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800">
-        {/* Beautiful Centered Header with Enhanced Purple Gradient and Glass Effects */}
-        <div className="relative py-6 px-4 bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-600 text-white overflow-hidden">
+        {/* Compact Header with Return Button and Enhanced Effects */}
+        <div className="relative py-3 px-4 bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-600 text-white overflow-hidden">
           {/* Animated background elements */}
           <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 via-transparent to-indigo-500/20 animate-pulse"></div>
-          <div className="absolute top-0 left-1/4 w-32 h-32 bg-white/5 rounded-full blur-xl animate-bounce" style={{animationDelay: '1s', animationDuration: '3s'}}></div>
-          <div className="absolute bottom-0 right-1/4 w-24 h-24 bg-white/5 rounded-full blur-lg animate-bounce" style={{animationDelay: '2s', animationDuration: '4s'}}></div>
+          <div className="absolute top-0 left-1/4 w-20 h-20 bg-white/5 rounded-full blur-xl animate-bounce" style={{animationDelay: '1s', animationDuration: '3s'}}></div>
+          <div className="absolute bottom-0 right-1/4 w-16 h-16 bg-white/5 rounded-full blur-lg animate-bounce" style={{animationDelay: '2s', animationDuration: '4s'}}></div>
           
           {/* Glassy backdrop */}
           <div className="absolute inset-0 backdrop-blur-sm bg-white/5"></div>
           
           {/* Content */}
-          <div className="relative flex flex-col items-center text-center">
-            <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm mb-4 shadow-lg hover:scale-110 transition-transform duration-300">
-              <BookOpen className="h-8 w-8 text-white" />
+          <div className="relative flex items-center justify-between">
+            {/* Left side - Decorative element with app tagline */}
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg hover:scale-110 transition-transform duration-300">
+                <Sparkles className="h-5 w-5 text-white animate-pulse" />
+              </div>
+              <div className="text-left">
+                <p className="text-xs text-purple-100 opacity-80 animate-pulse">Master Homeopathy</p>
+              </div>
             </div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-white via-purple-100 to-white bg-clip-text text-transparent mb-2 hover:scale-105 transition-transform duration-300">
-              Learning Assistant
-            </h1>
-            {/* Animated underline */}
-            <div className="w-32 h-1 bg-gradient-to-r from-transparent via-white to-transparent opacity-60 animate-pulse"></div>
+
+            {/* Center - Title */}
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                <BookOpen className="h-4 w-4 text-white" />
+              </div>
+              <h1 className="text-xl font-bold bg-gradient-to-r from-white via-purple-100 to-white bg-clip-text text-transparent hover:scale-105 transition-transform duration-300">
+                Learning Assistant
+              </h1>
+            </div>
+
+            {/* Right side - Return button */}
+            <Button
+              onClick={returnToHome}
+              variant="ghost"
+              size="sm"
+              className="text-white hover:bg-white/20 backdrop-blur-sm rounded-full p-2 transition-all duration-300 hover:scale-110"
+            >
+              <X className="h-5 w-5" />
+            </Button>
           </div>
         </div>
 
@@ -532,62 +565,67 @@ export default function LearningPage() {
         {/* Learn Tab Content */}
         {activeTab === 'learn' && (
           <div className="flex-1 flex flex-col overflow-hidden">
-            {/* Search and Filter Controls - Enhanced with scroll behavior and glassy effects */}
-            <div className={`transition-all duration-300 ease-in-out py-3 px-4 backdrop-blur-md bg-white/70 dark:bg-gray-800/70 border-b border-purple-200/30 ${
+            {/* Enhanced Search Controls - Relocated to Right Side with Glassy Effects */}
+            <div className={`transition-all duration-300 ease-in-out py-2 px-4 backdrop-blur-md bg-gradient-to-r from-white/80 via-purple-50/60 to-white/80 dark:from-gray-800/80 dark:via-gray-700/60 dark:to-gray-800/80 border-b border-purple-200/30 shadow-sm ${
               isSearchVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
             }`}>
-              <div className="max-w-4xl mx-auto">
-                <div className="flex gap-2 items-center">
-                  {/* Compact Search Bar */}
-                  <div className="w-56 relative flex-grow-0">
-                    <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-gray-400" />
-                    <Input
-                      placeholder="Search medicines, uses, or symptoms..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-7 py-1 h-8 text-sm bg-white/80 backdrop-blur-sm border-purple-200 focus:border-purple-400"
-                    />
+              <div className="max-w-6xl mx-auto">
+                <div className="flex items-center justify-between">
+                  {/* Left side - Decorative Learning Quote */}
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-gradient-to-r from-purple-500/20 to-indigo-500/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                      <Star className="h-4 w-4 text-purple-600 animate-pulse" />
+                    </div>
+                    <div className="text-sm text-purple-700 dark:text-purple-300 font-medium animate-pulse">
+                      Learn • Practice • Master
+                    </div>
                   </div>
-                  {/* Compact Category Filter */}
-                  <div className="relative w-40 flex-shrink-0">
-                    <Filter className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-gray-400" />
-                    <select
-                      value={selectedCategory}
-                      onChange={(e) => setSelectedCategory(e.target.value)}
-                      className="w-full pl-7 pr-7 py-1 h-8 text-sm border border-purple-200 rounded-md bg-white/80 backdrop-blur-sm focus:border-purple-400 appearance-none"
-                    >
-                      {categories.map(category => (
-                        <option key={category} value={category}>
-                          {category === 'all' ? 'All Categories' : category}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-gray-400 pointer-events-none" />
+
+                  {/* Right side - Search and Filter Controls */}
+                  <div className="flex gap-3 items-center">
+                    {/* Search Bar */}
+                    <div className="w-64 relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Input
+                        placeholder="Search medicines, uses, symptoms..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10 py-2 h-9 text-sm bg-white/90 backdrop-blur-sm border-purple-200 focus:border-purple-400 rounded-full shadow-sm hover:shadow-md transition-all duration-300"
+                      />
+                    </div>
+                    
+                    {/* Category Filter */}
+                    <div className="relative w-36">
+                      <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <select
+                        value={selectedCategory}
+                        onChange={(e) => setSelectedCategory(e.target.value)}
+                        className="w-full pl-10 pr-8 py-2 h-9 text-sm border border-purple-200 rounded-full bg-white/90 backdrop-blur-sm focus:border-purple-400 appearance-none shadow-sm hover:shadow-md transition-all duration-300"
+                      >
+                        {categories.map(category => (
+                          <option key={category} value={category}>
+                            {category === 'all' ? 'All' : category}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-3 w-3 text-gray-400 pointer-events-none" />
+                    </div>
                   </div>
-                  
-                  {/* Medicine Count Badge */}
-                  <div className="text-xs text-purple-700 dark:text-purple-300 ml-auto">
-                    <span className="font-medium">{displayedMedicines.length}</span>
-                    <span> of </span>
-                    <span className="font-medium">{filteredMedicines.length}</span>
-                    <span> medicines</span>
-                  </div>
-                  {/* Removed Start Quiz Button - redundant with Test Knowledge tab */}
                 </div>
               </div>
             </div>
 
-            {/* Medicines Grid with Better Container */}
-            <div className="flex-1 overflow-hidden">
+            {/* Enhanced Medicines Display Area - Increased Space and Better Visibility */}
+            <div className="flex-1 overflow-hidden bg-gradient-to-br from-purple-25/30 to-indigo-25/30">
               <ScrollArea className="h-full">
-                <div className="p-8">
+                <div className="p-4 md:p-6">
                   <div className="max-w-7xl mx-auto">
-                    {/* Medicine Cards Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+                    {/* Enhanced Medicine Cards Grid with Better Spacing */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-6 mb-6">
                       {displayedMedicines.map((medicine) => (
                         <Card
                           key={medicine.id}
-                          className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-105 bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-gray-900 border-purple-100 dark:border-purple-800"
+                          className="group cursor-pointer transition-all duration-500 hover:shadow-2xl hover:shadow-purple-500/20 hover:scale-105 bg-gradient-to-br from-white via-purple-50/50 to-white dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 border border-purple-200/50 dark:border-purple-700/50 backdrop-blur-sm hover:border-purple-300 dark:hover:border-purple-600 rounded-xl overflow-hidden"
                           onClick={() => setSelectedMedicine(medicine)}
                         >
                           <CardContent className="p-6">

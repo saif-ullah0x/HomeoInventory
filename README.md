@@ -8,7 +8,7 @@ HomeoInvent is an advanced offline-first homeopathic medicine learning and inven
 - **AI-Powered Analysis**: Get remedy suggestions through intelligent symptom analysis with Dr. Harmony
 - **Cloud Sharing**: Share your inventory with family members through secure share codes
 - **Offline-First Design**: Works without internet connection using local storage
-- **Enhanced Learning Assistant**: Master homeopathic remedies with our interactive learning system
+- **Enhanced Learning Assistant**: Master homeopathic remedies with our interactive learning system featuring compact design, glowing purple gradients, and smooth animations
 - **Life Wisdom**: Daily wellness tips and quotes from various traditions
 - **Export Options**: Generate PDF and Excel reports of your inventory
 - **Responsive UI**: Beautiful interface optimized for all devices
