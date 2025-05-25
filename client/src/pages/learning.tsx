@@ -369,6 +369,10 @@ export default function LearningPage() {
   const [showAllMedicines, setShowAllMedicines] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   
+  // Search bar visibility state for scroll behavior
+  const [isSearchVisible, setIsSearchVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  
   // Quiz state
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
@@ -452,25 +456,50 @@ export default function LearningPage() {
     setCurrentPage(1);
   }, [searchTerm, selectedCategory]);
 
+  // Scroll handler for search bar visibility
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        // Scrolling down and past threshold - hide search bar
+        setIsSearchVisible(false);
+      } else {
+        // Scrolling up or at top - show search bar
+        setIsSearchVisible(true);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
+
   return (
     <>
       {/* Full Page Layout (Analytics Style) */}
       <div className="flex flex-col h-screen bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800">
-        {/* Compact Header with beautiful gradient */}
-        <div className="flex items-center justify-between py-3 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
-          <div className="flex items-center gap-2">
-            <div className="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-              <BookOpen className="h-4 w-4 text-white" />
+        {/* Beautiful Centered Header with Enhanced Purple Gradient and Glass Effects */}
+        <div className="relative py-6 px-4 bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-600 text-white overflow-hidden">
+          {/* Animated background elements */}
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 via-transparent to-indigo-500/20 animate-pulse"></div>
+          <div className="absolute top-0 left-1/4 w-32 h-32 bg-white/5 rounded-full blur-xl animate-bounce" style={{animationDelay: '1s', animationDuration: '3s'}}></div>
+          <div className="absolute bottom-0 right-1/4 w-24 h-24 bg-white/5 rounded-full blur-lg animate-bounce" style={{animationDelay: '2s', animationDuration: '4s'}}></div>
+          
+          {/* Glassy backdrop */}
+          <div className="absolute inset-0 backdrop-blur-sm bg-white/5"></div>
+          
+          {/* Content */}
+          <div className="relative flex flex-col items-center text-center">
+            <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm mb-4 shadow-lg hover:scale-110 transition-transform duration-300">
+              <BookOpen className="h-8 w-8 text-white" />
             </div>
-            <div>
-              <h1 className="text-lg font-bold text-white">Learning Assistant</h1>
-              <p className="text-xs text-purple-100">150+ Authentic Homeopathic Medicines</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Badge className="bg-white/20 text-white border-white/30 px-3 py-1 text-xs">
-              {filteredMedicines.length} Medicines
-            </Badge>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-white via-purple-100 to-white bg-clip-text text-transparent mb-2 hover:scale-105 transition-transform duration-300">
+              Learning Assistant
+            </h1>
+            {/* Animated underline */}
+            <div className="w-32 h-1 bg-gradient-to-r from-transparent via-white to-transparent opacity-60 animate-pulse"></div>
           </div>
         </div>
 
@@ -503,8 +532,10 @@ export default function LearningPage() {
         {/* Learn Tab Content */}
         {activeTab === 'learn' && (
           <div className="flex-1 flex flex-col overflow-hidden">
-            {/* Search and Filter Controls - Improved Spacing */}
-            <div className="py-3 px-4 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 border-b">
+            {/* Search and Filter Controls - Enhanced with scroll behavior and glassy effects */}
+            <div className={`transition-all duration-300 ease-in-out py-3 px-4 backdrop-blur-md bg-white/70 dark:bg-gray-800/70 border-b border-purple-200/30 ${
+              isSearchVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
+            }`}>
               <div className="max-w-4xl mx-auto">
                 <div className="flex gap-2 items-center">
                   {/* Compact Search Bar */}
