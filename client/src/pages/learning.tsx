@@ -873,13 +873,13 @@ export default function LearningPage() {
                     </div>
                   </div>
 
-                  {/* Mental & Physical Symptoms */}
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Mental & Physical Symptoms - More Compact */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     {/* Mental Symptoms */}
-                    <div className="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-xl p-6 border border-purple-200 dark:border-purple-800">
-                      <div className="flex items-center gap-2 mb-4">
-                        <Brain className="h-5 w-5 text-purple-600" />
-                        <h3 className="text-lg font-semibold text-purple-900 dark:text-purple-100">Mental & Emotional</h3>
+                    <div className="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-lg p-4 border border-purple-200 dark:border-purple-800">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Brain className="h-4 w-4 text-purple-600" />
+                        <h3 className="text-sm font-semibold text-purple-900 dark:text-purple-100">Mental & Emotional</h3>
                       </div>
                       <div className="space-y-2">
                         {selectedMedicine.mentalSymptoms.map((symptom, index) => (
@@ -891,11 +891,11 @@ export default function LearningPage() {
                       </div>
                     </div>
 
-                    {/* Physical Symptoms */}
-                    <div className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-xl p-6 border border-orange-200 dark:border-orange-800">
-                      <div className="flex items-center gap-2 mb-4">
-                        <Heart className="h-5 w-5 text-orange-600" />
-                        <h3 className="text-lg font-semibold text-orange-900 dark:text-orange-100">Physical Symptoms</h3>
+                    {/* Physical Symptoms - More Compact */}
+                    <div className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-lg p-4 border border-orange-200 dark:border-orange-800">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Heart className="h-4 w-4 text-orange-600" />
+                        <h3 className="text-sm font-semibold text-orange-900 dark:text-orange-100">Physical Symptoms</h3>
                       </div>
                       <div className="space-y-2">
                         {selectedMedicine.physicalSymptoms.map((symptom, index) => (
