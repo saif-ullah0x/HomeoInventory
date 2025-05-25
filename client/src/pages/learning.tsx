@@ -419,21 +419,21 @@ export default function LearningPage() {
           <TabsList className="grid grid-cols-2 mb-8 bg-gradient-to-r from-white/90 via-purple-50/80 to-white/90 
                               dark:from-gray-800/90 dark:via-purple-900/30 dark:to-gray-800/90 
                               backdrop-blur-xl shadow-2xl border-2 border-purple-200/50 dark:border-purple-600/30 
-                              rounded-3xl p-2 mx-auto w-fit relative overflow-hidden group">
+                              rounded-3xl p-3 mx-auto w-fit max-w-[600px] min-w-[320px] relative overflow-hidden group">
             {/* Animated background glow */}
             <div className="absolute inset-0 bg-gradient-to-r from-purple-400/20 via-indigo-400/20 to-purple-400/20 
                            opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl"></div>
             
             <TabsTrigger 
               value="learn" 
-              className="flex items-center gap-3 font-semibold rounded-2xl relative z-10
+              className="flex items-center justify-center gap-3 font-semibold rounded-2xl relative z-10
                         data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-indigo-600
                         data-[state=active]:text-white data-[state=active]:shadow-2xl
                         hover:bg-gradient-to-r hover:from-purple-100 hover:to-indigo-100
                         dark:hover:from-purple-900/30 dark:hover:to-indigo-900/30
-                        transition-all duration-300 hover:scale-[1.05] px-8 py-4
+                        transition-all duration-300 hover:scale-[1.03] px-6 py-5
                         border-2 border-transparent data-[state=active]:border-white/30
-                        backdrop-blur-sm group/tab"
+                        backdrop-blur-sm group/tab h-[64px] min-w-[150px]"
             >
               <div className="p-2 rounded-xl bg-white/20 data-[state=active]:bg-white/30 
                              group-hover/tab:bg-white/30 transition-all duration-200 shadow-lg shadow-purple-500/20 group-data-[state=active]/tab:shadow-white/30">
@@ -448,14 +448,14 @@ export default function LearningPage() {
             
             <TabsTrigger 
               value="quiz" 
-              className="flex items-center gap-3 font-semibold rounded-2xl relative z-10
+              className="flex items-center justify-center gap-3 font-semibold rounded-2xl relative z-10
                         data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-500 data-[state=active]:to-purple-600
                         data-[state=active]:text-white data-[state=active]:shadow-2xl
                         hover:bg-gradient-to-r hover:from-indigo-100 hover:to-purple-100
                         dark:hover:from-indigo-900/30 dark:hover:to-purple-900/30
-                        transition-all duration-300 hover:scale-[1.05] px-8 py-4
+                        transition-all duration-300 hover:scale-[1.03] px-6 py-5
                         border-2 border-transparent data-[state=active]:border-white/30
-                        backdrop-blur-sm group/tab"
+                        backdrop-blur-sm group/tab h-[64px] min-w-[150px]"
             >
               <div className="p-2 rounded-xl bg-white/20 data-[state=active]:bg-white/30 
                              group-hover/tab:bg-white/30 transition-all duration-200 shadow-lg shadow-indigo-500/20 group-data-[state=active]/tab:shadow-white/30">
