@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Sun, Moon, Brain, MessageCircle } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
 import AIHomeopathyChatbot from "@/components/ai-homeopathy-chatbot";
-import AIEnhancedLearningAssistantPopup from "@/components/ai-enhanced-learning-assistant-popup";
+import AIEnhancedLearningAssistantTopLayer from "@/components/ai-enhanced-learning-assistant-top-layer";
 
 export default function Header() {
   const { theme, setTheme } = useTheme();
@@ -76,7 +76,7 @@ export default function Header() {
 
       {/* AI Learning Modals */}
       <AIHomeopathyChatbot isOpen={showAIChatbot} onClose={() => setShowAIChatbot(false)} />
-      <AIEnhancedLearningAssistantPopup isOpen={showLearningSystem} onClose={() => setShowLearningSystem(false)} />
+      <AIEnhancedLearningAssistantTopLayer isOpen={showLearningSystem} onClose={() => setShowLearningSystem(false)} />
     </header>
   );
 }

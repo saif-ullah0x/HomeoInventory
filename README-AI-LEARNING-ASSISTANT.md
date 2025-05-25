@@ -1,7 +1,7 @@
 # 🧠 AI-Enhanced Remedy Learning Assistant
 
 ## Overview
-The AI-Enhanced Remedy Learning Assistant is a beautiful, intelligent educational feature for your HomeoInvent app that provides comprehensive learning materials and interactive quizzes about homeopathic remedies and conditions. Featuring a stunning glassy design with purple gradients, smooth animations, and default content for common symptoms.
+The AI-Enhanced Remedy Learning Assistant is a beautiful popup interface for your HomeoInvent app that provides comprehensive learning about 50+ common homeopathic remedies with interactive quizzes. The popup appears above all elements (buttons, wisdom box, medicines container) with the highest z-index priority, featuring stunning purple gradients, glassy effects, and proper scrolling without interfering with existing features.
 
 ## ✨ Visual Design Features
 

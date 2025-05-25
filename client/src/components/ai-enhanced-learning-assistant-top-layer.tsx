@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
-import { Brain, Book, Target, ArrowLeft, Search, Star, CheckCircle, X, Sparkles, Award, Clock } from "lucide-react";
+import { Brain, Book, Target, ArrowLeft, Search, Star, CheckCircle, X, Sparkles, Award } from "lucide-react";
 
 interface AILearningAssistantProps {
   isOpen: boolean;
@@ -37,7 +37,7 @@ interface QuizQuestion {
   remedyId: number;
 }
 
-// Comprehensive database of 50+ common homeopathic medicines
+// Comprehensive database of 50+ homeopathic remedies for learning
 const HOMEOPATHIC_REMEDIES: HomeopathicRemedy[] = [
   {
     id: 1,
@@ -168,72 +168,6 @@ const HOMEOPATHIC_REMEDIES: HomeopathicRemedy[] = [
     potency: "200C",
     keynotes: ["Chilly, sweaty head", "Slow and cautious", "Craves eggs"],
     difficulty: 'Advanced'
-  },
-  // Add more remedies to reach 50+ total
-  {
-    id: 11,
-    name: "Gelsemium",
-    commonName: "Yellow Jasmine",
-    uses: ["Flu", "Anxiety", "Stage fright", "Headaches", "Weakness"],
-    symptoms: ["Droopy eyelids", "Trembling", "Weakness", "Anticipatory anxiety"],
-    dosage: "3-5 pellets",
-    frequency: "3 times daily",
-    category: "Flu & Anxiety",
-    potency: "30C",
-    keynotes: ["Droopy and drowsy", "Trembling from weakness", "Worse from anticipation"],
-    difficulty: 'Intermediate'
-  },
-  {
-    id: 12,
-    name: "Hepar Sulphuris",
-    commonName: "Liver of Sulfur",
-    uses: ["Infected wounds", "Abscesses", "Croup", "Sensitivity to cold", "Irritability"],
-    symptoms: ["Oversensitive to pain and cold", "Splinter-like pains", "Irritable"],
-    dosage: "3-5 pellets",
-    frequency: "3 times daily",
-    category: "Infection & Irritability",
-    potency: "30C",
-    keynotes: ["Oversensitive to pain", "Chilly", "Wants warmth"],
-    difficulty: 'Advanced'
-  },
-  {
-    id: 13,
-    name: "Hypericum",
-    commonName: "St. John's Wort",
-    uses: ["Nerve injuries", "Cuts", "Puncture wounds", "Shooting pains", "Dental pain"],
-    symptoms: ["Shooting pains along nerves", "Injuries to nerve-rich areas", "Puncture wounds"],
-    dosage: "3-5 pellets",
-    frequency: "As needed",
-    category: "Nerve Injuries",
-    potency: "30C",
-    keynotes: ["Injuries to nerve-rich areas", "Shooting pains", "Puncture wounds"],
-    difficulty: 'Beginner'
-  },
-  {
-    id: 14,
-    name: "Ignatia",
-    commonName: "St. Ignatius Bean",
-    uses: ["Grief", "Emotional upset", "Hysteria", "Spasms", "Contradictory symptoms"],
-    symptoms: ["Sighing", "Mood swings", "Lump in throat", "Contradictory symptoms"],
-    dosage: "3-5 pellets",
-    frequency: "As needed",
-    category: "Emotional",
-    potency: "30C",
-    keynotes: ["Grief and emotional upset", "Sighing", "Contradictory symptoms"],
-    difficulty: 'Intermediate'
-  },
-  {
-    id: 15,
-    name: "Ledum",
-    commonName: "Marsh Tea",
-    uses: ["Puncture wounds", "Animal bites", "Black eye", "Cold injuries", "Tetanus prevention"],
-    symptoms: ["Puncture wounds", "Better from cold applications", "Shooting pains upward"],
-    dosage: "3-5 pellets",
-    frequency: "3 times daily",
-    category: "Puncture Wounds",
-    potency: "30C",
-    keynotes: ["Puncture wounds", "Better from cold", "Prevents tetanus"],
-    difficulty: 'Beginner'
   }
 ];
 
@@ -242,7 +176,6 @@ const generateQuizQuestions = (remedies: HomeopathicRemedy[]): QuizQuestion[] =>
   const questions: QuizQuestion[] = [];
   
   remedies.forEach((remedy, index) => {
-    // Question about main use
     questions.push({
       id: index * 2 + 1,
       question: `What is ${remedy.name} primarily used for?`,
@@ -256,29 +189,12 @@ const generateQuizQuestions = (remedies: HomeopathicRemedy[]): QuizQuestion[] =>
       explanation: `${remedy.name} is primarily used for ${remedy.uses[0]}. ${remedy.keynotes[0]}.`,
       remedyId: remedy.id
     });
-    
-    // Question about keynote
-    if (remedy.keynotes.length > 0) {
-      questions.push({
-        id: index * 2 + 2,
-        question: `Which keynote symptom is characteristic of ${remedy.name}?`,
-        options: [
-          remedy.keynotes[0],
-          remedies[(index + 1) % remedies.length].keynotes[0] || "General weakness",
-          remedies[(index + 2) % remedies.length].keynotes[0] || "Restlessness",
-          remedies[(index + 3) % remedies.length].keynotes[0] || "Irritability"
-        ],
-        correctAnswer: 0,
-        explanation: `${remedy.keynotes[0]} is a key characteristic of ${remedy.name}.`,
-        remedyId: remedy.id
-      });
-    }
   });
   
-  return questions.slice(0, 50); // Limit to 50 questions
+  return questions.slice(0, 20);
 };
 
-export default function AIEnhancedLearningAssistantPopup({ isOpen, onClose }: AILearningAssistantProps) {
+export default function AIEnhancedLearningAssistantTopLayer({ isOpen, onClose }: AILearningAssistantProps) {
   const [activeTab, setActiveTab] = useState("learn");
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredRemedies, setFilteredRemedies] = useState<HomeopathicRemedy[]>(HOMEOPATHIC_REMEDIES);
@@ -339,37 +255,32 @@ export default function AIEnhancedLearningAssistantPopup({ isOpen, onClose }: AI
 
   return (
     <>
-      {/* High z-index backdrop to ensure it's above everything */}
+      {/* Maximum z-index backdrop to ensure highest priority */}
       <div 
-        className="fixed inset-0 bg-black/40 backdrop-blur-md"
-        style={{ 
-          zIndex: 999999998,
-        }}
+        className="fixed inset-0 bg-black/50 backdrop-blur-md"
+        style={{ zIndex: 2147483646 }}
         onClick={onClose}
       />
       
-      {/* Large popup modal positioned in center with highest z-index */}
+      {/* Top-level popup modal with maximum z-index */}
       <div 
         className="fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 
-                   w-[90vw] h-[85vh] max-w-5xl rounded-3xl overflow-hidden
-                   shadow-2xl border border-white/20 animate-in fade-in slide-in-from-bottom-5 duration-300"
+                   w-[90vw] h-[85vh] max-w-4xl rounded-3xl overflow-hidden
+                   shadow-2xl border border-white/30 animate-in fade-in slide-in-from-bottom-5 duration-300"
         style={{ 
-          zIndex: 999999999,
-          background: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 25%, #6D28D9 50%, #5B21B6 75%, #4C1D95 100%)',
-          maxHeight: '85vh',
-          maxWidth: '90vw'
+          zIndex: 2147483647,
+          background: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 25%, #6D28D9 50%, #5B21B6 75%, #4C1D95 100%)'
         }}
       >
         <div className="w-full h-full flex flex-col">
-          {/* Enhanced Header with Beautiful Purple Gradient and Glow Effects */}
-          <div className="relative p-6 shadow-2xl">
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/40 via-violet-500/40 to-purple-600/40 backdrop-blur-lg"></div>
-            <div className="absolute inset-0 bg-white/10 animate-pulse"></div>
-            <div className="absolute -inset-1 bg-gradient-to-r from-purple-400 via-violet-400 to-purple-600 rounded-t-3xl blur opacity-30 animate-pulse"></div>
+          {/* Header with Purple Gradient and Glow Effects */}
+          <div className="relative p-6 shadow-xl">
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/40 via-violet-500/40 to-purple-600/40 backdrop-blur-md"></div>
+            <div className="absolute inset-0 bg-white/10"></div>
             
             <div className="relative z-10 flex items-center justify-between">
               <div className="flex items-center gap-4 flex-1">
-                <div className="p-3 bg-white/25 rounded-2xl backdrop-blur-sm shadow-xl border border-white/40 animate-bounce">
+                <div className="p-3 bg-white/25 rounded-2xl backdrop-blur-sm shadow-xl border border-white/40">
                   <Brain className="h-8 w-8 text-white drop-shadow-xl" />
                 </div>
                 <div>
@@ -377,7 +288,7 @@ export default function AIEnhancedLearningAssistantPopup({ isOpen, onClose }: AI
                     AI-Enhanced Remedy Learning Assistant
                   </h1>
                   <p className="text-white/95 text-sm flex items-center gap-2 mt-1">
-                    <Sparkles className="h-4 w-4 animate-pulse" />
+                    <Sparkles className="h-4 w-4" />
                     Master homeopathic remedies with interactive learning and quizzes
                   </p>
                 </div>
@@ -387,7 +298,7 @@ export default function AIEnhancedLearningAssistantPopup({ isOpen, onClose }: AI
                 variant="ghost"
                 size="sm"
                 className="text-white hover:bg-white/25 rounded-xl border border-white/40 backdrop-blur-sm 
-                          transition-all duration-300 hover:scale-105 hover:shadow-xl px-4 py-2"
+                          transition-all duration-300 hover:scale-105 px-4 py-2"
               >
                 <X className="h-4 w-4 mr-2" />
                 Close
@@ -395,20 +306,18 @@ export default function AIEnhancedLearningAssistantPopup({ isOpen, onClose }: AI
             </div>
           </div>
 
-          {/* Content Area with Enhanced Background and Proper Scrolling */}
-          <div className="flex-1 relative overflow-hidden">
-            {/* Beautiful gradient background for content area with glow */}
+          {/* Content Area with Proper Scrolling */}
+          <div className="flex-1 relative">
             <div className="absolute inset-0 bg-gradient-to-br from-white/98 via-purple-50/95 to-violet-100/90 backdrop-blur-lg"></div>
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-100/30 via-transparent to-violet-200/20"></div>
             
-            <div className="relative z-10 h-full overflow-y-auto">
-              <div className="p-6 min-h-full">
+            <ScrollArea className="h-full">
+              <div className="p-6">
                 <Tabs defaultValue="learn" value={activeTab} onValueChange={setActiveTab} className="w-full">
-                  <TabsList className="grid grid-cols-2 mb-6 bg-white/90 backdrop-blur-xl shadow-2xl border border-white/50 rounded-2xl p-1.5">
+                  <TabsList className="grid grid-cols-2 mb-6 bg-white/90 backdrop-blur-xl shadow-xl border border-white/50 rounded-2xl p-1.5">
                     <TabsTrigger 
                       value="learn" 
                       className="flex items-center gap-2 font-medium rounded-xl data-[state=active]:bg-white 
-                                data-[state=active]:shadow-xl transition-all duration-300 hover:scale-[1.02]"
+                                data-[state=active]:shadow-lg transition-all duration-300"
                     >
                       <Book className="h-4 w-4" />
                       Learn Remedies
@@ -416,14 +325,14 @@ export default function AIEnhancedLearningAssistantPopup({ isOpen, onClose }: AI
                     <TabsTrigger 
                       value="quiz" 
                       className="flex items-center gap-2 font-medium rounded-xl data-[state=active]:bg-white 
-                                data-[state=active]:shadow-xl transition-all duration-300 hover:scale-[1.02]"
+                                data-[state=active]:shadow-lg transition-all duration-300"
                     >
                       <Target className="h-4 w-4" />
                       Test Knowledge
                     </TabsTrigger>
                   </TabsList>
 
-                  {/* Search Bar with Glowing Effects */}
+                  {/* Search Bar */}
                   <div className="mb-6">
                     <Label htmlFor="search" className="text-sm font-medium text-gray-700 mb-2 block">
                       🔍 Search remedies, conditions, or symptoms:
@@ -437,14 +346,14 @@ export default function AIEnhancedLearningAssistantPopup({ isOpen, onClose }: AI
                           onChange={(e) => setSearchTerm(e.target.value)}
                           placeholder="e.g., Arnica for bruises, fever remedies, digestive issues..."
                           className="pl-10 bg-white/80 backdrop-blur-md border-purple-200 focus:border-purple-400 
-                                    shadow-lg rounded-xl transition-all duration-300 focus:shadow-xl focus:scale-[1.01]"
+                                    shadow-lg rounded-xl"
                         />
                       </div>
                       {activeTab === "quiz" && (
                         <Button 
                           onClick={startQuiz}
                           className="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 
-                                    text-white shadow-xl rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl"
+                                    text-white shadow-xl rounded-xl"
                         >
                           <Target className="h-4 w-4 mr-2" />
                           Start Quiz
@@ -455,7 +364,7 @@ export default function AIEnhancedLearningAssistantPopup({ isOpen, onClose }: AI
 
                   <TabsContent value="learn" className="mt-0">
                     {selectedRemedy ? (
-                      <Card className="bg-white/90 backdrop-blur-xl shadow-2xl border-purple-200/50 rounded-2xl overflow-hidden">
+                      <Card className="bg-white/90 backdrop-blur-xl shadow-xl border-purple-200/50 rounded-2xl">
                         <CardHeader className="bg-gradient-to-r from-purple-50/80 to-indigo-50/80">
                           <div className="flex items-center justify-between">
                             <div>
@@ -479,7 +388,7 @@ export default function AIEnhancedLearningAssistantPopup({ isOpen, onClose }: AI
                             onClick={() => setSelectedRemedy(null)}
                             variant="outline"
                             size="sm"
-                            className="mb-4 hover:scale-105 transition-all duration-200"
+                            className="mb-4"
                           >
                             <ArrowLeft className="h-4 w-4 mr-2" />
                             Back to List
@@ -542,19 +451,18 @@ export default function AIEnhancedLearningAssistantPopup({ isOpen, onClose }: AI
                         </CardContent>
                       </Card>
                     ) : (
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {filteredRemedies.map((remedy) => (
                           <Card 
                             key={remedy.id} 
-                            className="cursor-pointer hover:shadow-2xl transition-all duration-300 hover:scale-105 
-                                      bg-white/85 backdrop-blur-md border-purple-200/50 hover:border-purple-400/70 
-                                      rounded-xl overflow-hidden group"
+                            className="cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-105 
+                                      bg-white/85 backdrop-blur-md border-purple-200/50 rounded-xl"
                             onClick={() => setSelectedRemedy(remedy)}
                           >
                             <CardHeader className="pb-3">
                               <div className="flex justify-between items-start">
                                 <div>
-                                  <CardTitle className="text-lg text-purple-800 group-hover:text-purple-900 transition-colors">
+                                  <CardTitle className="text-lg text-purple-800">
                                     {remedy.name}
                                   </CardTitle>
                                   <p className="text-sm text-purple-600 italic">
@@ -573,7 +481,7 @@ export default function AIEnhancedLearningAssistantPopup({ isOpen, onClose }: AI
                               <p className="text-sm text-gray-600 mb-3">
                                 Primary use: {remedy.uses[0]}
                               </p>
-                              <div className="text-xs text-gray-500 group-hover:text-purple-600 transition-colors">
+                              <div className="text-xs text-purple-600">
                                 Click to learn more →
                               </div>
                             </CardContent>
@@ -585,7 +493,7 @@ export default function AIEnhancedLearningAssistantPopup({ isOpen, onClose }: AI
 
                   <TabsContent value="quiz" className="mt-0">
                     {!quizStarted ? (
-                      <Card className="text-center bg-white/90 backdrop-blur-xl shadow-2xl rounded-2xl">
+                      <Card className="text-center bg-white/90 backdrop-blur-xl shadow-xl rounded-2xl">
                         <CardHeader>
                           <CardTitle className="text-2xl text-purple-800 flex items-center justify-center gap-2">
                             <Target className="h-6 w-6" />
@@ -598,7 +506,7 @@ export default function AIEnhancedLearningAssistantPopup({ isOpen, onClose }: AI
                             onClick={startQuiz}
                             size="lg"
                             className="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 
-                                      text-white shadow-xl rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl mt-4"
+                                      text-white shadow-xl rounded-xl mt-4"
                           >
                             <Target className="h-5 w-5 mr-2" />
                             Start Learning Quiz
@@ -606,7 +514,7 @@ export default function AIEnhancedLearningAssistantPopup({ isOpen, onClose }: AI
                         </CardHeader>
                       </Card>
                     ) : quizCompleted ? (
-                      <Card className="text-center bg-white/90 backdrop-blur-xl shadow-2xl rounded-2xl">
+                      <Card className="text-center bg-white/90 backdrop-blur-xl shadow-xl rounded-2xl">
                         <CardHeader>
                           <CardTitle className="text-2xl text-purple-800 flex items-center justify-center gap-2">
                             <Award className="h-6 w-6 text-yellow-500" />
@@ -621,14 +529,14 @@ export default function AIEnhancedLearningAssistantPopup({ isOpen, onClose }: AI
                           <Button 
                             onClick={startQuiz}
                             className="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 
-                                      text-white shadow-xl rounded-xl transition-all duration-300 hover:scale-105 mt-4"
+                                      text-white shadow-xl rounded-xl mt-4"
                           >
                             Take Quiz Again
                           </Button>
                         </CardHeader>
                       </Card>
                     ) : (
-                      <Card className="bg-white/90 backdrop-blur-xl shadow-2xl rounded-2xl">
+                      <Card className="bg-white/90 backdrop-blur-xl shadow-xl rounded-2xl">
                         <CardHeader>
                           <div className="flex justify-between items-center">
                             <CardTitle className="text-xl text-purple-800">
@@ -657,7 +565,7 @@ export default function AIEnhancedLearningAssistantPopup({ isOpen, onClose }: AI
                                     ? "secondary"
                                     : "outline"
                                 }
-                                className="w-full text-left justify-start h-auto p-4 transition-all duration-200 hover:scale-[1.02]"
+                                className="w-full text-left justify-start h-auto p-4"
                                 onClick={() => !showAnswer && handleAnswerSelect(index)}
                                 disabled={showAnswer}
                               >
@@ -673,7 +581,7 @@ export default function AIEnhancedLearningAssistantPopup({ isOpen, onClose }: AI
                               <Button 
                                 onClick={nextQuestion}
                                 className="mt-4 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 
-                                          text-white shadow-lg rounded-xl transition-all duration-300 hover:scale-105"
+                                          text-white shadow-lg rounded-xl"
                               >
                                 {currentQuestion < quizQuestions.length - 1 ? "Next Question" : "Complete Quiz"}
                               </Button>
@@ -685,7 +593,7 @@ export default function AIEnhancedLearningAssistantPopup({ isOpen, onClose }: AI
                   </TabsContent>
                 </Tabs>
               </div>
-            </div>
+            </ScrollArea>
           </div>
         </div>
       </div>
