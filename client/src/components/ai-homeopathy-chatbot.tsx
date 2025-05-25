@@ -31,7 +31,8 @@ import {
   MapPin,
   BarChart3,
   RefreshCw,
-  Archive
+  Archive,
+  X
 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -246,7 +247,7 @@ export default function AIHomeopathyChatbot({ isOpen, onClose }: AIChatbotProps)
   const clearChat = () => {
     setMessages([{
       type: 'ai',
-      content: "Chat cleared. How can I help you with homeopathic remedies today?",
+      content: "Chat cleared. Welcome back to AI Helper! How can I assist you with your homeopathic inventory today?",
       timestamp: new Date()
     }]);
   };
@@ -348,30 +349,34 @@ export default function AIHomeopathyChatbot({ isOpen, onClose }: AIChatbotProps)
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[500px] max-h-[90vh] h-[700px] flex flex-col p-0 rounded-xl overflow-hidden">
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] h-[700px] flex flex-col p-0 rounded-xl overflow-hidden [&>button]:hidden">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
+        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white relative">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md">
               <span className="text-xl">🤖</span>
             </div>
             <div>
-              <h3 className="font-semibold text-white">AI Homeopathy Chatbot</h3>
+              <h3 className="font-semibold text-white">AI Helper</h3>
               <p className="text-xs text-purple-100">Your Comprehensive Remedy Assistant</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <Button
               variant="ghost"
               size="sm"
               onClick={clearChat}
-              className="text-white hover:bg-white/20"
+              className="text-white hover:bg-white/20 h-8 w-8 p-0"
             >
               <Trash2 className="h-4 w-4" />
             </Button>
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-white hover:bg-white/20 h-8 w-8 p-0"
+                >
                   <Info className="h-4 w-4" />
                 </Button>
               </AlertDialogTrigger>
@@ -379,11 +384,11 @@ export default function AIHomeopathyChatbot({ isOpen, onClose }: AIChatbotProps)
                 <AlertDialogHeader>
                   <AlertDialogTitle className="flex items-center gap-2">
                     <AlertTriangle className="h-5 w-5 text-amber-500" />
-                    Medical Disclaimer
+                    Helper Disclaimer
                   </AlertDialogTitle>
                   <AlertDialogDescription className="space-y-2 text-left">
-                    <p>This AI assistant provides educational information based on classical homeopathic literature.</p>
-                    <p className="font-bold">This is not a substitute for professional medical advice, diagnosis, or treatment.</p>
+                    <p>This AI Helper provides educational information based on classical homeopathic literature.</p>
+                    <p className="font-bold">This is for informational purposes and learning assistance only.</p>
                     <p>Always consult qualified healthcare providers for serious health conditions.</p>
                   </AlertDialogDescription>
                 </AlertDialogHeader>
@@ -392,6 +397,14 @@ export default function AIHomeopathyChatbot({ isOpen, onClose }: AIChatbotProps)
                 </AlertDialogAction>
               </AlertDialogContent>
             </AlertDialog>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClose}
+              className="text-white hover:bg-white/20 h-8 w-8 p-0"
+            >
+              <X className="h-4 w-4" />
+            </Button>
           </div>
         </div>
 
