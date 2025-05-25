@@ -125,33 +125,29 @@ The learning system includes 50+ authentic homeopathic remedies with comprehensi
 ## 🔧 Setup Instructions
 
 ### API Key Configuration
-To enable authentic homeopathic remedy data, you need to configure a Perplexity AI API key:
+To enable all AI-powered learning features, you need to configure the DeepSeek R1 API key:
 
 #### Option 1: Environment Variable (Recommended)
-1. Get your API key from [Perplexity AI](https://www.perplexity.ai/)
-2. Add it to your environment variables as `PERPLEXITY_API_KEY`
+1. Get your API key from [DeepSeek Platform](https://platform.deepseek.com)
+2. Add it to your environment variables as `DEEPSEEK_API_KEY`
 
-#### Option 2: Manual Code Addition
-If you prefer to add the API key directly to the code after downloading:
+#### Option 2: Replit Secrets (For Replit Users)
+1. Click on the "Secrets" tab in the left sidebar
+2. Add a new secret with key `DEEPSEEK_API_KEY`
+3. Paste your DeepSeek API key as the value
 
-1. **Open the file**: `server/routes.ts`
-2. **Find these lines** (around lines 521 and 599):
-   ```javascript
-   // TODO: ADD YOUR PERPLEXITY API KEY HERE
-   // Replace 'YOUR_API_KEY_HERE' with your actual Perplexity API key
-   const PERPLEXITY_API_KEY = process.env.PERPLEXITY_API_KEY || 'YOUR_API_KEY_HERE';
-   ```
-3. **Replace** `'YOUR_API_KEY_HERE'` with your actual API key:
-   ```javascript
-   const PERPLEXITY_API_KEY = process.env.PERPLEXITY_API_KEY || 'pplx-your-actual-api-key-here';
-   ```
-
-### Getting a Perplexity API Key
-1. Visit [https://www.perplexity.ai/](https://www.perplexity.ai/)
+### Getting a DeepSeek API Key
+1. Visit [https://platform.deepseek.com](https://platform.deepseek.com)
 2. Sign up for an account
-3. Navigate to your API settings/dashboard
+3. Navigate to API Keys section
 4. Generate a new API key
-5. Copy the key and use it in the configuration above
+5. Copy the key (starts with `sk-`) and use it in the configuration
+
+### How DeepSeek R1 Powers Learning Features
+- **Dynamic Quiz Generation**: Creates custom questions about any homeopathic remedy
+- **Educational Content**: Provides detailed explanations and learning materials
+- **Adaptive Difficulty**: Adjusts content complexity based on your level
+- **Authentic Knowledge**: Enhanced with classical homeopathic literatureion above
 
 ## 🎨 Design Features
 
