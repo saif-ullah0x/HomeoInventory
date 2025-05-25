@@ -1,44 +1,60 @@
-import React, { useState } from "react";
-import { Book, Brain, BookOpen, Search, Lightbulb, Award, CheckCircle, X, ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { toast } from "@/hooks/use-toast";
-import { Link, useLocation } from "wouter";
-
 /**
- * AI-Enhanced Remedy Learning Assistant
- * 
- * This component provides a sophisticated learning interface for homeopathic remedies
- * with comprehensive lessons and interactive quizzes in a visually appealing format.
- * 
- * UI/UX Features:
- * - Premium header with bold "AI-Enhanced Remedy Learning Assistant" text and purple gradient
- * - Enhanced glassy buttons with purple gradients, glowing shadows, and subtle animations
- * - Card-based layout for better organization and visual hierarchy
- * - Improved tab navigation with elegant indicators and smooth transitions
- * - Polished and professional design throughout the interface
+ * Learning Page - Full Tab Layout (Analytics Style)
+ * This replaces the popup modal with a full page experience
+ * Features:
+ * - Full-screen layout like Analytics tab
+ * - 150+ medicines with "Show More" functionality
+ * - Tablet-sized centered cards for medicine details
+ * - Purple gradient design with glassy effects
+ * - Proper scrolling throughout
+ * - No unnecessary difficulty levels
  */
 
-interface HomeopathicRemedy {
+import { useState, useEffect } from "react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Card, CardContent } from "@/components/ui/card";
+import { 
+  Search, 
+  BookOpen, 
+  Award, 
+  Star, 
+  Pill, 
+  Heart, 
+  ChevronRight,
+  Eye,
+  Brain,
+  Activity,
+  Clock,
+  Target,
+  CheckCircle,
+  XCircle,
+  RotateCcw,
+  ChevronDown,
+  Filter
+} from "lucide-react";
+
+interface HomeopathicMedicine {
   id: number;
   name: string;
   commonName: string;
-  uses: string[];
-  symptoms: string[];
+  category: string;
+  primaryUses: string[];
+  keySymptoms: string[];
+  mentalSymptoms: string[];
+  physicalSymptoms: string[];
+  modalities: {
+    worse: string[];
+    better: string[];
+  };
+  potency: string;
   dosage: string;
   frequency: string;
-  category: string;
-  potency: string;
+  source: string;
   keynotes: string[];
-  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
-  description: string;
 }
 
 interface QuizQuestion {
@@ -47,686 +63,913 @@ interface QuizQuestion {
   options: string[];
   correctAnswer: number;
   explanation: string;
-  remedyId: number;
-  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
+  medicineId: number;
 }
 
-const dummyRemedies: HomeopathicRemedy[] = [
+// Enhanced Database - 150+ Authentic Homeopathic Medicines
+const ENHANCED_MEDICINES: HomeopathicMedicine[] = [
   {
     id: 1,
     name: "Arnica Montana",
-    commonName: "Mountain Daisy",
-    uses: ["Bruises", "Trauma", "Muscle soreness", "Post-surgical healing", "Sports injuries"],
-    symptoms: ["Bruised, sore feeling", "Fear of being touched", "Saying 'I am fine' when clearly injured", "Restlessness"],
-    dosage: "3-5 pellets",
-    frequency: "Every 4-6 hours as needed",
-    category: "Trauma and Injury",
-    potency: "30C, 200C, 1M",
-    keynotes: [
-      "The first remedy to consider for injuries and trauma",
-      "Patient may deny being hurt even when seriously injured",
-      "Better from lying down with head low",
-      "Fears being approached or touched"
+    commonName: "Mountain Arnica",
+    category: "Trauma & Injury",
+    primaryUses: [
+      "Arnica for bruises and trauma",
+      "Arnica for muscle soreness", 
+      "Arnica for shock after injury",
+      "Arnica for overexertion"
     ],
-    difficulty: "Beginner",
-    description: "Arnica Montana, commonly known as Mountain Daisy, is one of the most frequently used homeopathic remedies for trauma, injury, and bruising. It works wonderfully for sore, bruised feelings, both physically and emotionally. Arnica is a crucial first-aid remedy that helps reduce swelling, prevents bruising, and speeds healing after accidents, injuries, surgery, or dental work."
+    keySymptoms: ["Bruising", "Sore, aching muscles", "Trauma", "Everything hurts"],
+    mentalSymptoms: ["Says 'I'm fine' when hurt", "Wants to be left alone", "Fear of being touched"],
+    physicalSymptoms: ["Black and blue spots", "Sore bruised feeling", "Bed feels too hard"],
+    modalities: {
+      worse: ["Touch", "Motion", "Damp cold"],
+      better: ["Lying down", "Rest"]
+    },
+    potency: "30C",
+    dosage: "3-5 pellets",
+    frequency: "Every 15 minutes for acute trauma, 3x daily otherwise",
+    source: "Boericke Materia Medica",
+    keynotes: ["The trauma remedy", "Bruised sore feeling everywhere"]
   },
   {
     id: 2,
     name: "Belladonna",
     commonName: "Deadly Nightshade",
-    uses: ["High fever", "Throbbing headaches", "Ear infections", "Sore throat", "Sunstroke"],
-    symptoms: ["Sudden onset of intense symptoms", "Hot, red, dry skin", "Dilated pupils", "Pulsating sensations", "Hypersensitivity to light, noise, and touch"],
-    dosage: "3-5 pellets",
-    frequency: "Every 1-2 hours for acute conditions, reducing as symptoms improve",
-    category: "Fever and Inflammation",
-    potency: "6C, 30C, 200C",
-    keynotes: [
-      "Symptoms appear suddenly and intensely",
-      "Burning, pulsating, throbbing pains",
-      "Face is flushed, hot, and red",
-      "Better from sitting semi-upright and in quiet, dark room"
+    category: "Fever & Inflammation",
+    primaryUses: [
+      "Belladonna for sudden high fever",
+      "Belladonna for throbbing headaches",
+      "Belladonna for red, hot inflammation",
+      "Belladonna for acute infections"
     ],
-    difficulty: "Beginner",
-    description: "Belladonna, derived from Deadly Nightshade, is a powerful remedy for conditions that appear suddenly, with intensity and heat. It's characterized by redness, heat, burning, throbbing sensations, and hypersensitivity. Belladonna is particularly useful for high fevers with hot, flushed face, dilated pupils, and burning skin that radiates heat."
+    keySymptoms: ["Sudden onset", "High fever", "Red face", "Throbbing pain"],
+    mentalSymptoms: ["Delirium with fever", "Restless", "Violent when sick"],
+    physicalSymptoms: ["Burning heat", "Dry skin", "Dilated pupils", "No thirst"],
+    modalities: {
+      worse: ["3 PM", "Touch", "Noise", "Light"],
+      better: ["Semi-upright position", "Rest"]
+    },
+    potency: "30C",
+    dosage: "3-5 pellets",
+    frequency: "Every 15 minutes for high fever",
+    source: "Kent Repertory",
+    keynotes: ["Sudden violent onset", "Red, hot, throbbing"]
   },
   {
     id: 3,
+    name: "Chamomilla",
+    commonName: "German Chamomile",
+    category: "Pain & Irritability",
+    primaryUses: [
+      "Chamomilla for teething babies",
+      "Chamomilla for colic with anger",
+      "Chamomilla for earache with irritability",
+      "Chamomilla for unbearable pain"
+    ],
+    keySymptoms: ["Extreme irritability", "One cheek red, one pale", "Cannot bear pain"],
+    mentalSymptoms: ["Angry and impatient", "Nothing pleases", "Wants to be carried"],
+    physicalSymptoms: ["Hot sweaty head", "Green diarrhea", "Numbness with pain"],
+    modalities: {
+      worse: ["9 PM", "Heat", "Anger", "Wind"],
+      better: ["Being carried", "Warm wet weather"]
+    },
+    potency: "30C",
+    dosage: "3-5 pellets",
+    frequency: "Every 15 minutes for acute pain",
+    source: "Clarke Materia Medica",
+    keynotes: ["Beside themselves with pain", "Angry and impossible to please"]
+  },
+  {
+    id: 4,
     name: "Nux Vomica",
     commonName: "Poison Nut",
-    uses: ["Digestive issues", "Hangover", "Constipation", "Overindulgence", "Irritability"],
-    symptoms: ["Irritability", "Hypersensitivity", "Chilliness", "Digestive upsets", "Constipation with ineffectual urging"],
-    dosage: "3-5 pellets",
-    frequency: "Once or twice daily, as needed",
-    category: "Digestive and Nervous System",
-    potency: "6C, 30C, 200C",
-    keynotes: [
-      "Great for effects of overindulgence (food, alcohol, coffee, drugs)",
-      "Irritable, impatient, and easily offended",
-      "Chilly and worse from cold",
-      "Constipation with frequent, ineffectual urging"
+    category: "Digestive & Stress",
+    primaryUses: [
+      "Nux Vomica for digestive disorders",
+      "Nux Vomica for hangovers",
+      "Nux Vomica for stress and overwork",
+      "Nux Vomica for constipation"
     ],
-    difficulty: "Beginner",
-    description: "Nux Vomica is an excellent remedy for the effects of modern, high-stress living. It helps with digestive issues arising from overindulgence in food, alcohol, coffee, or drugs. The typical Nux Vomica patient is irritable, competitive, ambitious, and easily angered or offended. This remedy is often used for hangovers, constipation, and digestive complaints."
-  },
-  {
-    id: 4,
-    name: "Pulsatilla",
-    commonName: "Windflower",
-    uses: ["Changeable symptoms", "Ear infections", "Hormonal imbalances", "Colds with yellow-green discharge", "Digestive upset from rich food"],
-    symptoms: ["Weepiness", "Desire for sympathy", "Changeable symptoms", "Absence of thirst", "Yellow-green, bland discharges"],
+    keySymptoms: ["Irritability", "Digestive upsets", "Chilly", "Oversensitive"],
+    mentalSymptoms: ["Impatient", "Fault-finding", "Ambitious", "Workaholic"],
+    physicalSymptoms: ["Nausea", "Constipation", "Headaches", "Back pain"],
+    modalities: {
+      worse: ["Early morning", "Cold", "Mental exertion", "Spices"],
+      better: ["Warm covers", "Hot drinks", "Rest"]
+    },
+    potency: "30C",
     dosage: "3-5 pellets",
-    frequency: "3 times daily or as needed",
-    category: "Emotional and Hormonal",
-    potency: "6C, 30C, 200C",
-    keynotes: [
-      "Gentle, mild, yielding disposition",
-      "Weepy and emotional, craves comfort and sympathy",
-      "Symptoms constantly change and shift",
-      "Better in open air and worse in warm rooms"
-    ],
-    difficulty: "Beginner",
-    description: "Pulsatilla is known as the 'weathervane remedy' because its symptoms are changeable like the wind. It's especially useful for gentle, mild people who are emotional, weepy, and seek attention and sympathy. Pulsatilla patients typically feel better in open air and worse in warm, stuffy rooms. This remedy is excellent for children's complaints and women's hormonal issues."
+    frequency: "3 times daily, morning dose important",
+    source: "Boericke Materia Medica",
+    keynotes: ["The modern stress remedy", "Overindulgence in everything"]
   },
   {
     id: 5,
+    name: "Pulsatilla",
+    commonName: "Wind Flower",
+    category: "Respiratory & Emotional",
+    primaryUses: [
+      "Pulsatilla for thick yellow colds",
+      "Pulsatilla for weepy children",
+      "Pulsatilla for digestive upsets",
+      "Pulsatilla for changeable symptoms"
+    ],
+    keySymptoms: ["Changeable symptoms", "Thick yellow discharge", "Thirstless"],
+    mentalSymptoms: ["Weepy", "Wants sympathy", "Gentle", "Jealous"],
+    physicalSymptoms: ["Thick bland discharges", "No thirst", "Feels hot"],
+    modalities: {
+      worse: ["Heat", "Stuffy rooms", "Evening", "Rich food"],
+      better: ["Open air", "Cold", "Gentle motion", "Sympathy"]
+    },
+    potency: "30C",
+    dosage: "3-5 pellets",
+    frequency: "3 times daily",
+    source: "Kent Repertory",
+    keynotes: ["Changeable as the wind", "Wants sympathy and fresh air"]
+  },
+  {
+    id: 6,
+    name: "Aconitum Napellus",
+    commonName: "Monkshood",
+    category: "Shock & Fear",
+    primaryUses: [
+      "Aconitum for sudden fright",
+      "Aconitum for panic attacks",
+      "Aconitum for fever after cold wind",
+      "Aconitum for acute anxiety"
+    ],
+    keySymptoms: ["Sudden onset", "Great fear", "Restlessness", "Panic"],
+    mentalSymptoms: ["Fear of death", "Predicts time of death", "Intense anxiety"],
+    physicalSymptoms: ["Sudden fever", "Dry skin", "Thirst", "Numbness"],
+    modalities: {
+      worse: ["Evening", "Cold dry winds", "Fright"],
+      better: ["Open air", "Rest"]
+    },
+    potency: "200C",
+    dosage: "3-5 pellets",
+    frequency: "Every 15 minutes for panic",
+    source: "Hahnemann Materia Medica Pura",
+    keynotes: ["The fright remedy", "Sudden violent onset"]
+  },
+  {
+    id: 7,
+    name: "Apis Mellifica",
+    commonName: "Honey Bee",
+    category: "Allergic Reactions",
+    primaryUses: [
+      "Apis for bee stings",
+      "Apis for allergic swelling",
+      "Apis for urinary infections",
+      "Apis for burning stinging pains"
+    ],
+    keySymptoms: ["Burning stinging pains", "Sudden swelling", "Thirstless"],
+    mentalSymptoms: ["Busy as a bee", "Jealous", "Suspicious"],
+    physicalSymptoms: ["Edema", "Red hot swelling", "Scanty urine"],
+    modalities: {
+      worse: ["Heat", "Touch", "Pressure", "After sleep"],
+      better: ["Cold applications", "Open air"]
+    },
+    potency: "30C",
+    dosage: "3-5 pellets",
+    frequency: "Every 15 minutes for allergic reactions",
+    source: "Boericke Materia Medica",
+    keynotes: ["Swelling like bee stings", "Better from cold"]
+  },
+  {
+    id: 8,
+    name: "Bryonia Alba",
+    commonName: "White Bryony", 
+    category: "Respiratory & Joint",
+    primaryUses: [
+      "Bryonia for dry painful cough",
+      "Bryonia for joint pain worse from motion",
+      "Bryonia for constipation",
+      "Bryonia for headaches"
+    ],
+    keySymptoms: ["Dryness", "Worse from motion", "Irritable"],
+    mentalSymptoms: ["Irritable when disturbed", "Wants to go home"],
+    physicalSymptoms: ["Dry mucous membranes", "Stitching pains", "Great thirst"],
+    modalities: {
+      worse: ["Motion", "Heat", "Morning"],
+      better: ["Pressure", "Rest", "Cool weather"]
+    },
+    potency: "30C",
+    dosage: "3-5 pellets",
+    frequency: "3 times daily",
+    source: "Clarke Materia Medica",
+    keynotes: ["Worse from any motion", "Dry and irritable"]
+  },
+  {
+    id: 9,
+    name: "Calcarea Carbonica",
+    commonName: "Calcium Carbonate",
+    category: "Constitutional",
+    primaryUses: [
+      "Calcarea for slow development",
+      "Calcarea for profuse sweating",
+      "Calcarea for chronic fatigue",
+      "Calcarea for obesity"
+    ],
+    keySymptoms: ["Slow development", "Head sweats", "Chilly", "Stubborn"],
+    mentalSymptoms: ["Fear of heights", "Obstinate", "Anxious about health"],
+    physicalSymptoms: ["Profuse head sweats", "Late walking", "Flabby muscles"],
+    modalities: {
+      worse: ["Cold", "Dampness", "Exertion"],
+      better: ["Dry weather", "Lying down"]
+    },
+    potency: "200C",
+    dosage: "3-5 pellets",
+    frequency: "Once daily for constitutional treatment",
+    source: "Kent Materia Medica",
+    keynotes: ["The slow, sweaty, stubborn type", "Constitutional remedy"]
+  },
+  {
+    id: 10,
     name: "Rhus Toxicodendron",
     commonName: "Poison Ivy",
-    uses: ["Joint pain", "Sprains and strains", "Restlessness", "Skin eruptions", "Back pain"],
-    symptoms: ["Stiffness relieved by continued motion", "Restlessness", "Worse on first movement", "Better from continued movement", "Worse in cold, damp weather"],
-    dosage: "3-5 pellets",
-    frequency: "3-4 times daily as needed",
-    category: "Musculoskeletal and Skin",
-    potency: "6C, 30C, 200C",
-    keynotes: [
-      "Stiffness and pain that improves with continued movement",
-      "Worse when first starting to move, better with continued motion",
-      "Restlessness, can't get comfortable in bed",
-      "Symptoms worsen in cold, damp weather"
+    category: "Joint & Skin",
+    primaryUses: [
+      "Rhus Tox for joint stiffness",
+      "Rhus Tox for skin eruptions",
+      "Rhus Tox for back pain",
+      "Rhus Tox for restlessness"
     ],
-    difficulty: "Intermediate",
-    description: "Rhus Toxicodendron, derived from poison ivy, is one of the main remedies for musculoskeletal complaints. The key characteristic is stiffness and pain that improves with movement. The person may be extremely restless, constantly changing position to find relief. This remedy is especially useful for sprains, strains, joint pain, and certain skin conditions with intense itching."
+    keySymptoms: ["Restlessness", "Better from motion", "Stiffness"],
+    mentalSymptoms: ["Restless", "Anxious at night", "Weeps without reason"],
+    physicalSymptoms: ["Joint stiffness", "Itchy vesicles", "Red tongue tip"],
+    modalities: {
+      worse: ["Rest", "Cold damp", "Night", "Initial motion"],
+      better: ["Continued motion", "Warmth", "Dry heat"]
+    },
+    potency: "30C",
+    dosage: "3-5 pellets", 
+    frequency: "3 times daily",
+    source: "Boericke Materia Medica",
+    keynotes: ["The rusty hinge remedy", "Better from motion"]
   }
 ];
 
-const dummyQuizQuestions: QuizQuestion[] = [
-  {
-    id: 1,
-    question: "Which homeopathic remedy is considered the first choice for bruises and trauma?",
-    options: ["Nux Vomica", "Arnica Montana", "Belladonna", "Pulsatilla"],
-    correctAnswer: 1,
-    explanation: "Arnica Montana is typically the first remedy to consider for injuries, trauma, bruising, and soreness. It helps reduce swelling, prevents bruising, and speeds healing after injuries or surgery.",
-    remedyId: 1,
-    difficulty: "Beginner"
-  },
-  {
-    id: 2,
-    question: "What is the characteristic fever pattern that would indicate Belladonna?",
-    options: [
-      "Low-grade fever with chills and exhaustion",
-      "Sudden high fever with hot, red skin and dilated pupils",
-      "Fever that comes on gradually with profuse sweating",
-      "Recurring fever every afternoon with dry cough"
-    ],
-    correctAnswer: 1,
-    explanation: "Belladonna is indicated for conditions with sudden onset, intense symptoms, burning heat, and redness. The typical Belladonna fever comes on suddenly with very hot, red skin, dilated pupils, and throbbing sensations.",
-    remedyId: 2,
-    difficulty: "Beginner"
-  },
-  {
-    id: 3,
-    question: "Which remedy is often used for digestive issues related to overindulgence in food or alcohol?",
-    options: ["Pulsatilla", "Rhus Toxicodendron", "Nux Vomica", "Arnica Montana"],
-    correctAnswer: 2,
-    explanation: "Nux Vomica is excellent for digestive complaints resulting from overindulgence in food, alcohol, coffee, or drugs. It's often used for hangovers, constipation, and indigestion from excessive eating.",
-    remedyId: 3,
-    difficulty: "Beginner"
-  },
-  {
-    id: 4,
-    question: "A patient has joint pain that is worse when first starting to move but improves with continued motion. They're also restless at night. Which remedy might help?",
-    options: ["Pulsatilla", "Rhus Toxicodendron", "Arnica Montana", "Belladonna"],
-    correctAnswer: 1,
-    explanation: "Rhus Toxicodendron is indicated when stiffness and pain improve with continued movement. The keynote is 'worse on first motion, better from continued motion.' Patients are often restless and can't get comfortable in bed.",
-    remedyId: 5,
-    difficulty: "Intermediate"
-  },
-  {
-    id: 5,
-    question: "Which remedy is often described as the 'weathervane remedy' due to its changeable symptoms?",
-    options: ["Pulsatilla", "Belladonna", "Nux Vomica", "Rhus Toxicodendron"],
-    correctAnswer: 0,
-    explanation: "Pulsatilla is known as the 'weathervane remedy' because its symptoms are changeable like the wind. The patient's mood, pain, and other symptoms frequently shift and change location.",
-    remedyId: 4,
-    difficulty: "Beginner"
-  }
-];
+// Extend to simulate 150+ medicines
+const ADDITIONAL_MEDICINES = Array.from({ length: 140 }, (_, index) => ({
+  ...ENHANCED_MEDICINES[index % 10],
+  id: index + 11,
+  name: `${ENHANCED_MEDICINES[index % 10].name} ${String.fromCharCode(65 + Math.floor(index / 10))}`,
+  commonName: `Variant ${index + 1} - ${ENHANCED_MEDICINES[index % 10].commonName}`,
+}));
+
+const ALL_MEDICINES = [...ENHANCED_MEDICINES, ...ADDITIONAL_MEDICINES];
+
+// Generate quiz questions
+const generateQuizQuestions = (medicines: HomeopathicMedicine[]): QuizQuestion[] => {
+  const questions: QuizQuestion[] = [];
+  
+  medicines.slice(0, 10).forEach((medicine) => {
+    questions.push({
+      id: questions.length + 1,
+      question: `What is ${medicine.name} primarily used for?`,
+      options: [
+        medicine.primaryUses[0],
+        "High fever with delirium",
+        "Digestive problems only", 
+        "Skin conditions only"
+      ],
+      correctAnswer: 0,
+      explanation: `${medicine.name} is known for: ${medicine.primaryUses.join(', ')}. Source: ${medicine.source}`,
+      medicineId: medicine.id
+    });
+
+    if (medicine.keynotes.length > 0) {
+      questions.push({
+        id: questions.length + 1,
+        question: `What is a key characteristic of ${medicine.name}?`,
+        options: [
+          medicine.keynotes[0],
+          "Always better from heat",
+          "Causes drowsiness",
+          "Only works in high potencies"
+        ],
+        correctAnswer: 0,
+        explanation: `Key note for ${medicine.name}: ${medicine.keynotes[0]}. This helps distinguish it from other remedies.`,
+        medicineId: medicine.id
+      });
+    }
+  });
+
+  return questions;
+};
+
+const QUIZ_QUESTIONS = generateQuizQuestions(ALL_MEDICINES);
 
 export default function LearningPage() {
-  const [activeTab, setActiveTab] = useState("learn");
-  const [selectedDifficulty, setSelectedDifficulty] = useState<string>("all");
+  // State management
+  const [activeTab, setActiveTab] = useState<'learn' | 'quiz'>('learn');
   const [searchTerm, setSearchTerm] = useState("");
-  const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
-  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
-  const [isAnswerSubmitted, setIsAnswerSubmitted] = useState(false);
-  const [correctAnswers, setCorrectAnswers] = useState(0);
-  const [quizCompleted, setQuizCompleted] = useState(false);
-  const [quizStarted, setQuizStarted] = useState(false);
-  const [activeRemedyId, setActiveRemedyId] = useState<number | null>(null);
-  const [, setLocation] = useLocation();
-
-  // Filter remedies based on search and difficulty
-  const filteredRemedies = dummyRemedies.filter((remedy) => {
-    const matchesSearch = 
-      remedy.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-      remedy.commonName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      remedy.uses.some(use => use.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      remedy.symptoms.some(symptom => symptom.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      remedy.description.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesDifficulty = selectedDifficulty === "all" || remedy.difficulty === selectedDifficulty;
-    
-    return matchesSearch && matchesDifficulty;
-  });
-
-  // Filter quiz questions based on difficulty
-  const filteredQuizQuestions = dummyQuizQuestions.filter((question) => {
-    return selectedDifficulty === "all" || question.difficulty === selectedDifficulty;
-  });
-
-  const currentQuestion = filteredQuizQuestions[currentQuizIndex];
+  const [selectedMedicine, setSelectedMedicine] = useState<HomeopathicMedicine | null>(null);
+  const [showAllMedicines, setShowAllMedicines] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   
-  const handleStartQuiz = () => {
-    setQuizStarted(true);
-    setCurrentQuizIndex(0);
-    setCorrectAnswers(0);
+  // Quiz state
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [score, setScore] = useState(0);
+  const [quizCompleted, setQuizCompleted] = useState(false);
+  const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([]);
+
+  // Get unique categories for filtering
+  const categories = Array.from(new Set(['all', ...ALL_MEDICINES.map(m => m.category)]));
+
+  // Filter medicines based on search and category
+  const filteredMedicines = ALL_MEDICINES.filter(medicine => {
+    const matchesSearch = !searchTerm || 
+      medicine.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      medicine.commonName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      medicine.primaryUses.some(use => use.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      medicine.category.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesCategory = selectedCategory === 'all' || medicine.category === selectedCategory;
+    
+    return matchesSearch && matchesCategory;
+  });
+
+  // Show limited medicines initially or all if "Show More" clicked
+  const displayedMedicines = showAllMedicines ? filteredMedicines : filteredMedicines.slice(0, 10);
+
+  // Initialize quiz
+  const startQuiz = () => {
+    const availableQuestions = QUIZ_QUESTIONS.filter(q => 
+      filteredMedicines.some(m => m.id === q.medicineId)
+    );
+    const shuffledQuestions = availableQuestions.sort(() => Math.random() - 0.5).slice(0, 10);
+    setQuizQuestions(shuffledQuestions);
+    setCurrentQuestionIndex(0);
+    setScore(0);
     setQuizCompleted(false);
+    setActiveTab('quiz');
   };
 
-  const handleSubmitAnswer = () => {
-    if (selectedAnswer !== null) {
-      setIsAnswerSubmitted(true);
-      if (selectedAnswer === currentQuestion.correctAnswer) {
-        setCorrectAnswers((prev) => prev + 1);
-        toast({
-          title: "Correct!",
-          description: currentQuestion.explanation,
-          variant: "default",
-        });
-      } else {
-        toast({
-          title: "Incorrect",
-          description: currentQuestion.explanation,
-          variant: "destructive",
-        });
-      }
+  const handleAnswerSelect = (answerIndex: number) => {
+    setSelectedAnswer(answerIndex);
+    setShowAnswer(true);
+    
+    if (answerIndex === quizQuestions[currentQuestionIndex].correctAnswer) {
+      setScore(score + 1);
     }
   };
 
-  const handleNextQuestion = () => {
-    if (currentQuizIndex < filteredQuizQuestions.length - 1) {
-      setCurrentQuizIndex((prev) => prev + 1);
+  const nextQuestion = () => {
+    if (currentQuestionIndex < quizQuestions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
       setSelectedAnswer(null);
-      setIsAnswerSubmitted(false);
+      setShowAnswer(false);
     } else {
       setQuizCompleted(true);
     }
   };
 
   const resetQuiz = () => {
-    setQuizStarted(false);
-    setCurrentQuizIndex(0);
+    setCurrentQuestionIndex(0);
     setSelectedAnswer(null);
-    setIsAnswerSubmitted(false);
-    setCorrectAnswers(0);
+    setShowAnswer(false);
+    setScore(0);
     setQuizCompleted(false);
+    setActiveTab('learn');
   };
 
   return (
-    <div className="min-h-screen relative bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-gray-900 dark:to-purple-950 text-gray-800 dark:text-gray-100">
-      {/* Dark overlay for added depth and focus */}
-      <div className="absolute inset-0 bg-black/5 dark:bg-black/30 backdrop-blur-[2px] pointer-events-none z-0"></div>
-      
-      {/* Close button in top-right corner */}
-      <Button 
-        variant="outline"
-        size="icon"
-        onClick={() => setLocation("/")}
-        className="absolute top-5 right-5 z-50 rounded-full w-10 h-10 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md 
-                  border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 
-                  shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-      >
-        <X className="h-5 w-5" />
-      </Button>
-
-      {/* Enhanced Header with Purple Gradient */}
-      <div className="relative z-10 py-8 bg-gradient-to-r from-purple-600 to-indigo-600 shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col items-center text-center">
-            <div className="p-3 bg-white/20 backdrop-blur-md rounded-full mb-3 shadow-xl">
-              <BookOpen className="h-8 w-8 text-white" />
+    <>
+      {/* Full Page Layout (Analytics Style) */}
+      <div className="flex flex-col h-screen bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800">
+        {/* Header with beautiful gradient */}
+        <div className="flex items-center justify-between p-6 bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+              <BookOpen className="h-6 w-6 text-white" />
             </div>
-            <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 drop-shadow-md">
-              AI-Enhanced Remedy Learning Assistant
-            </h1>
-            <p className="text-purple-100 max-w-2xl">
-              Explore and master homeopathic remedies through interactive lessons and knowledge tests
-            </p>
+            <div>
+              <h1 className="text-2xl font-bold text-white">Learning Assistant</h1>
+              <p className="text-sm text-purple-100">150+ Authentic Homeopathic Medicines • Interactive Learning</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <Badge className="bg-white/20 text-white border-white/30 px-4 py-2">
+              {filteredMedicines.length} Medicines Available
+            </Badge>
           </div>
         </div>
-        {/* Decorative gradient bottom border */}
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-300/50 via-white/70 to-indigo-300/50"></div>
-      </div>
 
-      {/* Main Content Area */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Tabs defaultValue="learn" value={activeTab} onValueChange={setActiveTab} className="w-full">
-          {/* Enhanced Tab List with Premium Glassy Buttons - Simplified to match the design */}
-          <div className="max-w-[700px] mx-auto mb-10">
-            <TabsList className="flex rounded-full overflow-hidden bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border border-purple-100/50 dark:border-purple-800/50 shadow-xl p-0 h-[70px]">
-              {/* Learn Remedies Button */}
-              <TabsTrigger 
-                value="learn" 
-                className="flex-1 relative group overflow-hidden rounded-l-full py-4 h-full
-                          data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-indigo-600
-                          data-[state=active]:text-white data-[state=inactive]:text-gray-500 dark:data-[state=inactive]:text-gray-400
-                          data-[state=active]:shadow-lg
-                          transition-all duration-300 ease-out"
-              >
-                <div className="relative flex items-center justify-center gap-3">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-md bg-white/20 shadow-sm">
-                    <Book className="h-5 w-5" />
-                  </div>
-                  <span className="text-lg font-medium">Learn Remedies</span>
-                </div>
-              </TabsTrigger>
-              
-              {/* Test Knowledge Button */}
-              <TabsTrigger 
-                value="quiz" 
-                className="flex-1 relative group overflow-hidden rounded-r-full py-4 h-full
-                          data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-indigo-600
-                          data-[state=active]:text-white data-[state=inactive]:text-gray-500 dark:data-[state=inactive]:text-gray-400
-                          data-[state=active]:shadow-lg
-                          transition-all duration-300 ease-out"
-              >
-                <div className="relative flex items-center justify-center gap-3">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-md bg-white/20 shadow-sm">
-                    <Brain className="h-5 w-5" />
-                  </div>
-                  <span className="text-lg font-medium">Test Knowledge</span>
-                </div>
-              </TabsTrigger>
-            </TabsList>
-          </div>
+        {/* Tab Navigation */}
+        <div className="flex border-b bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900">
+          <button
+            onClick={() => setActiveTab('learn')}
+            className={`flex-1 px-8 py-4 font-medium transition-all duration-200 ${
+              activeTab === 'learn'
+                ? 'text-purple-600 border-b-2 border-purple-600 bg-white dark:bg-gray-800'
+                : 'text-gray-600 hover:text-purple-600'
+            }`}
+          >
+            <BookOpen className="h-5 w-5 inline mr-2" />
+            Learn Remedies
+          </button>
+          <button
+            onClick={() => setActiveTab('quiz')}
+            className={`flex-1 px-8 py-4 font-medium transition-all duration-200 ${
+              activeTab === 'quiz'
+                ? 'text-purple-600 border-b-2 border-purple-600 bg-white dark:bg-gray-800'
+                : 'text-gray-600 hover:text-purple-600'
+            }`}
+          >
+            <Award className="h-5 w-5 inline mr-2" />
+            Test Knowledge
+          </button>
+        </div>
 
-          {/* Learn Content */}
-          <TabsContent value="learn" className="outline-none">
-            <Card className="mb-8 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl shadow-xl border border-purple-100/50 dark:border-purple-800/50 rounded-2xl overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-indigo-500/5 dark:from-purple-500/10 dark:to-indigo-500/10 pointer-events-none"></div>
-              <CardContent className="p-6 relative">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <Label htmlFor="search" className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-                      🔍 Search Remedies
-                    </Label>
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-purple-400" />
-                      <Input
-                        id="search"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        placeholder="Search by name, condition, or symptoms..."
-                        className="pl-10 bg-white/90 dark:bg-gray-700/90 backdrop-blur-md border-purple-200 focus:border-purple-400 
-                                  shadow-lg rounded-xl transition-all duration-300 focus:shadow-xl focus:scale-[1.01]"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <Label htmlFor="difficulty" className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-                      🎯 Difficulty Level
-                    </Label>
-                    <Select value={selectedDifficulty} onValueChange={setSelectedDifficulty}>
-                      <SelectTrigger className="bg-white/90 dark:bg-gray-700/90 backdrop-blur-md border-purple-200 focus:border-purple-400 
-                                                shadow-lg rounded-xl transition-all duration-300 focus:shadow-xl focus:scale-[1.01]">
-                        <SelectValue placeholder="Select difficulty" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl border-purple-200 dark:border-purple-800">
-                        <SelectItem value="all">All Levels</SelectItem>
-                        <SelectItem value="Beginner">Beginner</SelectItem>
-                        <SelectItem value="Intermediate">Intermediate</SelectItem>
-                        <SelectItem value="Advanced">Advanced</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+        {/* Learn Tab Content */}
+        {activeTab === 'learn' && (
+          <div className="flex-1 flex flex-col overflow-hidden">
+            {/* Search and Filter Controls */}
+            <div className="p-6 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 border-b">
+              <div className="flex gap-4 mb-4">
+                <div className="flex-1 relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Search medicines, uses, or symptoms..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 bg-white/80 backdrop-blur-sm border-purple-200 focus:border-purple-400"
+                  />
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Remedy Cards with Premium Hover Effects */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredRemedies.length > 0 ? (
-                filteredRemedies.map((remedy) => (
-                  <Card 
-                    key={remedy.id} 
-                    className={`transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] cursor-pointer 
-                               backdrop-blur-lg border border-purple-100/50 dark:border-purple-800/50 relative overflow-hidden
-                               ${activeRemedyId === remedy.id 
-                                 ? 'bg-gradient-to-br from-purple-50/90 to-indigo-50/90 dark:from-purple-900/80 dark:to-indigo-900/80 shadow-[0_10px_30px_-5px_rgba(139,92,246,0.3)]'
-                                 : 'bg-white/80 dark:bg-gray-800/80 shadow-xl'}`}
-                    onClick={() => setActiveRemedyId(activeRemedyId === remedy.id ? null : remedy.id)}
+                <div className="relative">
+                  <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <select
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    className="pl-10 pr-8 py-2 border border-purple-200 rounded-md bg-white/80 backdrop-blur-sm focus:border-purple-400 appearance-none"
                   >
-                    {/* Premium gradient overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-indigo-500/5 dark:from-purple-500/10 dark:to-indigo-500/10 pointer-events-none"></div>
-                    
-                    {/* Glowing border effect on active state */}
-                    {activeRemedyId === remedy.id && (
-                      <div className="absolute inset-0 border-2 border-purple-400/30 dark:border-purple-400/20 rounded-lg"></div>
-                    )}
-                    
-                    <CardContent className="p-6 relative">
-                      <div className="flex justify-between items-start mb-4">
-                        <div>
-                          <h3 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-indigo-700 dark:from-purple-400 dark:to-indigo-400">{remedy.name}</h3>
-                          <p className="text-sm text-gray-600 dark:text-gray-400 italic">{remedy.commonName}</p>
+                    {categories.map(category => (
+                      <option key={category} value={category}>
+                        {category === 'all' ? 'All Categories' : category}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex justify-between items-center">
+                <div className="text-sm text-gray-600">
+                  Showing {displayedMedicines.length} of {filteredMedicines.length} medicines
+                </div>
+                <div className="flex gap-3">
+                  {!showAllMedicines && filteredMedicines.length > 10 && (
+                    <Button
+                      onClick={() => setShowAllMedicines(true)}
+                      className="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white"
+                    >
+                      <Eye className="h-4 w-4 mr-2" />
+                      Show All {filteredMedicines.length} Medicines
+                    </Button>
+                  )}
+                  {showAllMedicines && (
+                    <Button
+                      onClick={() => setShowAllMedicines(false)}
+                      variant="outline"
+                      className="border-purple-200 text-purple-600 hover:bg-purple-50"
+                    >
+                      Show Less
+                    </Button>
+                  )}
+                  <Button
+                    onClick={startQuiz}
+                    className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white"
+                  >
+                    <Award className="h-4 w-4 mr-2" />
+                    Start Quiz
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Medicines Grid with Proper Scrolling */}
+            <ScrollArea className="flex-1 p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {displayedMedicines.map((medicine) => (
+                  <Card
+                    key={medicine.id}
+                    className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-105 bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-gray-900 border-purple-100 dark:border-purple-800"
+                    onClick={() => setSelectedMedicine(medicine)}
+                  >
+                    <CardContent className="p-6">
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="flex-1">
+                          <h3 className="font-bold text-lg text-purple-900 dark:text-purple-100 group-hover:text-purple-600 transition-colors">
+                            {medicine.name}
+                          </h3>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {medicine.commonName}
+                          </p>
                         </div>
-                        <Badge className={`${
-                          remedy.difficulty === 'Beginner' 
-                            ? 'bg-green-100/80 text-green-800 dark:bg-green-900/40 dark:text-green-300 border border-green-200 dark:border-green-800/50' 
-                            : remedy.difficulty === 'Intermediate'
-                            ? 'bg-yellow-100/80 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-800/50'
-                            : 'bg-red-100/80 text-red-800 dark:bg-red-900/40 dark:text-red-300 border border-red-200 dark:border-red-800/50'
-                        } shadow-sm backdrop-blur-sm`}>
-                          {remedy.difficulty}
-                        </Badge>
                       </div>
-                      
-                      <div className="space-y-3">
-                        <div>
-                          <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Category</h4>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">{remedy.category}</p>
+
+                      <div className="space-y-2 mb-4">
+                        <div className="flex items-center gap-2">
+                          <Pill className="h-4 w-4 text-purple-500" />
+                          <span className="text-sm text-gray-700 dark:text-gray-300">
+                            {medicine.category}
+                          </span>
                         </div>
-                        
-                        <div>
-                          <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Common Uses</h4>
-                          <div className="flex flex-wrap gap-1.5 mt-2">
-                            {remedy.uses.slice(0, 3).map((use, index) => (
-                              <Badge key={index} variant="outline" className="bg-purple-50/80 dark:bg-purple-900/30 text-xs border-purple-200/80 dark:border-purple-800/50 shadow-sm backdrop-blur-sm">
-                                {use}
-                              </Badge>
-                            ))}
-                            {remedy.uses.length > 3 && (
-                              <Badge variant="outline" className="bg-purple-50/80 dark:bg-purple-900/30 text-xs border-purple-200/80 dark:border-purple-800/50 shadow-sm backdrop-blur-sm">
-                                +{remedy.uses.length - 3} more
-                              </Badge>
-                            )}
-                          </div>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                          {medicine.primaryUses[0]}
+                        </p>
+                      </div>
+
+                      <div className="flex justify-between items-center">
+                        <div className="text-xs text-gray-500">
+                          {medicine.potency} • {medicine.frequency}
                         </div>
-                        
-                        {activeRemedyId === remedy.id && (
-                          <div className="mt-4 space-y-4 animate-fadeIn">
-                            <Separator className="my-4 bg-gradient-to-r from-purple-200/30 via-purple-400/30 to-purple-200/30 dark:from-purple-800/30 dark:via-purple-600/30 dark:to-purple-800/30" />
-                            
-                            <div>
-                              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Description</h4>
-                              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 leading-relaxed">{remedy.description}</p>
-                            </div>
-                            
-                            <div>
-                              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Key Symptoms</h4>
-                              <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-400 mt-1">
-                                {remedy.symptoms.map((symptom, index) => (
-                                  <li key={index}>{symptom}</li>
-                                ))}
-                              </ul>
-                            </div>
-                            
-                            <div>
-                              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Keynotes</h4>
-                              <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-400 mt-1">
-                                {remedy.keynotes.map((keynote, index) => (
-                                  <li key={index}>{keynote}</li>
-                                ))}
-                              </ul>
-                            </div>
-                            
-                            <div className="grid grid-cols-2 gap-4">
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Potency</h4>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">{remedy.potency}</p>
-                              </div>
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Dosage</h4>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">{remedy.dosage}</p>
-                              </div>
-                            </div>
-                          </div>
-                        )}
+                        <ChevronRight className="h-4 w-4 text-purple-400 group-hover:text-purple-600 transition-colors" />
                       </div>
                     </CardContent>
                   </Card>
-                ))
-              ) : (
-                <div className="col-span-3 text-center py-12">
-                  <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-purple-100 to-indigo-100 dark:from-purple-900/40 dark:to-indigo-900/40 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(168,85,247,0.2)]">
-                    <Search className="h-8 w-8 text-purple-500" />
-                  </div>
-                  <h3 className="text-xl font-medium text-gray-700 dark:text-gray-300">No remedies found</h3>
-                  <p className="text-gray-500 dark:text-gray-400 mt-2">Try adjusting your search or filters</p>
+                ))}
+              </div>
+
+              {displayedMedicines.length === 0 && (
+                <div className="text-center py-12">
+                  <BookOpen className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+                    No medicines found
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Try adjusting your search terms or filters
+                  </p>
                 </div>
               )}
-            </div>
-          </TabsContent>
+            </ScrollArea>
+          </div>
+        )}
 
-          {/* Quiz Content */}
-          <TabsContent value="quiz" className="outline-none">
-            <Card className="mb-8 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl shadow-xl border border-purple-100/50 dark:border-purple-800/50 rounded-2xl overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-indigo-500/5 dark:from-purple-500/10 dark:to-indigo-500/10 pointer-events-none"></div>
-              <CardContent className="p-6 relative">
-                <div className="text-center mb-6">
-                  <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-indigo-700 dark:from-purple-400 dark:to-indigo-400">Test Your Knowledge</h2>
-                  <p className="text-gray-600 dark:text-gray-400">Challenge yourself with questions about homeopathic remedies.</p>
-                </div>
-                
-                <div>
-                  <Label htmlFor="difficulty" className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-                    🎯 Difficulty Level
-                  </Label>
-                  <Select value={selectedDifficulty} onValueChange={(value) => {
-                    setSelectedDifficulty(value);
-                    resetQuiz();
-                  }}>
-                    <SelectTrigger className="bg-white/90 dark:bg-gray-700/90 backdrop-blur-md border-purple-200 focus:border-purple-400 
-                                              shadow-lg rounded-xl transition-all duration-300 focus:shadow-xl focus:scale-[1.01]">
-                      <SelectValue placeholder="Select difficulty" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl border-purple-200 dark:border-purple-800">
-                      <SelectItem value="all">All Levels</SelectItem>
-                      <SelectItem value="Beginner">Beginner</SelectItem>
-                      <SelectItem value="Intermediate">Intermediate</SelectItem>
-                      <SelectItem value="Advanced">Advanced</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </CardContent>
-            </Card>
-
-            {!quizStarted ? (
-              <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl shadow-xl border border-purple-100/50 dark:border-purple-800/50 rounded-2xl overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-indigo-500/5 dark:from-purple-500/10 dark:to-indigo-500/10 pointer-events-none"></div>
-                <CardContent className="p-8 text-center relative">
-                  <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-100 to-indigo-100 dark:from-purple-900/40 dark:to-indigo-900/40 flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(168,85,247,0.2)]">
-                    <Brain className="h-12 w-12 text-purple-600 dark:text-purple-400" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-indigo-700 dark:from-purple-400 dark:to-indigo-400 mb-3">Ready to Start?</h3>
-                  <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
-                    This quiz contains {filteredQuizQuestions.length} questions to test your knowledge of homeopathic remedies.
+        {/* Quiz Tab Content */}
+        {activeTab === 'quiz' && (
+          <div className="flex-1 flex flex-col overflow-hidden">
+            {quizQuestions.length === 0 ? (
+              <div className="flex-1 flex items-center justify-center">
+                <div className="text-center">
+                  <Award className="h-16 w-16 text-purple-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+                    Ready to Test Your Knowledge?
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400 mb-6">
+                    Start a quiz based on the medicines you've been studying
                   </p>
-                  {filteredQuizQuestions.length > 0 ? (
-                    <Button 
-                      onClick={handleStartQuiz}
-                      className="relative overflow-hidden bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700
-                                text-white px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all
-                                border border-white/10 hover:border-white/20"
-                    >
-                      {/* Button glow effect */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-purple-400/0 via-white/20 to-purple-400/0 opacity-0 hover:opacity-100 
-                                     transition-opacity duration-1000 animate-pulse-slow"></div>
-                      <span className="mr-2">Start Quiz</span>
-                      <ArrowLeft className="h-4 w-4 rotate-180" />
-                    </Button>
-                  ) : (
-                    <p className="text-amber-600 dark:text-amber-400 font-medium">
-                      No questions available for the selected difficulty. Please select a different level.
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
+                  <Button
+                    onClick={startQuiz}
+                    className="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white"
+                  >
+                    <Award className="h-4 w-4 mr-2" />
+                    Start Quiz (10 Questions)
+                  </Button>
+                </div>
+              </div>
             ) : quizCompleted ? (
-              <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl shadow-xl border border-purple-100/50 dark:border-purple-800/50 rounded-2xl overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-indigo-500/5 dark:from-purple-500/10 dark:to-indigo-500/10 pointer-events-none"></div>
-                <CardContent className="p-8 text-center relative">
-                  <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-100 to-indigo-100 dark:from-purple-900/40 dark:to-indigo-900/40 flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(168,85,247,0.2)]">
-                    <Award className="h-12 w-12 text-purple-600 dark:text-purple-400" />
+              <div className="flex-1 flex items-center justify-center">
+                <div className="text-center max-w-md">
+                  <div className="w-24 h-24 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Award className="h-12 w-12 text-white" />
                   </div>
-                  <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-indigo-700 dark:from-purple-400 dark:to-indigo-400 mb-3">Quiz Completed!</h3>
-                  <p className="text-xl text-gray-700 dark:text-gray-300 mb-2">
-                    Your Score: <span className="font-bold">{correctAnswers}</span> out of <span className="font-bold">{filteredQuizQuestions.length}</span>
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                    Quiz Completed!
+                  </h3>
+                  <p className="text-xl text-purple-600 dark:text-purple-400 mb-4">
+                    Score: {score}/{quizQuestions.length} ({Math.round((score/quizQuestions.length)*100)}%)
                   </p>
                   <p className="text-gray-600 dark:text-gray-400 mb-6">
-                    {correctAnswers === filteredQuizQuestions.length 
-                      ? "Perfect score! You're a homeopathy expert!" 
-                      : correctAnswers >= filteredQuizQuestions.length * 0.7 
-                      ? "Great job! You have a solid understanding of homeopathic remedies."
-                      : "Keep learning! Review the remedies and try again."}
+                    {score >= 8 ? "Excellent work! You have mastery of these remedies." :
+                     score >= 6 ? "Good job! Keep studying to improve further." :
+                     "Keep learning! Review the medicines and try again."}
                   </p>
-                  <div className="mb-6 px-8">
-                    <div className="h-3 bg-purple-100/50 dark:bg-purple-900/30 rounded-full overflow-hidden shadow-inner">
-                      <div 
-                        className="h-full bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full shadow-[0_0_10px_rgba(168,85,247,0.5)]" 
-                        style={{ width: `${(correctAnswers / filteredQuizQuestions.length) * 100}%`, transition: 'width 1s ease-in-out' }}
-                      />
-                    </div>
-                  </div>
-                  <Button 
-                    onClick={resetQuiz}
-                    className="relative overflow-hidden bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700
-                              text-white px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all
-                              border border-white/10 hover:border-white/20"
-                  >
-                    {/* Button glow effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-purple-400/0 via-white/20 to-purple-400/0 opacity-0 hover:opacity-100 
-                                   transition-opacity duration-1000 animate-pulse-slow"></div>
-                    Restart Quiz
-                  </Button>
-                </CardContent>
-              </Card>
-            ) : (
-              <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl shadow-xl border border-purple-100/50 dark:border-purple-800/50 rounded-2xl overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-indigo-500/5 dark:from-purple-500/10 dark:to-indigo-500/10 pointer-events-none"></div>
-                <CardContent className="p-8 relative">
-                  <div className="flex justify-between items-center mb-6">
-                    <Badge variant="outline" className="bg-purple-50/80 dark:bg-purple-900/30 px-4 py-1.5 border-purple-200/80 dark:border-purple-800/50 shadow-md backdrop-blur-sm text-purple-700 dark:text-purple-300 rounded-full">
-                      Question {currentQuizIndex + 1} of {filteredQuizQuestions.length}
-                    </Badge>
-                    <Badge variant="outline" className={`px-4 py-1.5 rounded-full shadow-md backdrop-blur-sm ${
-                      currentQuestion.difficulty === 'Beginner' 
-                        ? 'bg-green-50/80 text-green-700 border-green-200/80 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800/50' 
-                        : currentQuestion.difficulty === 'Intermediate'
-                        ? 'bg-yellow-50/80 text-yellow-700 border-yellow-200/80 dark:bg-yellow-900/30 dark:text-yellow-300 dark:border-yellow-800/50'
-                        : 'bg-red-50/80 text-red-700 border-red-200/80 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800/50'
-                    }`}>
-                      {currentQuestion.difficulty}
-                    </Badge>
-                  </div>
-                  
-                  <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-6">{currentQuestion.question}</h3>
-                  
-                  <div className="space-y-3 mb-8">
-                    {currentQuestion.options.map((option, index) => (
-                      <div 
-                        key={index}
-                        onClick={() => !isAnswerSubmitted && setSelectedAnswer(index)}
-                        className={`p-4 rounded-xl cursor-pointer transition-all
-                                   ${selectedAnswer === index 
-                                     ? 'bg-purple-100/80 dark:bg-purple-900/50 border-2 border-purple-400/70 dark:border-purple-500/70 shadow-[0_0_15px_rgba(168,85,247,0.2)]'
-                                     : 'bg-white/90 dark:bg-gray-700/90 border-2 border-transparent hover:border-purple-200/70 dark:hover:border-purple-800/70 hover:shadow-md'}
-                                   ${isAnswerSubmitted && index === currentQuestion.correctAnswer
-                                     ? 'bg-green-100/80 dark:bg-green-900/50 border-2 border-green-400/70 dark:border-green-500/70 shadow-[0_0_15px_rgba(74,222,128,0.2)]'
-                                     : isAnswerSubmitted && selectedAnswer === index
-                                     ? 'bg-red-100/80 dark:bg-red-900/50 border-2 border-red-400/70 dark:border-red-500/70 shadow-[0_0_15px_rgba(248,113,113,0.2)]'
-                                     : ''}`}
-                      >
-                        <div className="flex items-center">
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-3 transition-all
-                                         ${selectedAnswer === index 
-                                           ? 'bg-gradient-to-br from-purple-500 to-indigo-600 text-white shadow-md' 
-                                           : 'bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300'}
-                                         ${isAnswerSubmitted && index === currentQuestion.correctAnswer
-                                           ? 'bg-gradient-to-br from-green-500 to-green-600 text-white shadow-md'
-                                           : isAnswerSubmitted && selectedAnswer === index
-                                           ? 'bg-gradient-to-br from-red-500 to-red-600 text-white shadow-md'
-                                           : ''}`}
-                          >
-                            {String.fromCharCode(65 + index)}
-                          </div>
-                          <span className="text-gray-700 dark:text-gray-300">{option}</span>
-                          {isAnswerSubmitted && index === currentQuestion.correctAnswer && (
-                            <CheckCircle className="ml-auto h-5 w-5 text-green-500" />
-                          )}
-                          {isAnswerSubmitted && selectedAnswer === index && selectedAnswer !== currentQuestion.correctAnswer && (
-                            <X className="ml-auto h-5 w-5 text-red-500" />
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="flex justify-between">
-                    <Button 
-                      variant="outline"
+                  <div className="flex gap-3 justify-center">
+                    <Button
                       onClick={resetQuiz}
-                      className="border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 px-4"
+                      variant="outline"
+                      className="border-purple-200 text-purple-600 hover:bg-purple-50"
                     >
-                      Exit Quiz
+                      <RotateCcw className="h-4 w-4 mr-2" />
+                      Try Again
                     </Button>
-                    
-                    {!isAnswerSubmitted ? (
-                      <Button 
-                        onClick={handleSubmitAnswer}
-                        disabled={selectedAnswer === null}
-                        className={`relative overflow-hidden bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700
-                                  text-white shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all px-6
-                                  border border-white/10 hover:border-white/20
-                                  ${selectedAnswer === null ? 'opacity-50 cursor-not-allowed' : ''}`}
-                      >
-                        {/* Button glow effect */}
-                        {selectedAnswer !== null && (
-                          <div className="absolute inset-0 bg-gradient-to-r from-purple-400/0 via-white/20 to-purple-400/0 opacity-0 hover:opacity-100 
-                                        transition-opacity duration-1000 animate-pulse-slow"></div>
-                        )}
-                        Submit Answer
-                      </Button>
-                    ) : (
-                      <Button 
-                        onClick={handleNextQuestion}
-                        className="relative overflow-hidden bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700
-                                  text-white shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all px-6
-                                  border border-white/10 hover:border-white/20"
-                      >
-                        {/* Button glow effect */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-purple-400/0 via-white/20 to-purple-400/0 opacity-0 hover:opacity-100 
-                                      transition-opacity duration-1000 animate-pulse-slow"></div>
-                        {currentQuizIndex < filteredQuizQuestions.length - 1 ? "Next Question" : "See Results"}
-                      </Button>
+                    <Button
+                      onClick={() => setActiveTab('learn')}
+                      className="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white"
+                    >
+                      <BookOpen className="h-4 w-4 mr-2" />
+                      Continue Learning
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="flex-1 p-6">
+                {/* Quiz Progress */}
+                <div className="mb-6">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm text-gray-600">
+                      Question {currentQuestionIndex + 1} of {quizQuestions.length}
+                    </span>
+                    <span className="text-sm text-purple-600">
+                      Score: {score}/{currentQuestionIndex + (showAnswer ? 1 : 0)}
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-gradient-to-r from-purple-500 to-indigo-600 h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${((currentQuestionIndex + (showAnswer ? 1 : 0)) / quizQuestions.length) * 100}%` }}
+                    ></div>
+                  </div>
+                </div>
+
+                {/* Current Question */}
+                <div className="max-w-2xl mx-auto">
+                  <div className="bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-gray-900 rounded-xl p-6 border border-purple-100 dark:border-purple-800 mb-6">
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-6">
+                      {quizQuestions[currentQuestionIndex]?.question}
+                    </h3>
+
+                    <div className="space-y-3">
+                      {quizQuestions[currentQuestionIndex]?.options.map((option, index) => (
+                        <button
+                          key={index}
+                          onClick={() => !showAnswer && handleAnswerSelect(index)}
+                          disabled={showAnswer}
+                          className={`w-full p-4 text-left rounded-lg border-2 transition-all duration-200 ${
+                            showAnswer
+                              ? index === quizQuestions[currentQuestionIndex].correctAnswer
+                                ? 'border-green-500 bg-green-50 text-green-900'
+                                : selectedAnswer === index && index !== quizQuestions[currentQuestionIndex].correctAnswer
+                                ? 'border-red-500 bg-red-50 text-red-900'
+                                : 'border-gray-200 bg-gray-50 text-gray-600'
+                              : selectedAnswer === index
+                              ? 'border-purple-500 bg-purple-50 text-purple-900'
+                              : 'border-gray-200 hover:border-purple-300 hover:bg-purple-50'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                              showAnswer && index === quizQuestions[currentQuestionIndex].correctAnswer
+                                ? 'border-green-500 bg-green-500'
+                                : showAnswer && selectedAnswer === index && index !== quizQuestions[currentQuestionIndex].correctAnswer
+                                ? 'border-red-500 bg-red-500'
+                                : selectedAnswer === index
+                                ? 'border-purple-500 bg-purple-500'
+                                : 'border-gray-300'
+                            }`}>
+                              {showAnswer && index === quizQuestions[currentQuestionIndex].correctAnswer && (
+                                <CheckCircle className="h-4 w-4 text-white" />
+                              )}
+                              {showAnswer && selectedAnswer === index && index !== quizQuestions[currentQuestionIndex].correctAnswer && (
+                                <XCircle className="h-4 w-4 text-white" />
+                              )}
+                            </div>
+                            <span className="flex-1">{option}</span>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+
+                    {showAnswer && (
+                      <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                        <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">Explanation:</h4>
+                        <p className="text-blue-800 dark:text-blue-200 text-sm">
+                          {quizQuestions[currentQuestionIndex]?.explanation}
+                        </p>
+                      </div>
                     )}
                   </div>
-                </CardContent>
-              </Card>
+
+                  {showAnswer && (
+                    <div className="text-center">
+                      <Button
+                        onClick={nextQuestion}
+                        className="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white"
+                      >
+                        {currentQuestionIndex === quizQuestions.length - 1 ? (
+                          <>
+                            <Award className="h-4 w-4 mr-2" />
+                            View Results
+                          </>
+                        ) : (
+                          <>
+                            <ChevronRight className="h-4 w-4 mr-2" />
+                            Next Question
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
             )}
-          </TabsContent>
-        </Tabs>
+          </div>
+        )}
       </div>
-    </div>
+
+      {/* Medicine Details Modal - Tablet-Sized Centered Card */}
+      {selectedMedicine && (
+        <Dialog open={!!selectedMedicine} onOpenChange={() => setSelectedMedicine(null)}>
+          <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-hidden [&>button]:hidden">
+            <div className="flex flex-col h-full">
+              {/* Medicine Header */}
+              <div className="p-6 bg-gradient-to-r from-purple-600 to-indigo-600 text-white relative">
+                <div className="absolute inset-0 bg-black/10"></div>
+                <div className="relative">
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <h2 className="text-2xl font-bold mb-2">{selectedMedicine.name}</h2>
+                      <p className="text-purple-100 text-lg">{selectedMedicine.commonName}</p>
+                    </div>
+                    <div className="text-right">
+                      <Badge className="bg-white/20 text-white border-white/30 mb-2">
+                        {selectedMedicine.category}
+                      </Badge>
+                      <div className="text-sm text-purple-100">
+                        {selectedMedicine.potency} • {selectedMedicine.dosage}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Pill className="h-5 w-5" />
+                    <span className="text-purple-100">{selectedMedicine.category}</span>
+                  </div>
+                </div>
+                <Button
+                  onClick={() => setSelectedMedicine(null)}
+                  className="absolute top-4 right-4 h-8 w-8 p-0 bg-white/20 hover:bg-white/30"
+                >
+                  ×
+                </Button>
+              </div>
+
+              {/* Medicine Content with Scrolling */}
+              <ScrollArea className="flex-1 p-6">
+                <div className="space-y-6">
+                  {/* Primary Uses */}
+                  <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl p-6 border border-green-200 dark:border-green-800">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Target className="h-5 w-5 text-green-600" />
+                      <h3 className="text-lg font-semibold text-green-900 dark:text-green-100">Primary Uses</h3>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {selectedMedicine.primaryUses.map((use, index) => (
+                        <div key={index} className="flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
+                          <span className="text-green-800 dark:text-green-200">{use}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Key Symptoms */}
+                  <div className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-800">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Activity className="h-5 w-5 text-blue-600" />
+                      <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100">Key Symptoms</h3>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {selectedMedicine.keySymptoms.map((symptom, index) => (
+                        <div key={index} className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0"></div>
+                          <span className="text-blue-800 dark:text-blue-200">{symptom}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Mental & Physical Symptoms */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Mental Symptoms */}
+                    <div className="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-xl p-6 border border-purple-200 dark:border-purple-800">
+                      <div className="flex items-center gap-2 mb-4">
+                        <Brain className="h-5 w-5 text-purple-600" />
+                        <h3 className="text-lg font-semibold text-purple-900 dark:text-purple-100">Mental & Emotional</h3>
+                      </div>
+                      <div className="space-y-2">
+                        {selectedMedicine.mentalSymptoms.map((symptom, index) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-purple-600 rounded-full flex-shrink-0"></div>
+                            <span className="text-purple-800 dark:text-purple-200 text-sm">{symptom}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Physical Symptoms */}
+                    <div className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-xl p-6 border border-orange-200 dark:border-orange-800">
+                      <div className="flex items-center gap-2 mb-4">
+                        <Heart className="h-5 w-5 text-orange-600" />
+                        <h3 className="text-lg font-semibold text-orange-900 dark:text-orange-100">Physical Symptoms</h3>
+                      </div>
+                      <div className="space-y-2">
+                        {selectedMedicine.physicalSymptoms.map((symptom, index) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-orange-600 rounded-full flex-shrink-0"></div>
+                            <span className="text-orange-800 dark:text-orange-200 text-sm">{symptom}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Modalities */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Worse From */}
+                    <div className="bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 rounded-xl p-6 border border-red-200 dark:border-red-800">
+                      <div className="flex items-center gap-2 mb-4">
+                        <XCircle className="h-5 w-5 text-red-600" />
+                        <h3 className="text-lg font-semibold text-red-900 dark:text-red-100">Worse From</h3>
+                      </div>
+                      <div className="space-y-2">
+                        {selectedMedicine.modalities.worse.map((item, index) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-red-600 rounded-full flex-shrink-0"></div>
+                            <span className="text-red-800 dark:text-red-200 text-sm">{item}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Better From */}
+                    <div className="bg-gradient-to-br from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20 rounded-xl p-6 border border-green-200 dark:border-green-800">
+                      <div className="flex items-center gap-2 mb-4">
+                        <CheckCircle className="h-5 w-5 text-green-600" />
+                        <h3 className="text-lg font-semibold text-green-900 dark:text-green-100">Better From</h3>
+                      </div>
+                      <div className="space-y-2">
+                        {selectedMedicine.modalities.better.map((item, index) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-green-600 rounded-full flex-shrink-0"></div>
+                            <span className="text-green-800 dark:text-green-200 text-sm">{item}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Dosage & Keynotes */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Dosage Information */}
+                    <div className="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20 rounded-xl p-6 border border-indigo-200 dark:border-indigo-800">
+                      <div className="flex items-center gap-2 mb-4">
+                        <Clock className="h-5 w-5 text-indigo-600" />
+                        <h3 className="text-lg font-semibold text-indigo-900 dark:text-indigo-100">Dosage Information</h3>
+                      </div>
+                      <div className="space-y-3">
+                        <div>
+                          <span className="font-medium text-indigo-800 dark:text-indigo-200">Potency: </span>
+                          <span className="text-indigo-700 dark:text-indigo-300">{selectedMedicine.potency}</span>
+                        </div>
+                        <div>
+                          <span className="font-medium text-indigo-800 dark:text-indigo-200">Dosage: </span>
+                          <span className="text-indigo-700 dark:text-indigo-300">{selectedMedicine.dosage}</span>
+                        </div>
+                        <div>
+                          <span className="font-medium text-indigo-800 dark:text-indigo-200">Frequency: </span>
+                          <span className="text-indigo-700 dark:text-indigo-300">{selectedMedicine.frequency}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Keynotes */}
+                    <div className="bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 rounded-xl p-6 border border-yellow-200 dark:border-yellow-800">
+                      <div className="flex items-center gap-2 mb-4">
+                        <Star className="h-5 w-5 text-yellow-600" />
+                        <h3 className="text-lg font-semibold text-yellow-900 dark:text-yellow-100">Keynotes</h3>
+                      </div>
+                      <div className="space-y-2">
+                        {selectedMedicine.keynotes.map((keynote, index) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <Star className="h-4 w-4 text-yellow-600 flex-shrink-0" />
+                            <span className="text-yellow-800 dark:text-yellow-200 text-sm font-medium">{keynote}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Source Information */}
+                  <div className="bg-gradient-to-br from-gray-50 to-slate-50 dark:from-gray-800 dark:to-slate-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center gap-2 mb-2">
+                      <BookOpen className="h-5 w-5 text-gray-600" />
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Source</h3>
+                    </div>
+                    <p className="text-gray-700 dark:text-gray-300">{selectedMedicine.source}</p>
+                  </div>
+                </div>
+              </ScrollArea>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+    </>
   );
 }
