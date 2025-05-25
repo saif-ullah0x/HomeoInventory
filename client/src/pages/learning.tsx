@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollToTopButton } from "@/components/scroll-to-top-button";
+import { LearningScrollButton } from "@/components/learning-scroll-button";
 import { 
   Search, 
   BookOpen, 
@@ -605,7 +606,7 @@ export default function LearningPage() {
                       >
                         {categories.map(category => (
                           <option key={category} value={category}>
-                            {category === 'all' ? 'All' : category}
+                            {category === 'all' ? '📋 All Categories' : `🏷️ ${category}`}
                           </option>
                         ))}
                       </select>
@@ -617,8 +618,8 @@ export default function LearningPage() {
             </div>
 
             {/* Enhanced Medicines Display Area - Increased Space and Better Visibility */}
-            <div className="flex-1 overflow-hidden bg-gradient-to-br from-purple-25/30 to-indigo-25/30">
-              <ScrollArea className="h-full">
+            <div className="flex-1 overflow-hidden bg-gradient-to-br from-purple-25/30 to-indigo-25/30 relative">
+              <ScrollArea className="h-full [&>div>div[style]]:!pr-0 [&>div>div]:scrollbar-none">
                 <div className="p-4 md:p-6">
                   <div className="max-w-7xl mx-auto">
                     {/* Enhanced Medicine Cards Grid with Better Spacing */}
@@ -700,6 +701,9 @@ export default function LearningPage() {
                   </div>
                 </div>
               </ScrollArea>
+              
+              {/* Learning Tab Specific Scroll to Top Button */}
+              <LearningScrollButton />
             </div>
           </div>
         )}
@@ -1062,8 +1066,7 @@ export default function LearningPage() {
         </Dialog>
       )}
 
-      {/* Scroll to Top Button */}
-      <ScrollToTopButton containerSelector="[data-radix-scroll-area-viewport]" showThreshold={200} />
+
     </>
   );
 }
