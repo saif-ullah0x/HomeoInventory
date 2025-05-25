@@ -515,12 +515,12 @@ export default function LearningPage() {
               </div>
             </div>
 
-            {/* Center - Title */}
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                <BookOpen className="h-4 w-4 text-white" />
+            {/* Center - Perfectly Centered Title with Enhanced Effects */}
+            <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center gap-3">
+              <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg">
+                <BookOpen className="h-5 w-5 text-white" />
               </div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-white via-purple-100 to-white bg-clip-text text-transparent hover:scale-105 transition-transform duration-300">
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-white via-purple-100 to-white bg-clip-text text-transparent hover:scale-105 transition-all duration-300 drop-shadow-sm">
                 Learning Assistant
               </h1>
             </div>
@@ -537,14 +537,14 @@ export default function LearningPage() {
           </div>
         </div>
 
-        {/* Tab Navigation */}
+        {/* Enhanced Tab Navigation with Better Dark Mode Visibility */}
         <div className="flex border-b bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900">
           <button
             onClick={() => setActiveTab('learn')}
             className={`flex-1 px-8 py-4 font-medium transition-all duration-200 ${
               activeTab === 'learn'
-                ? 'text-purple-600 border-b-2 border-purple-600 bg-white dark:bg-gray-800'
-                : 'text-gray-600 hover:text-purple-600'
+                ? 'text-purple-600 dark:text-white border-b-2 border-purple-600 bg-white dark:bg-gray-700 shadow-sm dark:shadow-purple-500/20'
+                : 'text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-white hover:bg-white/50 dark:hover:bg-gray-700/50'
             }`}
           >
             <BookOpen className="h-5 w-5 inline mr-2" />
@@ -554,8 +554,8 @@ export default function LearningPage() {
             onClick={() => setActiveTab('quiz')}
             className={`flex-1 px-8 py-4 font-medium transition-all duration-200 ${
               activeTab === 'quiz'
-                ? 'text-purple-600 border-b-2 border-purple-600 bg-white dark:bg-gray-800'
-                : 'text-gray-600 hover:text-purple-600'
+                ? 'text-purple-600 dark:text-white border-b-2 border-purple-600 bg-white dark:bg-gray-700 shadow-sm dark:shadow-purple-500/20'
+                : 'text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-white hover:bg-white/50 dark:hover:bg-gray-700/50'
             }`}
           >
             <Award className="h-5 w-5 inline mr-2" />
@@ -586,22 +586,22 @@ export default function LearningPage() {
                   <div className="flex gap-3 items-center">
                     {/* Search Bar */}
                     <div className="w-64 relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500 dark:text-gray-300" />
                       <Input
-                        placeholder="Search medicines, uses, symptoms..."
+                        placeholder="Search medicines"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10 py-2 h-9 text-sm bg-white/90 backdrop-blur-sm border-purple-200 focus:border-purple-400 rounded-full shadow-sm hover:shadow-md transition-all duration-300"
+                        className="pl-10 py-2 h-9 text-sm bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border-purple-200 dark:border-purple-600 focus:border-purple-400 dark:focus:border-purple-400 rounded-full shadow-sm hover:shadow-md transition-all duration-300 text-gray-800 dark:text-gray-200"
                       />
                     </div>
                     
                     {/* Category Filter */}
                     <div className="relative w-36">
-                      <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500 dark:text-gray-300" />
                       <select
                         value={selectedCategory}
                         onChange={(e) => setSelectedCategory(e.target.value)}
-                        className="w-full pl-10 pr-8 py-2 h-9 text-sm border border-purple-200 rounded-full bg-white/90 backdrop-blur-sm focus:border-purple-400 appearance-none shadow-sm hover:shadow-md transition-all duration-300"
+                        className="w-full pl-10 pr-8 py-2 h-9 text-sm border border-purple-200 dark:border-purple-600 rounded-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm focus:border-purple-400 dark:focus:border-purple-400 appearance-none shadow-sm hover:shadow-md transition-all duration-300 text-gray-800 dark:text-gray-200"
                       >
                         {categories.map(category => (
                           <option key={category} value={category}>
@@ -609,7 +609,7 @@ export default function LearningPage() {
                           </option>
                         ))}
                       </select>
-                      <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-3 w-3 text-gray-400 pointer-events-none" />
+                      <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-3 w-3 text-gray-500 dark:text-gray-300 pointer-events-none" />
                     </div>
                   </div>
                 </div>
