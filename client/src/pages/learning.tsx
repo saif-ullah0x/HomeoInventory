@@ -10,21 +10,20 @@ import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
-import { useNavigate } from "wouter";
+import { Link, useLocation } from "wouter";
 
 /**
- * Learning Page Component - Enhanced UI/UX Version
+ * AI-Enhanced Remedy Learning Assistant
  * 
- * This component provides a dedicated learning interface for homeopathic remedies
+ * This component provides a sophisticated learning interface for homeopathic remedies
  * with comprehensive lessons and interactive quizzes in a visually appealing format.
  * 
- * UI/UX Improvements:
- * - Premium glassy card-based interface with subtle hover animations
- * - Larger, glowing gradient buttons for better visibility and interaction
- * - Improved tab navigation with smooth animations and visual indicators
- * - Redesigned layout with better spacing and visual hierarchy
- * - Cross button in top-right corner instead of "Return to App" button
- * - Shadow overlay for better visual separation and focus
+ * UI/UX Features:
+ * - Premium header with bold "AI-Enhanced Remedy Learning Assistant" text and purple gradient
+ * - Enhanced glassy buttons with purple gradients, glowing shadows, and subtle animations
+ * - Card-based layout for better organization and visual hierarchy
+ * - Improved tab navigation with elegant indicators and smooth transitions
+ * - Polished and professional design throughout the interface
  */
 
 interface HomeopathicRemedy {
@@ -214,7 +213,7 @@ export default function LearningPage() {
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [quizStarted, setQuizStarted] = useState(false);
   const [activeRemedyId, setActiveRemedyId] = useState<number | null>(null);
-  const navigate = useNavigate();
+  const [, setLocation] = useLocation();
 
   // Filter remedies based on search and difficulty
   const filteredRemedies = dummyRemedies.filter((remedy) => {
@@ -236,11 +235,6 @@ export default function LearningPage() {
   });
 
   const currentQuestion = filteredQuizQuestions[currentQuizIndex];
-  
-  // Handle navigating back to the main app without reloading
-  const handleClose = () => {
-    navigate('/');
-  };
   
   const handleStartQuiz = () => {
     setQuizStarted(true);
@@ -289,105 +283,114 @@ export default function LearningPage() {
   };
 
   return (
-    // Main container with a premium gradient background and improved styling
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-gray-900 dark:to-purple-950 text-gray-800 dark:text-gray-100">
-      {/* Dark overlay for added depth and focus - gives a premium feel */}
-      <div className="absolute inset-0 bg-black/5 dark:bg-black/30 backdrop-blur-[2px] pointer-events-none"></div>
+    <div className="min-h-screen relative bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-gray-900 dark:to-purple-950 text-gray-800 dark:text-gray-100">
+      {/* Dark overlay for added depth and focus */}
+      <div className="absolute inset-0 bg-black/5 dark:bg-black/30 backdrop-blur-[2px] pointer-events-none z-0"></div>
       
-      {/* Close button that appears in top-right corner for easy navigation */}
+      {/* Close button in top-right corner */}
       <Button 
-        variant="outline" 
+        variant="outline"
         size="icon"
-        onClick={handleClose}
-        className="absolute top-4 right-4 z-50 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+        onClick={() => setLocation("/")}
+        className="absolute top-5 right-5 z-50 rounded-full w-10 h-10 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md 
+                  border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 
+                  shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
       >
         <X className="h-5 w-5" />
       </Button>
 
-      {/* Header with improved glassy effect */}
-      <div className="relative py-6 border-b border-white/20 bg-white/40 dark:bg-gray-800/40 backdrop-blur-xl shadow-lg z-10">
-        <div className="max-w-7xl mx-auto flex justify-between items-center px-4 sm:px-6 lg:px-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-400 dark:to-indigo-400">
-            <span className="inline-flex items-center">
-              <div className="p-2 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 text-white shadow-lg mr-3">
-                <BookOpen className="h-6 w-6" />
-              </div>
-              Homeopathic Learning Center
-            </span>
-          </h1>
-          <div>
-            <Badge variant="outline" className="bg-white/60 dark:bg-gray-800/60 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800 px-4 py-1.5 shadow-md backdrop-blur-md rounded-full">
-              <Lightbulb className="w-4 h-4 mr-2 text-amber-500" />
-              Interactive Learning Experience
-            </Badge>
+      {/* Enhanced Header with Purple Gradient */}
+      <div className="relative z-10 py-8 bg-gradient-to-r from-purple-600 to-indigo-600 shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col items-center text-center">
+            <div className="p-3 bg-white/20 backdrop-blur-md rounded-full mb-3 shadow-xl">
+              <BookOpen className="h-8 w-8 text-white" />
+            </div>
+            <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 drop-shadow-md">
+              AI-Enhanced Remedy Learning Assistant
+            </h1>
+            <p className="text-purple-100 max-w-2xl">
+              Explore and master homeopathic remedies through interactive lessons and knowledge tests
+            </p>
           </div>
         </div>
+        {/* Decorative gradient bottom border */}
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-300/50 via-white/70 to-indigo-300/50"></div>
       </div>
 
-      {/* Main Content Area with improved layout and spacing */}
+      {/* Main Content Area */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs defaultValue="learn" value={activeTab} onValueChange={setActiveTab} className="w-full">
-          {/* Enhanced Tab List with Premium Styling */}
+          {/* Enhanced Tab List with Premium Glassy Buttons */}
           <div className="max-w-[700px] mx-auto mb-10">
-            <div className="p-2 rounded-2xl bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-purple-100/50 dark:border-purple-800/50 shadow-xl">
-              <TabsList className="grid grid-cols-2 w-full p-1.5 gap-2 bg-purple-50/50 dark:bg-gray-900/50 rounded-xl relative overflow-hidden">
-                {/* Progress indicator with glowing effect */}
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-400/20 to-indigo-400/20 dark:from-purple-900/30 dark:to-indigo-900/30">
-                  <div className={`h-full bg-gradient-to-r from-purple-500 to-indigo-500 shadow-[0_0_10px_rgba(168,85,247,0.5)] transition-all duration-500 ${
-                    activeTab === "learn" ? "w-1/2 translate-x-0" : "w-1/2 translate-x-full"
-                  }`}></div>
+            <div className="rounded-2xl bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-purple-100/50 dark:border-purple-800/50 shadow-xl p-3">
+              <TabsList className="w-full grid grid-cols-2 gap-2 p-1 rounded-xl bg-purple-50/50 dark:bg-gray-900/50 relative">
+                {/* Animated progress indicator */}
+                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-purple-400/20 to-indigo-400/20">
+                  <div 
+                    className={`h-full bg-gradient-to-r from-purple-500 to-indigo-500 transition-all duration-500 ease-in-out ${
+                      activeTab === "learn" ? "w-1/2 translate-x-0" : "w-1/2 translate-x-full"
+                    }`}
+                    style={{boxShadow: "0 0 10px rgba(168,85,247,0.5)"}}
+                  ></div>
                 </div>
                 
-                {/* Learn Tab with enhanced premium styling */}
+                {/* Learn Remedies Button */}
                 <TabsTrigger 
                   value="learn" 
-                  className="relative z-10 flex items-center justify-center gap-3 font-semibold py-4 rounded-lg
+                  className="relative group overflow-hidden rounded-lg py-4 px-4
                             data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-indigo-600
-                            data-[state=active]:text-white data-[state=active]:shadow-[0_0_20px_rgba(168,85,247,0.4)]
-                            hover:bg-white/80 dark:hover:bg-gray-800/80
-                            transition-all duration-300 hover:scale-[1.02]
-                            border border-transparent data-[state=active]:border-white/30
-                            backdrop-blur-sm group/tab"
+                            data-[state=active]:text-white data-[state=active]:shadow-lg
+                            data-[state=active]:border-[1px] data-[state=active]:border-white/30
+                            transition-all duration-300 ease-out hover:scale-[1.02]"
                 >
-                  <div className="p-2 rounded-lg bg-white/20 data-[state=active]:bg-white/30 
-                                 group-hover/tab:bg-white/30 transition-all duration-200 shadow-lg shadow-purple-500/10 group-data-[state=active]/tab:shadow-white/30">
-                    <Book className="h-5 w-5 group-hover/tab:scale-110 transition-transform duration-200" />
-                  </div>
-                  <span className="text-lg group-data-[state=active]/tab:font-bold">Learn Remedies</span>
+                  {/* Glow effect */}
+                  <div className="absolute inset-0 data-[state=active]:opacity-100 opacity-0 group-hover:opacity-50 
+                               bg-gradient-to-r from-purple-400/20 via-indigo-400/40 to-purple-400/20 
+                               transition-opacity duration-300 rounded-lg"></div>
                   
-                  {/* Glowing effect on hover and active state */}
-                  <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500/0 via-purple-500/5 to-purple-500/0 
-                                 opacity-0 group-hover/tab:opacity-100 group-data-[state=active]/tab:opacity-100 
-                                 transition-opacity duration-300"></div>
+                  {/* Glass morphism effect */}
+                  <div className="absolute inset-0 data-[state=active]:opacity-20 opacity-0 group-hover:opacity-10
+                               bg-white backdrop-blur-md rounded-lg transition-opacity duration-300"></div>
+                  
+                  <div className="relative flex items-center justify-center gap-3">
+                    <div className="p-2 rounded-lg bg-white/20 shadow-sm">
+                      <Book className="h-5 w-5 group-hover:scale-110 transition-transform duration-200" />
+                    </div>
+                    <span className="text-lg font-medium">Learn Remedies</span>
+                  </div>
                 </TabsTrigger>
                 
-                {/* Quiz Tab with matching premium styling */}
+                {/* Test Knowledge Button */}
                 <TabsTrigger 
                   value="quiz" 
-                  className="relative z-10 flex items-center justify-center gap-3 font-semibold py-4 rounded-lg
+                  className="relative group overflow-hidden rounded-lg py-4 px-4
                             data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-indigo-600
-                            data-[state=active]:text-white data-[state=active]:shadow-[0_0_20px_rgba(168,85,247,0.4)]
-                            hover:bg-white/80 dark:hover:bg-gray-800/80
-                            transition-all duration-300 hover:scale-[1.02]
-                            border border-transparent data-[state=active]:border-white/30
-                            backdrop-blur-sm group/tab"
+                            data-[state=active]:text-white data-[state=active]:shadow-lg
+                            data-[state=active]:border-[1px] data-[state=active]:border-white/30
+                            transition-all duration-300 ease-out hover:scale-[1.02]"
                 >
-                  <div className="p-2 rounded-lg bg-white/20 data-[state=active]:bg-white/30 
-                                 group-hover/tab:bg-white/30 transition-all duration-200 shadow-lg shadow-purple-500/10 group-data-[state=active]/tab:shadow-white/30">
-                    <Brain className="h-5 w-5 group-hover/tab:scale-110 transition-transform duration-200" />
-                  </div>
-                  <span className="text-lg group-data-[state=active]/tab:font-bold">Test Knowledge</span>
+                  {/* Glow effect */}
+                  <div className="absolute inset-0 data-[state=active]:opacity-100 opacity-0 group-hover:opacity-50 
+                               bg-gradient-to-r from-purple-400/20 via-indigo-400/40 to-purple-400/20 
+                               transition-opacity duration-300 rounded-lg"></div>
                   
-                  {/* Glowing effect on hover and active state */}
-                  <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500/0 via-purple-500/5 to-purple-500/0 
-                                 opacity-0 group-hover/tab:opacity-100 group-data-[state=active]/tab:opacity-100 
-                                 transition-opacity duration-300"></div>
+                  {/* Glass morphism effect */}
+                  <div className="absolute inset-0 data-[state=active]:opacity-20 opacity-0 group-hover:opacity-10
+                               bg-white backdrop-blur-md rounded-lg transition-opacity duration-300"></div>
+                  
+                  <div className="relative flex items-center justify-center gap-3">
+                    <div className="p-2 rounded-lg bg-white/20 shadow-sm">
+                      <Brain className="h-5 w-5 group-hover:scale-110 transition-transform duration-200" />
+                    </div>
+                    <span className="text-lg font-medium">Test Knowledge</span>
+                  </div>
                 </TabsTrigger>
               </TabsList>
             </div>
           </div>
 
-          {/* Learn Content with improved card-based layout */}
+          {/* Learn Content */}
           <TabsContent value="learn" className="outline-none">
             <Card className="mb-8 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl shadow-xl border border-purple-100/50 dark:border-purple-800/50 rounded-2xl overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-indigo-500/5 dark:from-purple-500/10 dark:to-indigo-500/10 pointer-events-none"></div>
@@ -430,7 +433,7 @@ export default function LearningPage() {
               </CardContent>
             </Card>
 
-            {/* Enhanced remedy cards with premium hover effects */}
+            {/* Remedy Cards with Premium Hover Effects */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredRemedies.length > 0 ? (
                 filteredRemedies.map((remedy) => (
@@ -545,7 +548,7 @@ export default function LearningPage() {
             </div>
           </TabsContent>
 
-          {/* Quiz Content with enhanced premium styling */}
+          {/* Quiz Content */}
           <TabsContent value="quiz" className="outline-none">
             <Card className="mb-8 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl shadow-xl border border-purple-100/50 dark:border-purple-800/50 rounded-2xl overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-indigo-500/5 dark:from-purple-500/10 dark:to-indigo-500/10 pointer-events-none"></div>
@@ -592,10 +595,13 @@ export default function LearningPage() {
                   {filteredQuizQuestions.length > 0 ? (
                     <Button 
                       onClick={handleStartQuiz}
-                      className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700
+                      className="relative overflow-hidden bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700
                                 text-white px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all
                                 border border-white/10 hover:border-white/20"
                     >
+                      {/* Button glow effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-purple-400/0 via-white/20 to-purple-400/0 opacity-0 hover:opacity-100 
+                                     transition-opacity duration-1000 animate-pulse-slow"></div>
                       <span className="mr-2">Start Quiz</span>
                       <ArrowLeft className="h-4 w-4 rotate-180" />
                     </Button>
@@ -634,10 +640,13 @@ export default function LearningPage() {
                   </div>
                   <Button 
                     onClick={resetQuiz}
-                    className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700
+                    className="relative overflow-hidden bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700
                               text-white px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all
                               border border-white/10 hover:border-white/20"
                   >
+                    {/* Button glow effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-purple-400/0 via-white/20 to-purple-400/0 opacity-0 hover:opacity-100 
+                                   transition-opacity duration-1000 animate-pulse-slow"></div>
                     Restart Quiz
                   </Button>
                 </CardContent>
@@ -716,20 +725,28 @@ export default function LearningPage() {
                       <Button 
                         onClick={handleSubmitAnswer}
                         disabled={selectedAnswer === null}
-                        className={`bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700
+                        className={`relative overflow-hidden bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700
                                   text-white shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all px-6
                                   border border-white/10 hover:border-white/20
                                   ${selectedAnswer === null ? 'opacity-50 cursor-not-allowed' : ''}`}
                       >
+                        {/* Button glow effect */}
+                        {selectedAnswer !== null && (
+                          <div className="absolute inset-0 bg-gradient-to-r from-purple-400/0 via-white/20 to-purple-400/0 opacity-0 hover:opacity-100 
+                                        transition-opacity duration-1000 animate-pulse-slow"></div>
+                        )}
                         Submit Answer
                       </Button>
                     ) : (
                       <Button 
                         onClick={handleNextQuestion}
-                        className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700
+                        className="relative overflow-hidden bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700
                                   text-white shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all px-6
                                   border border-white/10 hover:border-white/20"
                       >
+                        {/* Button glow effect */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-purple-400/0 via-white/20 to-purple-400/0 opacity-0 hover:opacity-100 
+                                      transition-opacity duration-1000 animate-pulse-slow"></div>
                         {currentQuizIndex < filteredQuizQuestions.length - 1 ? "Next Question" : "See Results"}
                       </Button>
                     )}
