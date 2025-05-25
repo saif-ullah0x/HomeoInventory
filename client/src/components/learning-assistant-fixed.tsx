@@ -7,9 +7,9 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
-import { Brain, Book, Target, ArrowLeft, Search, Star, CheckCircle, X, Sparkles, Award, Clock } from "lucide-react";
+import { Brain, Book, Target, ArrowLeft, Search, Star, CheckCircle, X, Sparkles } from "lucide-react";
 
-interface AILearningAssistantProps {
+interface LearningAssistantProps {
   isOpen: boolean;
   onClose: () => void;
 }
@@ -28,16 +28,6 @@ interface HomeopathicRemedy {
   difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
 }
 
-interface QuizQuestion {
-  id: number;
-  question: string;
-  options: string[];
-  correctAnswer: number;
-  explanation: string;
-  remedyId: number;
-}
-
-// Comprehensive database of 52+ common homeopathic medicines
 const HOMEOPATHIC_REMEDIES: HomeopathicRemedy[] = [
   {
     id: 1,
@@ -64,111 +54,28 @@ const HOMEOPATHIC_REMEDIES: HomeopathicRemedy[] = [
     potency: "30C",
     keynotes: ["Sudden violent onset", "Red, hot, throbbing", "Worse from light and noise"],
     difficulty: 'Beginner'
-  },
-  {
-    id: 3,
-    name: "Rhus Toxicodendron",
-    commonName: "Poison Ivy",
-    uses: ["Joint stiffness", "Rheumatism", "Skin rashes", "Restlessness", "Sprains"],
-    symptoms: ["Stiffness worse on first motion", "Restless legs", "Itchy skin eruptions"],
-    dosage: "3-5 pellets",
-    frequency: "3 times daily",
-    category: "Joint & Muscle",
-    potency: "30C",
-    keynotes: ["Better from motion after initial stiffness", "Restless", "Worse in damp weather"],
-    difficulty: 'Intermediate'
-  },
-  {
-    id: 4,
-    name: "Aconitum Napellus",
-    commonName: "Monkshood",
-    uses: ["Sudden fever", "Panic attacks", "Fear", "Shock", "Cold exposure"],
-    symptoms: ["Sudden onset after cold wind", "Great fear and anxiety", "Restlessness"],
-    dosage: "3-5 pellets",
-    frequency: "Every 15-30 minutes",
-    category: "Acute & Emergency",
-    potency: "30C",
-    keynotes: ["Sudden onset after fright or cold", "Great fear of death", "Worse around midnight"],
-    difficulty: 'Beginner'
-  },
-  {
-    id: 5,
-    name: "Chamomilla",
-    commonName: "German Chamomile",
-    uses: ["Teething", "Colic", "Irritability", "Earache", "Sleeplessness"],
-    symptoms: ["Extreme irritability", "One cheek red, one pale", "Wants to be carried"],
-    dosage: "3-5 pellets",
-    frequency: "As needed",
-    category: "Children & Irritability",
-    potency: "30C",
-    keynotes: ["Nothing pleases", "Angry and irritable", "Better from being carried"],
-    difficulty: 'Beginner'
   }
 ];
 
-// Generate quiz questions based on the remedies
-const generateQuizQuestions = (remedies: HomeopathicRemedy[]): QuizQuestion[] => {
-  const questions: QuizQuestion[] = [];
-  
-  remedies.forEach((remedy, index) => {
-    // Question about main use
-    questions.push({
-      id: index * 2 + 1,
-      question: `What is ${remedy.name} primarily used for?`,
-      options: [
-        remedy.uses[0],
-        remedies[(index + 1) % remedies.length].uses[0],
-        remedies[(index + 2) % remedies.length].uses[0],
-        remedies[(index + 3) % remedies.length].uses[0]
-      ],
-      correctAnswer: 0,
-      explanation: `${remedy.name} is primarily used for ${remedy.uses[0]}. ${remedy.keynotes[0]}.`,
-      remedyId: remedy.id
-    });
-  });
-  
-  return questions.slice(0, 10);
-};
-
-export default function AIEnhancedLearningAssistantTopLayer({ isOpen, onClose }: AILearningAssistantProps) {
+export default function LearningAssistantFixed({ isOpen, onClose }: LearningAssistantProps) {
   const [activeTab, setActiveTab] = useState("learn");
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredRemedies, setFilteredRemedies] = useState<HomeopathicRemedy[]>(HOMEOPATHIC_REMEDIES);
   const [selectedRemedy, setSelectedRemedy] = useState<HomeopathicRemedy | null>(null);
-  const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([]);
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
-  const [showAnswer, setShowAnswer] = useState(false);
-  const [score, setScore] = useState(0);
-  const [quizStarted, setQuizStarted] = useState(false);
-  const [quizCompleted, setQuizCompleted] = useState(false);
 
   // Hide body scroll when learning interface is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
       document.documentElement.style.overflow = 'hidden';
-      // Also hide any potential scrollbars from the root app
-      const rootElement = document.getElementById('root');
-      if (rootElement) {
-        rootElement.style.overflow = 'hidden';
-      }
     } else {
       document.body.style.overflow = '';
       document.documentElement.style.overflow = '';
-      const rootElement = document.getElementById('root');
-      if (rootElement) {
-        rootElement.style.overflow = '';
-      }
     }
     
     return () => {
       document.body.style.overflow = '';
       document.documentElement.style.overflow = '';
-      const rootElement = document.getElementById('root');
-      if (rootElement) {
-        rootElement.style.overflow = '';
-      }
     };
   }, [isOpen]);
 
@@ -187,76 +94,27 @@ export default function AIEnhancedLearningAssistantTopLayer({ isOpen, onClose }:
     }
   }, [searchTerm]);
 
-  const startQuiz = () => {
-    const questions = generateQuizQuestions(filteredRemedies.slice(0, 10));
-    setQuizQuestions(questions);
-    setCurrentQuestion(0);
-    setScore(0);
-    setQuizStarted(true);
-    setQuizCompleted(false);
-    setSelectedAnswer(null);
-    setShowAnswer(false);
-  };
-
-  const handleAnswerSelect = (answerIndex: number) => {
-    setSelectedAnswer(answerIndex);
-    setShowAnswer(true);
-    if (answerIndex === quizQuestions[currentQuestion].correctAnswer) {
-      setScore(score + 1);
-    }
-  };
-
-  const nextQuestion = () => {
-    if (currentQuestion < quizQuestions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
-      setSelectedAnswer(null);
-      setShowAnswer(false);
-    } else {
-      setQuizCompleted(true);
-    }
-  };
-
   if (!isOpen) return null;
 
   return (
-    <>
-      {/* Full coverage backdrop */}
-      <div 
-        className="fixed inset-0"
-        style={{ 
-          zIndex: 2147483646,
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          width: '100vw',
-          height: '100vh',
-          backgroundColor: '#000000',
-          pointerEvents: 'auto'
-        }}
-        onClick={onClose}
-      />
-      
-      {/* Learning interface */}
-      <div 
-        className="fixed inset-0"
-        style={{ 
-          zIndex: 2147483647,
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          width: '100vw',
-          height: '100vh',
-          overflow: 'hidden',
-          pointerEvents: 'auto',
-          background: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 25%, #6D28D9 50%, #5B21B6 75%, #4C1D95 100%)'
-        }}
-      >
+    <div 
+      className="fixed inset-0"
+      style={{ 
+        zIndex: 2147483647,
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100vw',
+        height: '100vh',
+        overflow: 'hidden',
+        pointerEvents: 'auto',
+        background: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 25%, #6D28D9 50%, #5B21B6 75%, #4C1D95 100%)'
+      }}
+    >
       <div className="w-full h-full flex flex-col">
-        {/* Enhanced Header with Beautiful Purple Gradient */}
+        {/* Header */}
         <div className="relative p-6 shadow-xl">
           <div className="absolute inset-0 bg-gradient-to-r from-purple-500/30 via-violet-500/30 to-purple-600/30 backdrop-blur-md"></div>
           <div className="absolute inset-0 bg-white/5"></div>
@@ -288,9 +146,8 @@ export default function AIEnhancedLearningAssistantTopLayer({ isOpen, onClose }:
           </div>
         </div>
 
-        {/* Content Area with Enhanced Background */}
+        {/* Content Area */}
         <div className="flex-1 relative">
-          {/* Beautiful gradient background for content area */}
           <div className="absolute inset-0 bg-gradient-to-br from-white/95 via-purple-50/90 to-violet-100/85 backdrop-blur-sm"></div>
           
           <ScrollArea className="flex-1 overflow-y-auto relative z-10 h-full">
@@ -307,7 +164,6 @@ export default function AIEnhancedLearningAssistantTopLayer({ isOpen, onClose }:
                   </TabsTrigger>
                 </TabsList>
 
-                {/* Search Bar */}
                 <div className="mb-6">
                   <Label htmlFor="search" className="text-sm font-medium text-gray-700 mb-2 block">
                     🔍 Search remedies, conditions, or symptoms:
@@ -323,15 +179,6 @@ export default function AIEnhancedLearningAssistantTopLayer({ isOpen, onClose }:
                         className="pl-10 bg-white/70 backdrop-blur-sm border-purple-200 focus:border-purple-400"
                       />
                     </div>
-                    {activeTab === "quiz" && (
-                      <Button 
-                        onClick={startQuiz}
-                        className="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white shadow-lg"
-                      >
-                        <Target className="h-4 w-4 mr-2" />
-                        Start Quiz
-                      </Button>
-                    )}
                   </div>
                 </div>
 
@@ -395,32 +242,6 @@ export default function AIEnhancedLearningAssistantTopLayer({ isOpen, onClose }:
                             </ul>
                           </div>
                         </div>
-
-                        <div className="grid md:grid-cols-3 gap-4 p-4 bg-purple-50 rounded-lg">
-                          <div>
-                            <h5 className="font-semibold mb-2">Dosage</h5>
-                            <p className="text-sm">{selectedRemedy.dosage}</p>
-                          </div>
-                          <div>
-                            <h5 className="font-semibold mb-2">Frequency</h5>
-                            <p className="text-sm">{selectedRemedy.frequency}</p>
-                          </div>
-                          <div>
-                            <h5 className="font-semibold mb-2">Potency</h5>
-                            <p className="text-sm">{selectedRemedy.potency}</p>
-                          </div>
-                        </div>
-
-                        <div>
-                          <h4 className="font-semibold text-lg mb-3">Key Notes</h4>
-                          <div className="space-y-2">
-                            {selectedRemedy.keynotes.map((note, index) => (
-                              <div key={index} className="p-3 bg-indigo-50 rounded-lg border-l-4 border-indigo-400">
-                                <p className="text-sm">{note}</p>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
                       </CardContent>
                     </Card>
                   ) : (
@@ -464,104 +285,20 @@ export default function AIEnhancedLearningAssistantTopLayer({ isOpen, onClose }:
                 </TabsContent>
 
                 <TabsContent value="quiz" className="mt-0">
-                  {!quizStarted ? (
-                    <Card className="text-center bg-white/90 backdrop-blur-sm shadow-xl">
-                      <CardHeader>
-                        <CardTitle className="text-2xl text-purple-800">Ready to Test Your Knowledge?</CardTitle>
-                        <p className="text-gray-600">
-                          {filteredRemedies.length} remedies available for quiz questions
-                        </p>
-                        <Button 
-                          onClick={startQuiz}
-                          size="lg"
-                          className="mt-4 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white shadow-lg"
-                        >
-                          <Target className="h-5 w-5 mr-2" />
-                          Start Quiz
-                        </Button>
-                      </CardHeader>
-                    </Card>
-                  ) : quizCompleted ? (
-                    <Card className="text-center bg-white/90 backdrop-blur-sm shadow-xl">
-                      <CardHeader>
-                        <CardTitle className="text-2xl text-purple-800">Quiz Complete!</CardTitle>
-                        <p className="text-lg">
-                          You scored {Math.round((score/quizQuestions.length) * 100)}%
-                        </p>
-                        <p className="text-gray-600">
-                          {score} out of {quizQuestions.length} questions correct
-                        </p>
-                        <Button 
-                          onClick={startQuiz}
-                          size="lg"
-                          className="mt-4 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white shadow-lg"
-                        >
-                          Try Again
-                        </Button>
-                      </CardHeader>
-                    </Card>
-                  ) : (
-                    <Card className="bg-white/90 backdrop-blur-sm shadow-xl">
-                      <CardHeader>
-                        <div className="flex justify-between items-center">
-                          <CardTitle className="text-xl text-purple-800">
-                            Question {currentQuestion + 1} of {quizQuestions.length}
-                          </CardTitle>
-                          <Badge variant="outline">
-                            Score: {score}/{currentQuestion + (showAnswer ? 1 : 0)}
-                          </Badge>
-                        </div>
-                        <Progress value={((currentQuestion + (showAnswer ? 1 : 0)) / quizQuestions.length) * 100} className="w-full" />
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <h3 className="text-lg font-medium">{quizQuestions[currentQuestion]?.question}</h3>
-                        <div className="space-y-2">
-                          {quizQuestions[currentQuestion]?.options.map((option, index) => (
-                            <Button
-                              key={index}
-                              variant={
-                                showAnswer
-                                  ? index === quizQuestions[currentQuestion].correctAnswer
-                                    ? "default"
-                                    : index === selectedAnswer && index !== quizQuestions[currentQuestion].correctAnswer
-                                    ? "destructive"
-                                    : "outline"
-                                  : selectedAnswer === index
-                                  ? "secondary"
-                                  : "outline"
-                              }
-                              className="w-full text-left justify-start h-auto p-4"
-                              onClick={() => !showAnswer && handleAnswerSelect(index)}
-                              disabled={showAnswer}
-                            >
-                              {option}
-                            </Button>
-                          ))}
-                        </div>
-                        
-                        {showAnswer && (
-                          <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-                            <p className="text-sm text-blue-800">
-                              <strong>Explanation:</strong> {quizQuestions[currentQuestion]?.explanation}
-                            </p>
-                            <Button 
-                              onClick={nextQuestion}
-                              className="mt-3 bg-purple-600 hover:bg-purple-700"
-                            >
-                              {currentQuestion < quizQuestions.length - 1 ? "Next Question" : "Finish Quiz"}
-                            </Button>
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  )}
+                  <Card className="text-center bg-white/90 backdrop-blur-sm shadow-xl">
+                    <CardHeader>
+                      <CardTitle className="text-2xl text-purple-800">Quiz Feature Coming Soon!</CardTitle>
+                      <p className="text-gray-600">
+                        Interactive quizzes will be available here to test your knowledge.
+                      </p>
+                    </CardHeader>
+                  </Card>
                 </TabsContent>
               </Tabs>
             </div>
           </ScrollArea>
         </div>
       </div>
-      </div>
-    </>
+    </div>
   );
 }
