@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -335,13 +335,29 @@ export default function AIEnhancedLearningAssistant({ isOpen, onClose }: AILearn
     }
   };
 
+  // Hide body scroll when learning interface is open
+  React.useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+    }
+    
+    return () => {
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
     <>
-      {/* Enhanced backdrop with blur effect */}
+      {/* Maximum z-index backdrop that covers everything */}
       <div 
-        className="fixed inset-0 bg-black/30 backdrop-blur-sm"
+        className="fixed inset-0"
         style={{ 
           zIndex: 2147483646,
           position: 'fixed', 
@@ -351,14 +367,16 @@ export default function AIEnhancedLearningAssistant({ isOpen, onClose }: AILearn
           bottom: 0,
           width: '100vw',
           height: '100vh',
+          backgroundColor: 'rgba(0, 0, 0, 0.3)',
+          backdropFilter: 'blur(4px)',
           pointerEvents: 'auto'
         }}
         onClick={onClose}
       />
       
-      {/* Main learning interface with enhanced gradient background */}
+      {/* Main learning interface - HIGHEST possible z-index */}
       <div 
-        className="fixed inset-0 overflow-hidden"
+        className="fixed inset-0"
         style={{ 
           zIndex: 2147483647, 
           position: 'fixed', 
@@ -368,7 +386,7 @@ export default function AIEnhancedLearningAssistant({ isOpen, onClose }: AILearn
           bottom: 0,
           width: '100vw',
           height: '100vh',
-          isolation: 'isolate',
+          overflow: 'hidden',
           pointerEvents: 'auto',
           background: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 25%, #6D28D9 50%, #5B21B6 75%, #4C1D95 100%)'
         }}
