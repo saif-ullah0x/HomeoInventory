@@ -1,14 +1,36 @@
-import { Route, Switch } from "wouter";
-import LearningPage from "./pages/learning-integrated"; // Original version
-import ImprovedLearningPage from "./pages/improved-learning"; // New improved version
+import { Switch, Route } from "wouter";
+import { queryClient } from "./lib/queryClient";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "@/components/ui/toaster";
+import NotFound from "@/pages/not-found";
+import Header from "@/components/header";
+import Footer from "@/components/footer";
+import Inventory from "@/pages/inventory";
+import Analytics from "@/pages/analytics";
+import Learning from "@/pages/learning";
 
-export default function App() {
+function Router() {
   return (
-    <div className="min-h-screen">
-      <Switch>
-        <Route path="/improved" component={ImprovedLearningPage} />
-        <Route path="/" component={LearningPage} />
-      </Switch>
-    </div>
+    <Switch>
+      <Route path="/" component={Inventory} />
+      <Route path="/analytics" component={Analytics} />
+      <Route path="/learning" component={Learning} />
+      <Route component={NotFound} />
+    </Switch>
   );
 }
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <Router />
+        <Footer />
+      </div>
+      <Toaster />
+    </QueryClientProvider>
+  );
+}
+
+export default App;
