@@ -31,7 +31,6 @@ The Learning Assistant has been enhanced with:
 - **Perfectly Centered Header**: "Learning Assistant" title centered with enhanced purple gradient and glassy effects
 - **Return to Home Button**: Easy navigation back to the main app with a clean X button
 - **Enhanced Search Interface**: Simplified "Search medicines" placeholder with improved icon visibility in both light and dark modes
-- **Visual Category Icons**: Category dropdown options include emoji icons (📋 All Categories, 🏷️ Category names) for better visual cues
 - **Improved Dark Mode**: Enhanced text contrast for "Test Knowledge" and "Learn Remedies" tabs with better visibility
 - **Hidden Scrollbars**: Clean scrolling experience without visible scrollbars in the medicine display area
 - **Smart Scroll Button**: Bottom-to-top button appears in the medicine area when scrolling down with smooth animation

@@ -606,7 +606,7 @@ export default function LearningPage() {
                       >
                         {categories.map(category => (
                           <option key={category} value={category}>
-                            {category === 'all' ? '📋 All Categories' : `🏷️ ${category}`}
+                            {category === 'all' ? 'All Categories' : category}
                           </option>
                         ))}
                       </select>
