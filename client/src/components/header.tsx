@@ -22,22 +22,28 @@ export default function Header() {
           <div className="flex items-center slide-up-fade-in">
             <Link href="/">
               <h1 
-                className="font-display text-2xl font-bold cursor-pointer premium-gradient-text premium-logo"
+                className="font-display text-2xl font-bold cursor-pointer premium-logo"
                 data-text="HomeoInvent"
+                style={{
+                  background: "linear-gradient(to right, #a855f7, #6366f1)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  textShadow: "0 0 15px rgba(168, 85, 247, 0.5)"
+                }}
               >
                 HomeoInvent
               </h1>
             </Link>
           </div>
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2 sm:space-x-4">
             {/* AI Helper */}
             <Button 
               variant="outline" 
               size="sm"
               onClick={() => setShowAIChatbot(true)}
-              className="premium-gradient-button bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white border-0 flex items-center space-x-1 premium-glow"
+              className="premium-gradient-button bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white border-0 flex items-center justify-center h-10 px-3 sm:px-4 rounded-lg premium-glow"
             >
-              <MessageCircle className="h-4 w-4" />
+              <MessageCircle className="h-4 w-4 sm:mr-1.5" />
               <span className="hidden sm:inline font-medium">AI Helper</span>
             </Button>
 
@@ -46,11 +52,11 @@ export default function Header() {
               <Button 
                 variant="outline" 
                 size="sm"
-                className={`premium-gradient-button bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white border-0 flex items-center space-x-1 premium-glow ${
+                className={`premium-gradient-button bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white border-0 flex items-center justify-center h-10 px-3 sm:px-4 rounded-lg premium-glow ${
                   location === '/learning' ? 'ring-2 ring-white/50' : ''
                 }`}
               >
-                <Brain className="h-4 w-4" />
+                <Brain className="h-4 w-4 sm:mr-1.5" />
                 <span className="hidden sm:inline font-medium">Learn</span>
               </Button>
             </Link>
@@ -59,16 +65,16 @@ export default function Header() {
               variant="outline" 
               size="sm"
               onClick={toggleTheme}
-              className="premium-simple-button border-2 dark:border-slate-600 hover:border-primary dark:hover:border-primary transition-all duration-200 flex items-center space-x-1 relative overflow-hidden group"
+              className="premium-simple-button border border-purple-200 dark:border-slate-600 hover:border-primary dark:hover:border-primary transition-all duration-500 flex items-center justify-center h-10 px-3 sm:px-4 rounded-lg relative overflow-hidden group"
               style={{ 
                 boxShadow: `0 0 12px rgba(${theme === 'dark' ? '252, 232, 131, 0.4' : '124, 58, 237, 0.4'})`
               }}
             >
-              <div className="absolute inset-0 opacity-0 dark:opacity-10 bg-primary group-hover:opacity-20 transition-opacity duration-200 rounded-sm"></div>
+              <div className="absolute inset-0 opacity-0 dark:opacity-10 bg-gradient-to-r from-yellow-200 to-purple-300 dark:from-purple-800 dark:to-indigo-900 group-hover:opacity-20 transition-opacity duration-500 rounded-lg"></div>
               {theme === "dark" ? (
-                <Sun className="h-5 w-5 mr-1 text-yellow-500 drop-shadow-md" />
+                <Sun className="h-5 w-5 sm:mr-1.5 text-yellow-500 drop-shadow-md" />
               ) : (
-                <Moon className="h-5 w-5 mr-1 text-indigo-600 drop-shadow-md" />
+                <Moon className="h-5 w-5 sm:mr-1.5 text-indigo-600 drop-shadow-md" />
               )}
               <span className="hidden sm:inline font-medium">Theme</span>
             </Button>

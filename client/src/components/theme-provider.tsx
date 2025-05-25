@@ -39,9 +39,19 @@ export function ThemeProvider({
           : "light"
         : theme;
     
-    // Direct theme change without transitions to avoid delays
-    root.classList.remove("light", "dark");
-    root.classList.add(resolvedTheme);
+    // Add transition class first
+    root.classList.add('theme-transition');
+    
+    // Set a timeout to allow transition to take effect
+    setTimeout(() => {
+      root.classList.remove("light", "dark");
+      root.classList.add(resolvedTheme);
+      
+      // Remove transition class after the transition completes
+      setTimeout(() => {
+        root.classList.remove('theme-transition');
+      }, 500);
+    }, 10);
   }, [theme]);
 
   const value = {
