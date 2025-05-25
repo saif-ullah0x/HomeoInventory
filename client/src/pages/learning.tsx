@@ -480,6 +480,44 @@ export default function LearningPage() {
     setCurrentPage(1);
   }, [searchTerm, selectedCategory]);
 
+  // Scroll state for sticky search bar
+  const [searchBarVisible, setSearchBarVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  
+  // Handle scroll events to show/hide search bar
+  const handleScroll = () => {
+    if (!scrollContainerRef.current) return;
+    
+    const currentScrollY = scrollContainerRef.current.scrollTop;
+    
+    if (currentScrollY > 100) { // Only apply after scrolling down a bit
+      if (currentScrollY > lastScrollY + 10) {
+        // Scrolling down - hide search bar
+        setSearchBarVisible(false);
+      } else if (currentScrollY < lastScrollY - 10) {
+        // Scrolling up - show search bar
+        setSearchBarVisible(true);
+      }
+    } else {
+      // At the top - always show search bar
+      setSearchBarVisible(true);
+    }
+    
+    setLastScrollY(currentScrollY);
+  };
+  
+  // Add scroll event listener
+  useEffect(() => {
+    const scrollContainer = scrollContainerRef.current;
+    if (scrollContainer) {
+      scrollContainer.addEventListener('scroll', handleScroll);
+      return () => {
+        scrollContainer.removeEventListener('scroll', handleScroll);
+      };
+    }
+  }, [lastScrollY]);
+
   return (
     <>
       {/* Full Page Layout (Analytics Style) */}
