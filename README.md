@@ -28,9 +28,13 @@ HomeoInvent features a premium, cohesive user interface with:
 
 The Learning Assistant has been enhanced with:
 
-- **Compact Header Design**: Streamlined header with animated purple gradients and glassy effects
+- **Perfectly Centered Header**: "Learning Assistant" title centered with enhanced purple gradient and glassy effects
 - **Return to Home Button**: Easy navigation back to the main app with a clean X button
-- **Right-Side Search Layout**: Modern search bar placement with decorative learning quotes on the left
+- **Enhanced Search Interface**: Simplified "Search medicines" placeholder with improved icon visibility in both light and dark modes
+- **Visual Category Icons**: Category dropdown options include emoji icons (📋 All Categories, 🏷️ Category names) for better visual cues
+- **Improved Dark Mode**: Enhanced text contrast for "Test Knowledge" and "Learn Remedies" tabs with better visibility
+- **Hidden Scrollbars**: Clean scrolling experience without visible scrollbars in the medicine display area
+- **Smart Scroll Button**: Bottom-to-top button appears in the medicine area when scrolling down with smooth animation
 - **Enhanced Medicine Cards**: Glowing purple gradients with smooth hover animations and glassy textures
 - **Optimized Display Area**: Increased space for medicine visibility with better grid layout
 - **Smart Medicine Counter**: Bottom-right placement of medicine count with glassy background
