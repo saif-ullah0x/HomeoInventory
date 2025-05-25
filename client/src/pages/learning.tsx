@@ -393,8 +393,13 @@ export default function LearningPage() {
     return matchesSearch && matchesCategory;
   });
 
-  // Show limited medicines initially or all if "Show More" clicked
-  const displayedMedicines = showAllMedicines ? filteredMedicines : filteredMedicines.slice(0, 10);
+  // Pagination state for incremental loading
+  const [currentPage, setCurrentPage] = useState(1);
+  const medicinesPerPage = 10;
+  
+  // Show medicines based on current page (incremental loading)
+  const displayedMedicines = filteredMedicines.slice(0, currentPage * medicinesPerPage);
+  const hasMoreMedicines = displayedMedicines.length < filteredMedicines.length;
 
   // Initialize quiz
   const startQuiz = () => {
@@ -436,6 +441,16 @@ export default function LearningPage() {
     setQuizCompleted(false);
     setActiveTab('learn');
   };
+
+  // Load more medicines function for pagination
+  const loadMoreMedicines = () => {
+    setCurrentPage(prev => prev + 1);
+  };
+
+  // Reset pagination when search/filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedCategory]);
 
   return (
     <>
@@ -488,126 +503,131 @@ export default function LearningPage() {
         {/* Learn Tab Content */}
         {activeTab === 'learn' && (
           <div className="flex-1 flex flex-col overflow-hidden">
-            {/* Search and Filter Controls */}
-            <div className="p-6 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 border-b">
-              <div className="flex gap-4 mb-4">
-                <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    placeholder="Search medicines, uses, or symptoms..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-white/80 backdrop-blur-sm border-purple-200 focus:border-purple-400"
-                  />
-                </div>
-                <div className="relative">
-                  <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <select
-                    value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="pl-10 pr-8 py-2 border border-purple-200 rounded-md bg-white/80 backdrop-blur-sm focus:border-purple-400 appearance-none"
-                  >
-                    {categories.map(category => (
-                      <option key={category} value={category}>
-                        {category === 'all' ? 'All Categories' : category}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex justify-between items-center">
-                <div className="text-sm text-gray-600">
-                  Showing {displayedMedicines.length} of {filteredMedicines.length} medicines
-                </div>
-                <div className="flex gap-3">
-                  {!showAllMedicines && filteredMedicines.length > 10 && (
-                    <Button
-                      onClick={() => setShowAllMedicines(true)}
-                      className="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white"
+            {/* Search and Filter Controls - Improved Spacing */}
+            <div className="p-8 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 border-b">
+              <div className="max-w-4xl mx-auto">
+                <div className="flex gap-4 mb-6">
+                  {/* Smaller Search Bar */}
+                  <div className="w-80 relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Input
+                      placeholder="Search medicines, uses, or symptoms..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10 bg-white/80 backdrop-blur-sm border-purple-200 focus:border-purple-400"
+                    />
+                  </div>
+                  {/* Category Filter */}
+                  <div className="relative w-48">
+                    <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <select
+                      value={selectedCategory}
+                      onChange={(e) => setSelectedCategory(e.target.value)}
+                      className="w-full pl-10 pr-8 py-2 border border-purple-200 rounded-md bg-white/80 backdrop-blur-sm focus:border-purple-400 appearance-none"
                     >
-                      <Eye className="h-4 w-4 mr-2" />
-                      Show All {filteredMedicines.length} Medicines
-                    </Button>
-                  )}
-                  {showAllMedicines && (
-                    <Button
-                      onClick={() => setShowAllMedicines(false)}
-                      variant="outline"
-                      className="border-purple-200 text-purple-600 hover:bg-purple-50"
-                    >
-                      Show Less
-                    </Button>
-                  )}
+                      {categories.map(category => (
+                        <option key={category} value={category}>
+                          {category === 'all' ? 'All Categories' : category}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                  </div>
+                  {/* Start Quiz Button */}
                   <Button
                     onClick={startQuiz}
-                    className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white"
+                    className="ml-auto bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-lg"
                   >
                     <Award className="h-4 w-4 mr-2" />
                     Start Quiz
                   </Button>
                 </div>
+
+                {/* Status Info */}
+                <div className="text-sm text-gray-600">
+                  Showing {displayedMedicines.length} medicines
+                  {searchTerm || selectedCategory !== 'all' ? ` (filtered from ${filteredMedicines.length})` : ''}
+                </div>
               </div>
             </div>
 
-            {/* Medicines Grid with Proper Scrolling */}
-            <ScrollArea className="flex-1 p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {displayedMedicines.map((medicine) => (
-                  <Card
-                    key={medicine.id}
-                    className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-105 bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-gray-900 border-purple-100 dark:border-purple-800"
-                    onClick={() => setSelectedMedicine(medicine)}
-                  >
-                    <CardContent className="p-6">
-                      <div className="flex justify-between items-start mb-3">
-                        <div className="flex-1">
-                          <h3 className="font-bold text-lg text-purple-900 dark:text-purple-100 group-hover:text-purple-600 transition-colors">
-                            {medicine.name}
-                          </h3>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">
-                            {medicine.commonName}
-                          </p>
-                        </div>
-                      </div>
+            {/* Medicines Grid with Better Container */}
+            <div className="flex-1 overflow-hidden">
+              <ScrollArea className="h-full">
+                <div className="p-8">
+                  <div className="max-w-7xl mx-auto">
+                    {/* Medicine Cards Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+                      {displayedMedicines.map((medicine) => (
+                        <Card
+                          key={medicine.id}
+                          className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-105 bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-gray-900 border-purple-100 dark:border-purple-800"
+                          onClick={() => setSelectedMedicine(medicine)}
+                        >
+                          <CardContent className="p-6">
+                            <div className="flex justify-between items-start mb-3">
+                              <div className="flex-1">
+                                <h3 className="font-bold text-lg text-purple-900 dark:text-purple-100 group-hover:text-purple-600 transition-colors">
+                                  {medicine.name}
+                                </h3>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                  {medicine.commonName}
+                                </p>
+                              </div>
+                            </div>
 
-                      <div className="space-y-2 mb-4">
-                        <div className="flex items-center gap-2">
-                          <Pill className="h-4 w-4 text-purple-500" />
-                          <span className="text-sm text-gray-700 dark:text-gray-300">
-                            {medicine.category}
-                          </span>
-                        </div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
-                          {medicine.primaryUses[0]}
+                            <div className="space-y-2 mb-4">
+                              <div className="flex items-center gap-2">
+                                <Pill className="h-4 w-4 text-purple-500" />
+                                <span className="text-sm text-gray-700 dark:text-gray-300">
+                                  {medicine.category}
+                                </span>
+                              </div>
+                              <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                                {medicine.primaryUses[0]}
+                              </p>
+                            </div>
+
+                            <div className="flex justify-between items-center">
+                              <div className="text-xs text-gray-500">
+                                {medicine.potency} • {medicine.frequency}
+                              </div>
+                              <ChevronRight className="h-4 w-4 text-purple-400 group-hover:text-purple-600 transition-colors" />
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+
+                    {/* Pagination-Style "See More" Button */}
+                    {hasMoreMedicines && (
+                      <div className="flex justify-center py-8">
+                        <Button
+                          onClick={loadMoreMedicines}
+                          className="premium-pagination-button bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white px-8 py-3 rounded-full shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-105"
+                        >
+                          <ChevronDown className="h-5 w-5 mr-2" />
+                          See More Medicines
+                          <ChevronDown className="h-5 w-5 ml-2" />
+                        </Button>
+                      </div>
+                    )}
+
+                    {displayedMedicines.length === 0 && (
+                      <div className="text-center py-12">
+                        <BookOpen className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+                          No medicines found
+                        </h3>
+                        <p className="text-gray-600 dark:text-gray-400">
+                          Try adjusting your search terms or filters
                         </p>
                       </div>
-
-                      <div className="flex justify-between items-center">
-                        <div className="text-xs text-gray-500">
-                          {medicine.potency} • {medicine.frequency}
-                        </div>
-                        <ChevronRight className="h-4 w-4 text-purple-400 group-hover:text-purple-600 transition-colors" />
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-
-              {displayedMedicines.length === 0 && (
-                <div className="text-center py-12">
-                  <BookOpen className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-                    No medicines found
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Try adjusting your search terms or filters
-                  </p>
+                    )}
+                  </div>
                 </div>
-              )}
-            </ScrollArea>
+              </ScrollArea>
+            </div>
           </div>
         )}
 
