@@ -246,11 +246,8 @@ export default function Inventory() {
       <div className="fixed right-6 bottom-6 z-10">
         <button 
           onClick={() => setIsAIDoctorModalOpen(true)}
-          className="premium-gradient-button premium-float-button chat-animation bg-gradient-to-r from-purple-700 to-purple-500 hover:from-purple-800 hover:to-purple-600 text-white rounded-full p-3 shadow-lg transition-all duration-300 flex items-center justify-center w-14 h-14"
+          className="premium-gradient-button premium-float-button bg-gradient-to-r from-purple-700 to-purple-500 hover:from-purple-800 hover:to-purple-600 text-white rounded-full p-3 flex items-center justify-center w-14 h-14"
           aria-label="AI Doctor"
-          style={{ 
-            boxShadow: "0 8px 16px rgba(124, 58, 237, 0.3), 0 0 0 2px rgba(255, 255, 255, 0.1) inset"
-          }}
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
@@ -267,11 +264,8 @@ export default function Inventory() {
       <div className="fixed left-6 bottom-6 z-10">
         <button 
           onClick={() => setIsShareModalOpen(true)}
-          className="premium-gradient-button premium-float-button chat-animation bg-gradient-to-r from-purple-700 to-purple-500 hover:from-purple-800 hover:to-purple-600 text-white rounded-full p-3 shadow-lg transition-all duration-300 flex items-center justify-center w-14 h-14"
+          className="premium-gradient-button premium-float-button bg-gradient-to-r from-purple-700 to-purple-500 hover:from-purple-800 hover:to-purple-600 text-white rounded-full p-3 flex items-center justify-center w-14 h-14"
           aria-label="Family Access Sharing"
-          style={{ 
-            boxShadow: "0 8px 16px rgba(124, 58, 237, 0.3), 0 0 0 2px rgba(255, 255, 255, 0.1) inset"
-          }}
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-users">
             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
