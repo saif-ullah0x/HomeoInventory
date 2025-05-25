@@ -18,8 +18,11 @@ import {
   Sparkles, 
   Award,
   GraduationCap,
-  Pill
+  Pill,
+  X,
+  Home
 } from "lucide-react";
+import { Link } from "wouter";
 
 /**
  * Learning Page Component
@@ -345,25 +348,41 @@ export default function LearningPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900">
-      {/* Hero Header with Purple Gradient */}
+      {/* Hero Header with Purple Gradient and Close Button */}
       <div className="relative bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 p-8 shadow-xl">
         <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
         <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-indigo-500/20 animate-pulse"></div>
         
         <div className="relative z-10 max-w-7xl mx-auto">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm shadow-lg border border-white/30 animate-bounce">
-              <Brain className="h-10 w-10 text-white drop-shadow-lg" />
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm shadow-lg border border-white/30 animate-bounce">
+                <Brain className="h-10 w-10 text-white drop-shadow-lg" />
+              </div>
+              <div>
+                <h1 className="text-white text-4xl font-bold tracking-wide drop-shadow-lg">
+                  AI-Enhanced Remedy Learning Assistant
+                </h1>
+                <p className="text-white/90 text-lg flex items-center gap-2 mt-2">
+                  <Sparkles className="h-5 w-5" />
+                  Master homeopathic remedies with interactive learning and quizzes
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-white text-4xl font-bold tracking-wide drop-shadow-lg">
-                AI-Enhanced Remedy Learning Assistant
-              </h1>
-              <p className="text-white/90 text-lg flex items-center gap-2 mt-2">
-                <Sparkles className="h-5 w-5" />
-                Master homeopathic remedies with interactive learning and quizzes
-              </p>
-            </div>
+            
+            {/* Close Button to Return to Main App */}
+            <Link href="/">
+              <Button 
+                variant="ghost" 
+                size="lg"
+                className="text-white hover:bg-white/20 rounded-2xl border-2 border-white/30 backdrop-blur-md 
+                          transition-all duration-300 hover:scale-105 hover:shadow-2xl px-6 py-3 group
+                          bg-white/10 hover:bg-white/25"
+              >
+                <Home className="h-5 w-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
+                <span className="font-medium">Return to App</span>
+              </Button>
+            </Link>
           </div>
           
           {/* Statistics Cards */}
@@ -396,23 +415,55 @@ export default function LearningPage() {
       {/* Main Content Area */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs defaultValue="learn" value={activeTab} onValueChange={setActiveTab} className="w-full">
-          {/* Tab Navigation */}
-          <TabsList className="grid grid-cols-2 mb-8 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md shadow-xl border border-white/40 rounded-2xl p-1.5 mx-auto w-fit">
+          {/* Enhanced Tab Navigation with Purple Gradient and Glassy Effects */}
+          <TabsList className="grid grid-cols-2 mb-8 bg-gradient-to-r from-white/90 via-purple-50/80 to-white/90 
+                              dark:from-gray-800/90 dark:via-purple-900/30 dark:to-gray-800/90 
+                              backdrop-blur-xl shadow-2xl border-2 border-purple-200/50 dark:border-purple-600/30 
+                              rounded-3xl p-2 mx-auto w-fit relative overflow-hidden group">
+            {/* Animated background glow */}
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-400/20 via-indigo-400/20 to-purple-400/20 
+                           opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl"></div>
+            
             <TabsTrigger 
               value="learn" 
-              className="flex items-center gap-2 font-medium rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700 
-                        data-[state=active]:shadow-xl transition-all duration-300 hover:scale-[1.02] px-8 py-3"
+              className="flex items-center gap-3 font-semibold rounded-2xl relative z-10
+                        data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-indigo-600
+                        data-[state=active]:text-white data-[state=active]:shadow-2xl
+                        hover:bg-gradient-to-r hover:from-purple-100 hover:to-indigo-100
+                        dark:hover:from-purple-900/30 dark:hover:to-indigo-900/30
+                        transition-all duration-300 hover:scale-[1.05] px-8 py-4
+                        border-2 border-transparent data-[state=active]:border-white/30
+                        backdrop-blur-sm group/tab"
             >
-              <Book className="h-5 w-5" />
-              Learn Remedies
+              <div className="p-2 rounded-xl bg-white/20 data-[state=active]:bg-white/30 
+                             group-hover/tab:bg-white/30 transition-all duration-200">
+                <Book className="h-5 w-5 group-hover/tab:scale-110 transition-transform duration-200" />
+              </div>
+              <span className="text-lg">Learn Remedies</span>
+              {/* Subtle glow effect */}
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-500/0 via-purple-500/10 to-purple-500/0 
+                             opacity-0 group-hover/tab:opacity-100 transition-opacity duration-300"></div>
             </TabsTrigger>
+            
             <TabsTrigger 
               value="quiz" 
-              className="flex items-center gap-2 font-medium rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700 
-                        data-[state=active]:shadow-xl transition-all duration-300 hover:scale-[1.02] px-8 py-3"
+              className="flex items-center gap-3 font-semibold rounded-2xl relative z-10
+                        data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-500 data-[state=active]:to-purple-600
+                        data-[state=active]:text-white data-[state=active]:shadow-2xl
+                        hover:bg-gradient-to-r hover:from-indigo-100 hover:to-purple-100
+                        dark:hover:from-indigo-900/30 dark:hover:to-purple-900/30
+                        transition-all duration-300 hover:scale-[1.05] px-8 py-4
+                        border-2 border-transparent data-[state=active]:border-white/30
+                        backdrop-blur-sm group/tab"
             >
-              <Target className="h-5 w-5" />
-              Test Knowledge
+              <div className="p-2 rounded-xl bg-white/20 data-[state=active]:bg-white/30 
+                             group-hover/tab:bg-white/30 transition-all duration-200">
+                <Target className="h-5 w-5 group-hover/tab:scale-110 transition-transform duration-200" />
+              </div>
+              <span className="text-lg">Test Knowledge</span>
+              {/* Subtle glow effect */}
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-indigo-500/0 via-indigo-500/10 to-indigo-500/0 
+                             opacity-0 group-hover/tab:opacity-100 transition-opacity duration-300"></div>
             </TabsTrigger>
           </TabsList>
 
@@ -489,12 +540,15 @@ export default function LearningPage() {
                 <CardContent className="p-8 space-y-8">
                   <Button
                     onClick={() => setSelectedRemedy(null)}
-                    variant="outline"
-                    size="sm"
-                    className="hover:scale-105 transition-all duration-200"
+                    className="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 
+                              text-white shadow-xl rounded-2xl transition-all duration-300 hover:scale-105 
+                              hover:shadow-purple-500/30 border-2 border-white/20 backdrop-blur-sm
+                              relative overflow-hidden group px-6 py-3"
                   >
-                    <ArrowLeft className="h-4 w-4 mr-2" />
-                    Back to Remedy List
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 
+                                   -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                    <ArrowLeft className="h-4 w-4 mr-2 relative z-10 group-hover:-translate-x-1 transition-transform duration-200" />
+                    <span className="font-semibold relative z-10">Back to Remedy List</span>
                   </Button>
 
                   <div className="grid md:grid-cols-2 gap-8">
@@ -638,10 +692,18 @@ export default function LearningPage() {
                     onClick={startQuiz}
                     size="lg"
                     className="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 
-                              text-white shadow-xl rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl px-8 py-4"
+                              text-white shadow-2xl rounded-3xl transition-all duration-300 hover:scale-110 
+                              hover:shadow-purple-500/40 border-2 border-white/30 backdrop-blur-sm
+                              relative overflow-hidden group px-10 py-5 text-lg font-bold"
                   >
-                    <Target className="h-5 w-5 mr-2" />
-                    Start Learning Quiz
+                    {/* Shimmer effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/30 to-white/0 
+                                   -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                    {/* Pulsing glow */}
+                    <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-purple-400/50 to-indigo-400/50 
+                                   opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500"></div>
+                    <Target className="h-6 w-6 mr-3 relative z-10 group-hover:rotate-12 transition-transform duration-300" />
+                    <span className="relative z-10">Start Learning Quiz</span>
                   </Button>
                 </CardHeader>
               </Card>
