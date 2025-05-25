@@ -103,7 +103,7 @@ export default function AIDoctorModal({ isOpen, onClose }: AIDoctorModalProps) {
     setIsLoading(true);
     
     try {
-      // Send symptoms to our AI endpoint
+      // Use consolidated DeepSeek R1 API for Dr. Harmony (AI Doctor)
       const response = await fetch('/api/ai-doctor', {
         method: 'POST',
         headers: {

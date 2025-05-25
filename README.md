@@ -1,14 +1,23 @@
 # HomeoInvent - Homeopathic Medicine Inventory Manager
 
-HomeoInvent is an advanced offline-first homeopathic medicine learning and inventory management application that provides comprehensive health insights through intelligent medication tracking and user-centric wellness tools.
+HomeoInvent is an advanced offline-first homeopathic medicine learning and inventory management application that provides comprehensive health insights through intelligent medication tracking and user-centric wellness tools, powered by **DeepSeek R1 AI** for all intelligent features.
 
-## Features
+## 🚀 AI Features Powered by DeepSeek R1
+
+HomeoInvent now uses **DeepSeek R1 API** for ALL AI functionality, providing:
+
+- **🩺 AI Doctor (Dr. Harmony)**: Advanced symptom analysis and remedy suggestions
+- **🤖 AI Helper**: Intelligent inventory management and trend analysis  
+- **📚 Learning Assistant**: Dynamic quiz generation and educational content
+- **💬 Smart Chatbot**: Natural language conversations about homeopathy
+
+## ✨ Core Features
 
 - **Complete Inventory Management**: Track your homeopathic medicines with details like potency, company, location, and quantity
-- **AI-Powered Analysis**: Get remedy suggestions through intelligent symptom analysis with Dr. Harmony
+- **AI-Powered Analysis**: Get remedy suggestions through intelligent symptom analysis with Dr. Harmony (DeepSeek R1)
 - **Cloud Sharing**: Share your inventory with family members through secure share codes
 - **Offline-First Design**: Works without internet connection using local storage
-- **Enhanced Learning Assistant**: Master homeopathic remedies with our interactive learning system featuring compact design, glowing purple gradients, and smooth animations
+- **Enhanced Learning Assistant**: Master homeopathic remedies with AI-generated interactive quizzes
 - **Life Wisdom**: Daily wellness tips and quotes from various traditions
 - **Export Options**: Generate PDF and Excel reports of your inventory
 - **Responsive UI**: Beautiful interface optimized for all devices

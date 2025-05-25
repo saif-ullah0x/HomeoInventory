@@ -136,81 +136,44 @@ export default function AIHomeopathyChatbot({ isOpen, onClose }: AIChatbotProps)
     setIsLoading(true);
     
     try {
-      let response;
-      
-      // Route to appropriate endpoint based on message type
-      switch (messageType) {
-        case 'trend':
-          response = await fetch('/api/homeopathy-trends', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              query: currentInput,
-              userInventory: medicines.map(m => `${m.name} ${m.potency}`)
-            }),
-          });
-          break;
-          
-        case 'substitution':
-          response = await fetch('/api/remedy-substitutions', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              query: currentInput,
-              userInventory: medicines.map(m => `${m.name} ${m.potency}`)
-            }),
-          });
-          break;
-          
-        case 'dosage':
-          response = await fetch('/api/dosage-recommendations', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              query: currentInput,
-              userInventory: medicines.map(m => `${m.name} ${m.potency}`)
-            }),
-          });
-          break;
-          
-        default:
-          // Symptom matching or general AI doctor
-          response = await fetch('/api/ai-doctor', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              symptoms: currentInput,
-              userInventory: medicines.map(m => `${m.name} ${m.potency}`)
-            }),
-          });
-      }
+      // Use consolidated DeepSeek R1 API for all AI Helper functionality
+      const response = await fetch('/api/ai-helper', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          query: currentInput,
+          context: {
+            medicines: medicines,
+            recentUsage: [], // Enhanced with actual usage tracking if available
+            trends: [], // Enhanced with trend data if available
+            totalMedicines: medicines.length,
+            locations: Array.from(new Set(medicines.map(m => m.location))),
+            companies: Array.from(new Set(medicines.map(m => m.company))),
+            messageType: messageType // Pass message type for context
+          }
+        }),
+      });
       
       if (!response.ok) {
-        throw new Error('Failed to get AI response');
+        throw new Error('DeepSeek AI Helper service unavailable');
       }
       
       const data = await response.json();
       
-      // Process remedies with inventory check
-      const remediesWithInventoryCheck = data.remedies?.map((remedy: Remedy) => {
-        const matchingMedicine = medicines.find(m => 
-          m.name.toLowerCase().includes(remedy.name.toLowerCase()) ||
-          remedy.name.toLowerCase().includes(m.name.toLowerCase())
-        );
-        
-        return {
-          ...remedy,
-          inInventory: !!matchingMedicine,
-          storageLocation: matchingMedicine ? `${matchingMedicine.location}${matchingMedicine.subLocation ? ` - ${matchingMedicine.subLocation}` : ''}` : undefined
-        };
-      }) || [];
+      // Check if user's medicines are mentioned in recommendations
+      const remediesWithInventoryCheck = data.remedies?.map((remedy: Remedy) => ({
+        ...remedy,
+        inInventory: medicines.some(med => 
+          med.name.toLowerCase().includes(remedy.name.toLowerCase())
+        )
+      })) || [];
 
       const aiMessage: ChatMessage = {
         type: 'ai',
         content: data.response,
-        messageType,
+        messageType: data.actionType || messageType,
         remedies: remediesWithInventoryCheck,
-        trends: data.trends,
+        trends: data.suggestions || [],
         timestamp: new Date()
       };
       
