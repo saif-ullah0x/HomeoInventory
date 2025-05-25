@@ -316,9 +316,13 @@ export default function ShareModal({ isOpen, onClose }: ShareModalProps) {
                         readOnly
                         className="mr-2"
                       />
-                      <Button size="sm" onClick={copyShareLink} className="shrink-0">
-                        <Copy className="h-4 w-4" />
-                      </Button>
+                      <Button 
+                      size="sm" 
+                      onClick={copyShareLink} 
+                      className="shrink-0 bg-purple-100 hover:bg-purple-200 text-purple-700 dark:bg-purple-900/30 dark:hover:bg-purple-900/50 dark:text-purple-300"
+                    >
+                      <Copy className="h-4 w-4" />
+                    </Button>
                     </div>
                   </div>
                   

@@ -68,17 +68,17 @@ export default function InventoryControls({
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
       <div className="md:w-1/3">
         <div className="relative">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-purple-400" />
           <Input
             type="text"
             placeholder="Search medicines..."
-            className="pl-9 transition-all duration-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent hover:border-purple-300 glass-effect"
+            className="pl-10 py-6 rounded-xl bg-white/80 dark:bg-gray-900/50 border-purple-100/50 dark:border-purple-900/30 transition-all duration-300 focus:ring-2 focus:ring-purple-500/50 focus:border-transparent hover:border-purple-300 glass-effect text-gray-700 dark:text-gray-200"
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
             style={{
               boxShadow: searchTerm 
-                ? "0 0 15px rgba(168, 85, 247, 0.4)" 
-                : "0 0 5px rgba(168, 85, 247, 0.1)"
+                ? "0 0 20px rgba(168, 85, 247, 0.4)" 
+                : "0 0 10px rgba(168, 85, 247, 0.1)"
             }}
           />
         </div>
