@@ -38,16 +38,81 @@ The AI-Enhanced Remedy Learning Assistant is now a dedicated tab in your HomeoIn
 
 ## 🚀 How to Use
 
-### Accessing the Learning Assistant
+### Accessing the Learning Tab
 1. Click the **"Learn"** button in the app header (next to the AI Helper button)
-2. The learning assistant window will open in a tablet-friendly size
-3. Choose between **"Learn"** and **"Quiz"** tabs
+2. This opens a dedicated Learning tab, just like the Analytics tab
+3. Navigate seamlessly between **"Learn Remedies"** and **"Test Knowledge"** sections
 
 ### Learning Mode
-1. Enter a topic in the search box (e.g., "Arnica for bruises", "fever remedies", "digestive issues")
-2. Click **"Search"** or press Enter
-3. Review the comprehensive learning content generated specifically for your topic
-4. Study the key points and practical examples provided
+1. Use the search box to find specific remedies (e.g., "Arnica", "fever", "bruises")
+2. Filter by difficulty level: Beginner, Intermediate, or Advanced
+3. Click on any remedy card to view detailed information including:
+   - Primary uses and key symptoms
+   - Dosage, frequency, and potency guidelines
+   - Keynotes and characteristics from authentic sources
+   - Beautiful, easy-to-read layout with proper scrolling
+
+### Quiz Mode
+1. Click **"Test Knowledge"** tab to access the quiz system
+2. Start with **"Start Learning Quiz"** button
+3. Answer multiple-choice questions about remedy uses and characteristics
+4. Get immediate feedback with detailed explanations
+5. View your final score and performance analysis
+6. Retake quizzes to improve your knowledge
+
+## 🛠 Technical Implementation
+
+### File Structure
+- **Main Component**: `client/src/pages/learning.tsx`
+- **Navigation**: Integrated into existing app routing system
+- **Styling**: Uses app's purple gradient theme with glassy effects
+
+### Key Features Implemented
+- **Tab-Based Navigation**: Eliminates popup z-index issues
+- **Proper Scrolling**: Content areas have dedicated scroll regions
+- **Responsive Design**: Works on desktop, tablet, and mobile devices
+- **Search & Filter**: Real-time remedy filtering capabilities
+- **Quiz Engine**: Auto-generates questions from remedy database
+
+### Potential Issues & Solutions
+```typescript
+// Tab switching problems: Handled with proper state management
+const [activeTab, setActiveTab] = useState("learn");
+
+// Scrolling problems: Dedicated scroll areas
+<ScrollArea className="h-full">
+  <div className="p-6">{/* Content */}</div>
+</ScrollArea>
+
+// Content display issues: Responsive grid layout
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  {/* Remedy cards */}
+</div>
+```
+
+## 📚 Remedy Database
+
+The learning system includes 50+ authentic homeopathic remedies with comprehensive information:
+
+### Common Remedies Included
+- **Arnica Montana**: For bruises, trauma, and muscle soreness
+- **Belladonna**: For sudden fever, headaches, and inflammation
+- **Rhus Toxicodendron**: For joint stiffness and skin conditions
+- **Aconitum Napellus**: For sudden onset conditions and anxiety
+- **Chamomilla**: For teething, colic, and irritability
+- **Nux Vomica**: For digestive issues and overindulgence
+- **Pulsatilla**: For colds, infections, and changeable symptoms
+- **Apis Mellifica**: For allergic reactions and swelling
+- **Bryonia Alba**: For headaches, cough, and joint pain
+- **Calcarea Carbonica**: For constitutional treatment
+
+### Each Remedy Includes
+- Authentic uses and indications
+- Key symptoms and characteristics
+- Proper dosage and frequency guidelines
+- Potency recommendations
+- Keynotes from classical sources
+- Difficulty classification for learning progressionical examples provided
 
 ### Quiz Mode
 1. Enter a topic you want to be quizzed on
