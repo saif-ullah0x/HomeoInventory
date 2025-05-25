@@ -72,18 +72,20 @@ export default function InventoryControls({
           <Input
             type="text"
             placeholder="Search medicines..."
-            className="pl-9 transition-all duration-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent hover:border-purple-300 smooth-transition"
+            className="pl-9 transition-all duration-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent hover:border-purple-300 glass-effect"
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
             style={{
-              boxShadow: searchTerm ? "0 0 0 2px rgba(168, 85, 247, 0.2)" : "none"
+              boxShadow: searchTerm 
+                ? "0 0 15px rgba(168, 85, 247, 0.4)" 
+                : "0 0 5px rgba(168, 85, 247, 0.1)"
             }}
           />
         </div>
       </div>
       <div className="flex items-center gap-2 flex-wrap">
         <Select value={locationFilter} onValueChange={onLocationFilterChange}>
-          <SelectTrigger className="w-[140px]">
+          <SelectTrigger className="w-[140px] premium-glow glass-effect transition-all duration-300">
             <SelectValue placeholder="All Locations" />
           </SelectTrigger>
           <SelectContent>
@@ -97,7 +99,7 @@ export default function InventoryControls({
         </Select>
 
         <Select value={companyFilter} onValueChange={onCompanyFilterChange}>
-          <SelectTrigger className="w-[140px]">
+          <SelectTrigger className="w-[140px] premium-glow glass-effect transition-all duration-300">
             <SelectValue placeholder="All Companies" />
           </SelectTrigger>
           <SelectContent>
@@ -156,7 +158,7 @@ export default function InventoryControls({
         <Button 
           variant="outline"
           onClick={onImportClick} 
-          className="gap-2 premium-simple-button smooth-transition"
+          className="gap-2 premium-simple-button button-press premium-glow transition-all duration-300"
         >
           <FileDown className="h-4 w-4" />
           Import
@@ -164,7 +166,7 @@ export default function InventoryControls({
 
         <Button 
           onClick={onAddClick} 
-          className="gap-2 premium-gradient-button bg-gradient-to-r from-purple-700 to-purple-500 hover:from-purple-800 hover:to-purple-600 text-white border-0 premium-glow"
+          className="gap-2 premium-gradient-button bg-gradient-to-r from-purple-700 to-purple-500 hover:from-purple-800 hover:to-purple-600 text-white border-0 premium-glow button-press transition-all duration-300"
         >
           <Plus className="h-4 w-4" />
           Add
