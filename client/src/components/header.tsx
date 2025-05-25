@@ -1,15 +1,14 @@
 import * as React from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Sun, Moon, Brain, MessageCircle } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
 import AIHomeopathyChatbot from "@/components/ai-homeopathy-chatbot";
-import AIEnhancedLearningAssistantTopLayer from "@/components/ai-enhanced-learning-assistant-top-layer";
 
 export default function Header() {
   const { theme, setTheme } = useTheme();
+  const [location] = useLocation();
   const [showAIChatbot, setShowAIChatbot] = React.useState(false);
-  const [showLearningSystem, setShowLearningSystem] = React.useState(false);
 
   const toggleTheme = () => {
     // Simply toggle the theme - no animation needed
@@ -42,16 +41,19 @@ export default function Header() {
               <span className="hidden sm:inline font-medium">AI Helper</span>
             </Button>
 
-            {/* AI Learning Feature */}
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => setShowLearningSystem(true)}
-              className="premium-gradient-button bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white border-0 flex items-center space-x-1 premium-glow"
-            >
-              <Brain className="h-4 w-4" />
-              <span className="hidden sm:inline font-medium">Learn</span>
-            </Button>
+            {/* AI Learning Feature - Now as Tab Navigation */}
+            <Link href="/learning">
+              <Button 
+                variant="outline" 
+                size="sm"
+                className={`premium-gradient-button bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white border-0 flex items-center space-x-1 premium-glow ${
+                  location === '/learning' ? 'ring-2 ring-white/50' : ''
+                }`}
+              >
+                <Brain className="h-4 w-4" />
+                <span className="hidden sm:inline font-medium">Learn</span>
+              </Button>
+            </Link>
             
             <Button 
               variant="outline" 
@@ -74,9 +76,8 @@ export default function Header() {
         </div>
       </div>
 
-      {/* AI Learning Modals */}
+      {/* AI Chatbot Modal */}
       <AIHomeopathyChatbot isOpen={showAIChatbot} onClose={() => setShowAIChatbot(false)} />
-      <AIEnhancedLearningAssistantTopLayer isOpen={showLearningSystem} onClose={() => setShowLearningSystem(false)} />
     </header>
   );
 }

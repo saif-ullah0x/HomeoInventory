@@ -7,12 +7,14 @@ import Header from "@/components/header";
 import Footer from "@/components/footer";
 import Inventory from "@/pages/inventory";
 import Analytics from "@/pages/analytics";
+import Learning from "@/pages/learning";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Inventory} />
       <Route path="/analytics" component={Analytics} />
+      <Route path="/learning" component={Learning} />
       <Route component={NotFound} />
     </Switch>
   );
