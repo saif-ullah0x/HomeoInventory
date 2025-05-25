@@ -1063,7 +1063,7 @@ export default function LearningPage() {
       )}
 
       {/* Scroll to Top Button */}
-      <ScrollToTopButton />
+      <ScrollToTopButton containerSelector="[data-radix-scroll-area-viewport]" showThreshold={200} />
     </>
   );
 }
