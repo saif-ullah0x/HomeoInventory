@@ -212,7 +212,7 @@ export default function AIDoctorModal({ isOpen, onClose }: AIDoctorModalProps) {
         `}} />
         
         {/* Header */}
-        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
+        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white relative">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md">
               <span className="text-xl">🌿</span>
@@ -222,12 +222,12 @@ export default function AIDoctorModal({ isOpen, onClose }: AIDoctorModalProps) {
               <p className="text-xs text-purple-100">Homeopathic Assistant</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <Button
               variant="ghost"
               size="sm"
               onClick={clearChat}
-              className="text-white hover:bg-white/20"
+              className="text-white hover:bg-white/20 h-8 w-8 p-0"
             >
               <Trash2 className="h-4 w-4" />
             </Button>
@@ -236,7 +236,7 @@ export default function AIDoctorModal({ isOpen, onClose }: AIDoctorModalProps) {
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  className="text-white hover:bg-white/20"
+                  className="text-white hover:bg-white/20 h-8 w-8 p-0"
                 >
                   <Info className="h-4 w-4" />
                 </Button>
