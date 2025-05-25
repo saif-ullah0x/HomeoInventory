@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Book, Brain, BookOpen, Search, Lightbulb, Award, CheckCircle, X } from "lucide-react";
+import { Book, Brain, BookOpen, Search, Lightbulb, Award, CheckCircle, X, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,20 +10,21 @@ import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
+import { useNavigate } from "wouter";
 
 /**
- * Learning Page Component
+ * Learning Page Component - Enhanced UI/UX Version
  * 
  * This component provides a dedicated learning interface for homeopathic remedies
- * with comprehensive lessons and interactive quizzes. It's designed as a separate
- * tab to avoid popup z-index issues and provide better user experience.
+ * with comprehensive lessons and interactive quizzes in a visually appealing format.
  * 
- * Features:
- * - 50+ common homeopathic medicines with detailed information
- * - Interactive quiz system based on learned content
- * - Beautiful purple gradient design matching app theme
- * - Proper scrolling and content organization
- * - Smooth navigation between Learn and Quiz sections
+ * UI/UX Improvements:
+ * - Premium glassy card-based interface with subtle hover animations
+ * - Larger, glowing gradient buttons for better visibility and interaction
+ * - Improved tab navigation with smooth animations and visual indicators
+ * - Redesigned layout with better spacing and visual hierarchy
+ * - Cross button in top-right corner instead of "Return to App" button
+ * - Shadow overlay for better visual separation and focus
  */
 
 interface HomeopathicRemedy {
@@ -213,6 +214,7 @@ export default function LearningPage() {
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [quizStarted, setQuizStarted] = useState(false);
   const [activeRemedyId, setActiveRemedyId] = useState<number | null>(null);
+  const navigate = useNavigate();
 
   // Filter remedies based on search and difficulty
   const filteredRemedies = dummyRemedies.filter((remedy) => {
@@ -234,6 +236,11 @@ export default function LearningPage() {
   });
 
   const currentQuestion = filteredQuizQuestions[currentQuizIndex];
+  
+  // Handle navigating back to the main app without reloading
+  const handleClose = () => {
+    navigate('/');
+  };
   
   const handleStartQuiz = () => {
     setQuizStarted(true);
@@ -282,109 +289,122 @@ export default function LearningPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-gray-900 dark:to-purple-950 text-gray-800 dark:text-gray-100 pb-20">
-      {/* Header */}
-      <div className="py-6 border-b border-white/10 bg-white/30 dark:bg-gray-800/30 backdrop-blur-lg shadow-sm">
+    // Main container with a premium gradient background and improved styling
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-gray-900 dark:to-purple-950 text-gray-800 dark:text-gray-100">
+      {/* Dark overlay for added depth and focus - gives a premium feel */}
+      <div className="absolute inset-0 bg-black/5 dark:bg-black/30 backdrop-blur-[2px] pointer-events-none"></div>
+      
+      {/* Close button that appears in top-right corner for easy navigation */}
+      <Button 
+        variant="outline" 
+        size="icon"
+        onClick={handleClose}
+        className="absolute top-4 right-4 z-50 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+      >
+        <X className="h-5 w-5" />
+      </Button>
+
+      {/* Header with improved glassy effect */}
+      <div className="relative py-6 border-b border-white/20 bg-white/40 dark:bg-gray-800/40 backdrop-blur-xl shadow-lg z-10">
         <div className="max-w-7xl mx-auto flex justify-between items-center px-4 sm:px-6 lg:px-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-purple-800 dark:text-purple-300">
+          <h1 className="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-400 dark:to-indigo-400">
             <span className="inline-flex items-center">
-              <BookOpen className="mr-2 h-6 w-6 text-indigo-500" />
+              <div className="p-2 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 text-white shadow-lg mr-3">
+                <BookOpen className="h-6 w-6" />
+              </div>
               Homeopathic Learning Center
             </span>
           </h1>
-          <div className="flex items-center space-x-4">
-            <Badge variant="outline" className="bg-white/50 dark:bg-gray-800/50 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800 px-3 py-1 shadow-sm backdrop-blur-sm">
-              <Lightbulb className="w-4 h-4 mr-1 text-amber-500" />
-              Interactive Learning
+          <div>
+            <Badge variant="outline" className="bg-white/60 dark:bg-gray-800/60 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800 px-4 py-1.5 shadow-md backdrop-blur-md rounded-full">
+              <Lightbulb className="w-4 h-4 mr-2 text-amber-500" />
+              Interactive Learning Experience
             </Badge>
-            <Button 
-              variant="outline" 
-              onClick={() => window.location.href = '/'}
-              className="bg-white/70 dark:bg-gray-800/70 hover:bg-white dark:hover:bg-gray-700 border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 hover:text-purple-800 dark:hover:text-purple-200 px-4 py-2 rounded-full shadow-sm transition-all duration-200 hover:shadow-md"
-            >
-              <span className="mr-2">↩</span>
-              Return to App
-            </Button>
           </div>
         </div>
       </div>
 
-      {/* Main Content Area */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Main Content Area with improved layout and spacing */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs defaultValue="learn" value={activeTab} onValueChange={setActiveTab} className="w-full">
-          {/* Enhanced Tab List with Progress Bar */}
-          <div className="relative w-full max-w-[600px] mx-auto mb-8">
-            <TabsList className="flex h-[56px] w-full p-2 bg-white/90 dark:bg-gray-800/90 rounded-full shadow-md relative overflow-hidden">
-              {/* Progress indicator - shows at bottom of tabs */}
-              <div className="absolute bottom-0 left-0 right-0 h-2 bg-purple-100/50 dark:bg-purple-900/30 overflow-hidden">
-                <div className={`h-full bg-gradient-to-r from-purple-500 to-indigo-500 transition-all duration-500 ${
-                  activeTab === "learn" ? "w-1/2 translate-x-0" : "w-1/2 translate-x-full"
-                }`}></div>
-              </div>
-              
-              <TabsTrigger 
-                value="learn" 
-                className="flex items-center justify-center gap-3 font-semibold rounded-2xl relative z-10
-                          data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-indigo-600
-                          data-[state=active]:text-white data-[state=active]:shadow-2xl
-                          hover:bg-gradient-to-r hover:from-purple-100 hover:to-indigo-100
-                          dark:hover:from-purple-900/30 dark:hover:to-indigo-900/30
-                          transition-all duration-300 hover:scale-[1.03] px-6 py-5
-                          border-2 border-transparent data-[state=active]:border-white/30
-                          backdrop-blur-sm group/tab h-[48px] min-w-[150px]"
-              >
-                <div className="p-2 rounded-xl bg-white/20 data-[state=active]:bg-white/30 
-                               group-hover/tab:bg-white/30 transition-all duration-200 shadow-lg shadow-purple-500/20 group-data-[state=active]/tab:shadow-white/30">
-                  <Book className="h-5 w-5 group-hover/tab:scale-110 transition-transform duration-200" />
+          {/* Enhanced Tab List with Premium Styling */}
+          <div className="max-w-[700px] mx-auto mb-10">
+            <div className="p-2 rounded-2xl bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-purple-100/50 dark:border-purple-800/50 shadow-xl">
+              <TabsList className="grid grid-cols-2 w-full p-1.5 gap-2 bg-purple-50/50 dark:bg-gray-900/50 rounded-xl relative overflow-hidden">
+                {/* Progress indicator with glowing effect */}
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-400/20 to-indigo-400/20 dark:from-purple-900/30 dark:to-indigo-900/30">
+                  <div className={`h-full bg-gradient-to-r from-purple-500 to-indigo-500 shadow-[0_0_10px_rgba(168,85,247,0.5)] transition-all duration-500 ${
+                    activeTab === "learn" ? "w-1/2 translate-x-0" : "w-1/2 translate-x-full"
+                  }`}></div>
                 </div>
-                <span className="text-lg group-data-[state=active]/tab:font-bold">Learn Remedies</span>
-                {/* Enhanced glow effect */}
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-500/0 via-purple-500/10 to-purple-500/0 
-                               opacity-0 group-hover/tab:opacity-100 group-data-[state=active]/tab:opacity-100 
-                               transition-opacity duration-300 animate-pulse"></div>
-              </TabsTrigger>
-              
-              <TabsTrigger 
-                value="quiz" 
-                className="flex items-center justify-center gap-3 font-semibold rounded-2xl relative z-10
-                          data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-indigo-600
-                          data-[state=active]:text-white data-[state=active]:shadow-2xl
-                          hover:bg-gradient-to-r hover:from-purple-100 hover:to-indigo-100
-                          dark:hover:from-purple-900/30 dark:hover:to-indigo-900/30
-                          transition-all duration-300 hover:scale-[1.03] px-6 py-5
-                          border-2 border-transparent data-[state=active]:border-white/30
-                          backdrop-blur-sm group/tab h-[48px] min-w-[150px]"
-              >
-                <div className="p-2 rounded-xl bg-white/20 data-[state=active]:bg-white/30 
-                               group-hover/tab:bg-white/30 transition-all duration-200 shadow-lg shadow-purple-500/20 group-data-[state=active]/tab:shadow-white/30">
-                  <Brain className="h-5 w-5 group-hover/tab:scale-110 transition-transform duration-200" />
-                </div>
-                <span className="text-lg group-data-[state=active]/tab:font-bold">Test Knowledge</span>
-                {/* Enhanced glow effect */}
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-500/0 via-purple-500/10 to-purple-500/0 
-                               opacity-0 group-hover/tab:opacity-100 group-data-[state=active]/tab:opacity-100 
-                               transition-opacity duration-300 animate-pulse"></div>
-              </TabsTrigger>
-            </TabsList>
+                
+                {/* Learn Tab with enhanced premium styling */}
+                <TabsTrigger 
+                  value="learn" 
+                  className="relative z-10 flex items-center justify-center gap-3 font-semibold py-4 rounded-lg
+                            data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-indigo-600
+                            data-[state=active]:text-white data-[state=active]:shadow-[0_0_20px_rgba(168,85,247,0.4)]
+                            hover:bg-white/80 dark:hover:bg-gray-800/80
+                            transition-all duration-300 hover:scale-[1.02]
+                            border border-transparent data-[state=active]:border-white/30
+                            backdrop-blur-sm group/tab"
+                >
+                  <div className="p-2 rounded-lg bg-white/20 data-[state=active]:bg-white/30 
+                                 group-hover/tab:bg-white/30 transition-all duration-200 shadow-lg shadow-purple-500/10 group-data-[state=active]/tab:shadow-white/30">
+                    <Book className="h-5 w-5 group-hover/tab:scale-110 transition-transform duration-200" />
+                  </div>
+                  <span className="text-lg group-data-[state=active]/tab:font-bold">Learn Remedies</span>
+                  
+                  {/* Glowing effect on hover and active state */}
+                  <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500/0 via-purple-500/5 to-purple-500/0 
+                                 opacity-0 group-hover/tab:opacity-100 group-data-[state=active]/tab:opacity-100 
+                                 transition-opacity duration-300"></div>
+                </TabsTrigger>
+                
+                {/* Quiz Tab with matching premium styling */}
+                <TabsTrigger 
+                  value="quiz" 
+                  className="relative z-10 flex items-center justify-center gap-3 font-semibold py-4 rounded-lg
+                            data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-indigo-600
+                            data-[state=active]:text-white data-[state=active]:shadow-[0_0_20px_rgba(168,85,247,0.4)]
+                            hover:bg-white/80 dark:hover:bg-gray-800/80
+                            transition-all duration-300 hover:scale-[1.02]
+                            border border-transparent data-[state=active]:border-white/30
+                            backdrop-blur-sm group/tab"
+                >
+                  <div className="p-2 rounded-lg bg-white/20 data-[state=active]:bg-white/30 
+                                 group-hover/tab:bg-white/30 transition-all duration-200 shadow-lg shadow-purple-500/10 group-data-[state=active]/tab:shadow-white/30">
+                    <Brain className="h-5 w-5 group-hover/tab:scale-110 transition-transform duration-200" />
+                  </div>
+                  <span className="text-lg group-data-[state=active]/tab:font-bold">Test Knowledge</span>
+                  
+                  {/* Glowing effect on hover and active state */}
+                  <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500/0 via-purple-500/5 to-purple-500/0 
+                                 opacity-0 group-hover/tab:opacity-100 group-data-[state=active]/tab:opacity-100 
+                                 transition-opacity duration-300"></div>
+                </TabsTrigger>
+              </TabsList>
+            </div>
           </div>
 
-          {/* Learn Content */}
+          {/* Learn Content with improved card-based layout */}
           <TabsContent value="learn" className="outline-none">
-            <Card className="mb-8 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl shadow-xl border border-white/50 rounded-2xl">
-              <CardContent className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Card className="mb-8 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl shadow-xl border border-purple-100/50 dark:border-purple-800/50 rounded-2xl overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-indigo-500/5 dark:from-purple-500/10 dark:to-indigo-500/10 pointer-events-none"></div>
+              <CardContent className="p-6 relative">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <Label htmlFor="search" className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
                       🔍 Search Remedies
                     </Label>
                     <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-purple-400" />
                       <Input
                         id="search"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         placeholder="Search by name, condition, or symptoms..."
-                        className="pl-10 bg-white/80 dark:bg-gray-700/80 backdrop-blur-md border-purple-200 focus:border-purple-400 
+                        className="pl-10 bg-white/90 dark:bg-gray-700/90 backdrop-blur-md border-purple-200 focus:border-purple-400 
                                   shadow-lg rounded-xl transition-all duration-300 focus:shadow-xl focus:scale-[1.01]"
                       />
                     </div>
@@ -394,11 +414,11 @@ export default function LearningPage() {
                       🎯 Difficulty Level
                     </Label>
                     <Select value={selectedDifficulty} onValueChange={setSelectedDifficulty}>
-                      <SelectTrigger className="bg-white/80 dark:bg-gray-700/80 backdrop-blur-md border-purple-200 focus:border-purple-400 
+                      <SelectTrigger className="bg-white/90 dark:bg-gray-700/90 backdrop-blur-md border-purple-200 focus:border-purple-400 
                                                 shadow-lg rounded-xl transition-all duration-300 focus:shadow-xl focus:scale-[1.01]">
                         <SelectValue placeholder="Select difficulty" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl border-purple-200 dark:border-purple-800">
                         <SelectItem value="all">All Levels</SelectItem>
                         <SelectItem value="Beginner">Beginner</SelectItem>
                         <SelectItem value="Intermediate">Intermediate</SelectItem>
@@ -410,31 +430,40 @@ export default function LearningPage() {
               </CardContent>
             </Card>
 
+            {/* Enhanced remedy cards with premium hover effects */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredRemedies.length > 0 ? (
                 filteredRemedies.map((remedy) => (
                   <Card 
                     key={remedy.id} 
                     className={`transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] cursor-pointer 
-                               backdrop-blur-lg border border-white/30 dark:border-purple-900/30
+                               backdrop-blur-lg border border-purple-100/50 dark:border-purple-800/50 relative overflow-hidden
                                ${activeRemedyId === remedy.id 
-                                 ? 'bg-gradient-to-br from-purple-100 to-indigo-100 dark:from-purple-900/60 dark:to-indigo-900/60 shadow-2xl'
+                                 ? 'bg-gradient-to-br from-purple-50/90 to-indigo-50/90 dark:from-purple-900/80 dark:to-indigo-900/80 shadow-[0_10px_30px_-5px_rgba(139,92,246,0.3)]'
                                  : 'bg-white/80 dark:bg-gray-800/80 shadow-xl'}`}
                     onClick={() => setActiveRemedyId(activeRemedyId === remedy.id ? null : remedy.id)}
                   >
-                    <CardContent className="p-6">
+                    {/* Premium gradient overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-indigo-500/5 dark:from-purple-500/10 dark:to-indigo-500/10 pointer-events-none"></div>
+                    
+                    {/* Glowing border effect on active state */}
+                    {activeRemedyId === remedy.id && (
+                      <div className="absolute inset-0 border-2 border-purple-400/30 dark:border-purple-400/20 rounded-lg"></div>
+                    )}
+                    
+                    <CardContent className="p-6 relative">
                       <div className="flex justify-between items-start mb-4">
                         <div>
-                          <h3 className="text-xl font-bold text-purple-800 dark:text-purple-300">{remedy.name}</h3>
+                          <h3 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-indigo-700 dark:from-purple-400 dark:to-indigo-400">{remedy.name}</h3>
                           <p className="text-sm text-gray-600 dark:text-gray-400 italic">{remedy.commonName}</p>
                         </div>
                         <Badge className={`${
                           remedy.difficulty === 'Beginner' 
-                            ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' 
+                            ? 'bg-green-100/80 text-green-800 dark:bg-green-900/40 dark:text-green-300 border border-green-200 dark:border-green-800/50' 
                             : remedy.difficulty === 'Intermediate'
-                            ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300'
-                            : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
-                        }`}>
+                            ? 'bg-yellow-100/80 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-800/50'
+                            : 'bg-red-100/80 text-red-800 dark:bg-red-900/40 dark:text-red-300 border border-red-200 dark:border-red-800/50'
+                        } shadow-sm backdrop-blur-sm`}>
                           {remedy.difficulty}
                         </Badge>
                       </div>
@@ -447,14 +476,14 @@ export default function LearningPage() {
                         
                         <div>
                           <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Common Uses</h4>
-                          <div className="flex flex-wrap gap-1 mt-1">
+                          <div className="flex flex-wrap gap-1.5 mt-2">
                             {remedy.uses.slice(0, 3).map((use, index) => (
-                              <Badge key={index} variant="outline" className="bg-purple-50 dark:bg-purple-900/20 text-xs">
+                              <Badge key={index} variant="outline" className="bg-purple-50/80 dark:bg-purple-900/30 text-xs border-purple-200/80 dark:border-purple-800/50 shadow-sm backdrop-blur-sm">
                                 {use}
                               </Badge>
                             ))}
                             {remedy.uses.length > 3 && (
-                              <Badge variant="outline" className="bg-purple-50 dark:bg-purple-900/20 text-xs">
+                              <Badge variant="outline" className="bg-purple-50/80 dark:bg-purple-900/30 text-xs border-purple-200/80 dark:border-purple-800/50 shadow-sm backdrop-blur-sm">
                                 +{remedy.uses.length - 3} more
                               </Badge>
                             )}
@@ -463,11 +492,11 @@ export default function LearningPage() {
                         
                         {activeRemedyId === remedy.id && (
                           <div className="mt-4 space-y-4 animate-fadeIn">
-                            <Separator className="my-4 bg-purple-200/50 dark:bg-purple-700/30" />
+                            <Separator className="my-4 bg-gradient-to-r from-purple-200/30 via-purple-400/30 to-purple-200/30 dark:from-purple-800/30 dark:via-purple-600/30 dark:to-purple-800/30" />
                             
                             <div>
                               <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Description</h4>
-                              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{remedy.description}</p>
+                              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 leading-relaxed">{remedy.description}</p>
                             </div>
                             
                             <div>
@@ -506,7 +535,7 @@ export default function LearningPage() {
                 ))
               ) : (
                 <div className="col-span-3 text-center py-12">
-                  <div className="mx-auto w-16 h-16 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mb-4">
+                  <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-purple-100 to-indigo-100 dark:from-purple-900/40 dark:to-indigo-900/40 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(168,85,247,0.2)]">
                     <Search className="h-8 w-8 text-purple-500" />
                   </div>
                   <h3 className="text-xl font-medium text-gray-700 dark:text-gray-300">No remedies found</h3>
@@ -516,12 +545,13 @@ export default function LearningPage() {
             </div>
           </TabsContent>
 
-          {/* Quiz Content */}
+          {/* Quiz Content with enhanced premium styling */}
           <TabsContent value="quiz" className="outline-none">
-            <Card className="mb-8 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl shadow-xl border border-white/50 rounded-2xl">
-              <CardContent className="p-6">
+            <Card className="mb-8 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl shadow-xl border border-purple-100/50 dark:border-purple-800/50 rounded-2xl overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-indigo-500/5 dark:from-purple-500/10 dark:to-indigo-500/10 pointer-events-none"></div>
+              <CardContent className="p-6 relative">
                 <div className="text-center mb-6">
-                  <h2 className="text-2xl font-bold text-purple-800 dark:text-purple-300 mb-2">Test Your Knowledge</h2>
+                  <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-indigo-700 dark:from-purple-400 dark:to-indigo-400">Test Your Knowledge</h2>
                   <p className="text-gray-600 dark:text-gray-400">Challenge yourself with questions about homeopathic remedies.</p>
                 </div>
                 
@@ -533,11 +563,11 @@ export default function LearningPage() {
                     setSelectedDifficulty(value);
                     resetQuiz();
                   }}>
-                    <SelectTrigger className="bg-white/80 dark:bg-gray-700/80 backdrop-blur-md border-purple-200 focus:border-purple-400 
+                    <SelectTrigger className="bg-white/90 dark:bg-gray-700/90 backdrop-blur-md border-purple-200 focus:border-purple-400 
                                               shadow-lg rounded-xl transition-all duration-300 focus:shadow-xl focus:scale-[1.01]">
                       <SelectValue placeholder="Select difficulty" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl border-purple-200 dark:border-purple-800">
                       <SelectItem value="all">All Levels</SelectItem>
                       <SelectItem value="Beginner">Beginner</SelectItem>
                       <SelectItem value="Intermediate">Intermediate</SelectItem>
@@ -549,12 +579,13 @@ export default function LearningPage() {
             </Card>
 
             {!quizStarted ? (
-              <Card className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl shadow-xl border border-white/50 rounded-2xl">
-                <CardContent className="p-8 text-center">
-                  <div className="w-20 h-20 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mx-auto mb-6">
-                    <Brain className="h-10 w-10 text-purple-600 dark:text-purple-400" />
+              <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl shadow-xl border border-purple-100/50 dark:border-purple-800/50 rounded-2xl overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-indigo-500/5 dark:from-purple-500/10 dark:to-indigo-500/10 pointer-events-none"></div>
+                <CardContent className="p-8 text-center relative">
+                  <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-100 to-indigo-100 dark:from-purple-900/40 dark:to-indigo-900/40 flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(168,85,247,0.2)]">
+                    <Brain className="h-12 w-12 text-purple-600 dark:text-purple-400" />
                   </div>
-                  <h3 className="text-2xl font-bold text-purple-800 dark:text-purple-300 mb-3">Ready to Start?</h3>
+                  <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-indigo-700 dark:from-purple-400 dark:to-indigo-400 mb-3">Ready to Start?</h3>
                   <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
                     This quiz contains {filteredQuizQuestions.length} questions to test your knowledge of homeopathic remedies.
                   </p>
@@ -562,9 +593,11 @@ export default function LearningPage() {
                     <Button 
                       onClick={handleStartQuiz}
                       className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700
-                                text-white px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all"
+                                text-white px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all
+                                border border-white/10 hover:border-white/20"
                     >
-                      Start Quiz
+                      <span className="mr-2">Start Quiz</span>
+                      <ArrowLeft className="h-4 w-4 rotate-180" />
                     </Button>
                   ) : (
                     <p className="text-amber-600 dark:text-amber-400 font-medium">
@@ -574,12 +607,13 @@ export default function LearningPage() {
                 </CardContent>
               </Card>
             ) : quizCompleted ? (
-              <Card className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl shadow-xl border border-white/50 rounded-2xl">
-                <CardContent className="p-8 text-center">
-                  <div className="w-20 h-20 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mx-auto mb-6">
-                    <Award className="h-10 w-10 text-purple-600 dark:text-purple-400" />
+              <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl shadow-xl border border-purple-100/50 dark:border-purple-800/50 rounded-2xl overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-indigo-500/5 dark:from-purple-500/10 dark:to-indigo-500/10 pointer-events-none"></div>
+                <CardContent className="p-8 text-center relative">
+                  <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-100 to-indigo-100 dark:from-purple-900/40 dark:to-indigo-900/40 flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(168,85,247,0.2)]">
+                    <Award className="h-12 w-12 text-purple-600 dark:text-purple-400" />
                   </div>
-                  <h3 className="text-2xl font-bold text-purple-800 dark:text-purple-300 mb-3">Quiz Completed!</h3>
+                  <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-indigo-700 dark:from-purple-400 dark:to-indigo-400 mb-3">Quiz Completed!</h3>
                   <p className="text-xl text-gray-700 dark:text-gray-300 mb-2">
                     Your Score: <span className="font-bold">{correctAnswers}</span> out of <span className="font-bold">{filteredQuizQuestions.length}</span>
                   </p>
@@ -590,31 +624,38 @@ export default function LearningPage() {
                       ? "Great job! You have a solid understanding of homeopathic remedies."
                       : "Keep learning! Review the remedies and try again."}
                   </p>
-                  <div className="mb-6">
-                    <Progress value={(correctAnswers / filteredQuizQuestions.length) * 100} className="h-3 bg-purple-100 dark:bg-purple-900/30" />
+                  <div className="mb-6 px-8">
+                    <div className="h-3 bg-purple-100/50 dark:bg-purple-900/30 rounded-full overflow-hidden shadow-inner">
+                      <div 
+                        className="h-full bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full shadow-[0_0_10px_rgba(168,85,247,0.5)]" 
+                        style={{ width: `${(correctAnswers / filteredQuizQuestions.length) * 100}%`, transition: 'width 1s ease-in-out' }}
+                      />
+                    </div>
                   </div>
                   <Button 
                     onClick={resetQuiz}
                     className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700
-                              text-white px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all"
+                              text-white px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all
+                              border border-white/10 hover:border-white/20"
                   >
                     Restart Quiz
                   </Button>
                 </CardContent>
               </Card>
             ) : (
-              <Card className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl shadow-xl border border-white/50 rounded-2xl">
-                <CardContent className="p-8">
+              <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl shadow-xl border border-purple-100/50 dark:border-purple-800/50 rounded-2xl overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-indigo-500/5 dark:from-purple-500/10 dark:to-indigo-500/10 pointer-events-none"></div>
+                <CardContent className="p-8 relative">
                   <div className="flex justify-between items-center mb-6">
-                    <Badge variant="outline" className="bg-purple-50 dark:bg-purple-900/20 px-3 py-1">
+                    <Badge variant="outline" className="bg-purple-50/80 dark:bg-purple-900/30 px-4 py-1.5 border-purple-200/80 dark:border-purple-800/50 shadow-md backdrop-blur-sm text-purple-700 dark:text-purple-300 rounded-full">
                       Question {currentQuizIndex + 1} of {filteredQuizQuestions.length}
                     </Badge>
-                    <Badge variant="outline" className={`px-3 py-1 ${
+                    <Badge variant="outline" className={`px-4 py-1.5 rounded-full shadow-md backdrop-blur-sm ${
                       currentQuestion.difficulty === 'Beginner' 
-                        ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800' 
+                        ? 'bg-green-50/80 text-green-700 border-green-200/80 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800/50' 
                         : currentQuestion.difficulty === 'Intermediate'
-                        ? 'bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-300 dark:border-yellow-800'
-                        : 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800'
+                        ? 'bg-yellow-50/80 text-yellow-700 border-yellow-200/80 dark:bg-yellow-900/30 dark:text-yellow-300 dark:border-yellow-800/50'
+                        : 'bg-red-50/80 text-red-700 border-red-200/80 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800/50'
                     }`}>
                       {currentQuestion.difficulty}
                     </Badge>
@@ -629,23 +670,23 @@ export default function LearningPage() {
                         onClick={() => !isAnswerSubmitted && setSelectedAnswer(index)}
                         className={`p-4 rounded-xl cursor-pointer transition-all
                                    ${selectedAnswer === index 
-                                     ? 'bg-purple-100 dark:bg-purple-900/30 border-2 border-purple-400 dark:border-purple-500'
-                                     : 'bg-white dark:bg-gray-700 border-2 border-transparent hover:border-purple-200 dark:hover:border-purple-800'}
+                                     ? 'bg-purple-100/80 dark:bg-purple-900/50 border-2 border-purple-400/70 dark:border-purple-500/70 shadow-[0_0_15px_rgba(168,85,247,0.2)]'
+                                     : 'bg-white/90 dark:bg-gray-700/90 border-2 border-transparent hover:border-purple-200/70 dark:hover:border-purple-800/70 hover:shadow-md'}
                                    ${isAnswerSubmitted && index === currentQuestion.correctAnswer
-                                     ? 'bg-green-100 dark:bg-green-900/30 border-2 border-green-400 dark:border-green-500'
+                                     ? 'bg-green-100/80 dark:bg-green-900/50 border-2 border-green-400/70 dark:border-green-500/70 shadow-[0_0_15px_rgba(74,222,128,0.2)]'
                                      : isAnswerSubmitted && selectedAnswer === index
-                                     ? 'bg-red-100 dark:bg-red-900/30 border-2 border-red-400 dark:border-red-500'
+                                     ? 'bg-red-100/80 dark:bg-red-900/50 border-2 border-red-400/70 dark:border-red-500/70 shadow-[0_0_15px_rgba(248,113,113,0.2)]'
                                      : ''}`}
                       >
                         <div className="flex items-center">
-                          <div className={`w-6 h-6 rounded-full flex items-center justify-center mr-3
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-3 transition-all
                                          ${selectedAnswer === index 
-                                           ? 'bg-purple-500 text-white' 
+                                           ? 'bg-gradient-to-br from-purple-500 to-indigo-600 text-white shadow-md' 
                                            : 'bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300'}
                                          ${isAnswerSubmitted && index === currentQuestion.correctAnswer
-                                           ? 'bg-green-500 text-white'
+                                           ? 'bg-gradient-to-br from-green-500 to-green-600 text-white shadow-md'
                                            : isAnswerSubmitted && selectedAnswer === index
-                                           ? 'bg-red-500 text-white'
+                                           ? 'bg-gradient-to-br from-red-500 to-red-600 text-white shadow-md'
                                            : ''}`}
                           >
                             {String.fromCharCode(65 + index)}
@@ -666,7 +707,7 @@ export default function LearningPage() {
                     <Button 
                       variant="outline"
                       onClick={resetQuiz}
-                      className="border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                      className="border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 px-4"
                     >
                       Exit Quiz
                     </Button>
@@ -676,7 +717,8 @@ export default function LearningPage() {
                         onClick={handleSubmitAnswer}
                         disabled={selectedAnswer === null}
                         className={`bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700
-                                  text-white shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all
+                                  text-white shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all px-6
+                                  border border-white/10 hover:border-white/20
                                   ${selectedAnswer === null ? 'opacity-50 cursor-not-allowed' : ''}`}
                       >
                         Submit Answer
@@ -685,7 +727,8 @@ export default function LearningPage() {
                       <Button 
                         onClick={handleNextQuestion}
                         className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700
-                                  text-white shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all"
+                                  text-white shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all px-6
+                                  border border-white/10 hover:border-white/20"
                       >
                         {currentQuizIndex < filteredQuizQuestions.length - 1 ? "Next Question" : "See Results"}
                       </Button>
