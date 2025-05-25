@@ -8,13 +8,11 @@ import Footer from "@/components/footer";
 import Inventory from "@/pages/inventory";
 import Analytics from "@/pages/analytics";
 import Learning from "@/pages/learning";
-import BasicApp from "@/components/basic-app";
 
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={BasicApp} />
-      <Route path="/inventory" component={Inventory} />
+      <Route path="/" component={Inventory} />
       <Route path="/analytics" component={Analytics} />
       <Route path="/learning" component={Learning} />
       <Route component={NotFound} />
@@ -26,7 +24,9 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <div className="min-h-screen flex flex-col">
+        <Header />
         <Router />
+        <Footer />
       </div>
       <Toaster />
     </QueryClientProvider>
