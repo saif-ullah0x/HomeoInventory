@@ -463,6 +463,7 @@ export default function LearningPage() {
                              transition-opacity duration-300 animate-pulse"></div>
             </TabsTrigger>
           </TabsList>
+          </div>
 
           {/* Learn Tab Content */}
           <TabsContent value="learn" className="mt-0">
