@@ -343,7 +343,7 @@ export default function AIEnhancedLearningAssistant({ isOpen, onClose }: AILearn
       <div 
         className="fixed inset-0 bg-black/30 backdrop-blur-sm"
         style={{ 
-          zIndex: 9999998,
+          zIndex: 2147483646,
           position: 'fixed', 
           top: 0, 
           left: 0, 
@@ -360,7 +360,7 @@ export default function AIEnhancedLearningAssistant({ isOpen, onClose }: AILearn
       <div 
         className="fixed inset-0 overflow-hidden"
         style={{ 
-          zIndex: 9999999, 
+          zIndex: 2147483647, 
           position: 'fixed', 
           top: 0, 
           left: 0, 
