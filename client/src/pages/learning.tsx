@@ -321,73 +321,43 @@ export default function LearningPage() {
       {/* Main Content Area */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs defaultValue="learn" value={activeTab} onValueChange={setActiveTab} className="w-full">
-          {/* Enhanced Tab List with Premium Glassy Buttons */}
+          {/* Enhanced Tab List with Premium Glassy Buttons - Simplified to match the design */}
           <div className="max-w-[700px] mx-auto mb-10">
-            <div className="rounded-2xl bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-purple-100/50 dark:border-purple-800/50 shadow-xl p-3">
-              <TabsList className="w-full grid grid-cols-2 gap-2 p-1 rounded-xl bg-purple-50/50 dark:bg-gray-900/50 relative">
-                {/* Animated progress indicator */}
-                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-purple-400/20 to-indigo-400/20">
-                  <div 
-                    className={`h-full bg-gradient-to-r from-purple-500 to-indigo-500 transition-all duration-500 ease-in-out ${
-                      activeTab === "learn" ? "w-1/2 translate-x-0" : "w-1/2 translate-x-full"
-                    }`}
-                    style={{boxShadow: "0 0 10px rgba(168,85,247,0.5)"}}
-                  ></div>
+            <TabsList className="flex rounded-full overflow-hidden bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border border-purple-100/50 dark:border-purple-800/50 shadow-xl p-0 h-[70px]">
+              {/* Learn Remedies Button */}
+              <TabsTrigger 
+                value="learn" 
+                className="flex-1 relative group overflow-hidden rounded-l-full py-4 h-full
+                          data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-indigo-600
+                          data-[state=active]:text-white data-[state=inactive]:text-gray-500 dark:data-[state=inactive]:text-gray-400
+                          data-[state=active]:shadow-lg
+                          transition-all duration-300 ease-out"
+              >
+                <div className="relative flex items-center justify-center gap-3">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-md bg-white/20 shadow-sm">
+                    <Book className="h-5 w-5" />
+                  </div>
+                  <span className="text-lg font-medium">Learn Remedies</span>
                 </div>
-                
-                {/* Learn Remedies Button */}
-                <TabsTrigger 
-                  value="learn" 
-                  className="relative group overflow-hidden rounded-lg py-4 px-4
-                            data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-indigo-600
-                            data-[state=active]:text-white data-[state=active]:shadow-lg
-                            data-[state=active]:border-[1px] data-[state=active]:border-white/30
-                            transition-all duration-300 ease-out hover:scale-[1.02]"
-                >
-                  {/* Glow effect */}
-                  <div className="absolute inset-0 data-[state=active]:opacity-100 opacity-0 group-hover:opacity-50 
-                               bg-gradient-to-r from-purple-400/20 via-indigo-400/40 to-purple-400/20 
-                               transition-opacity duration-300 rounded-lg"></div>
-                  
-                  {/* Glass morphism effect */}
-                  <div className="absolute inset-0 data-[state=active]:opacity-20 opacity-0 group-hover:opacity-10
-                               bg-white backdrop-blur-md rounded-lg transition-opacity duration-300"></div>
-                  
-                  <div className="relative flex items-center justify-center gap-3">
-                    <div className="p-2 rounded-lg bg-white/20 shadow-sm">
-                      <Book className="h-5 w-5 group-hover:scale-110 transition-transform duration-200" />
-                    </div>
-                    <span className="text-lg font-medium">Learn Remedies</span>
+              </TabsTrigger>
+              
+              {/* Test Knowledge Button */}
+              <TabsTrigger 
+                value="quiz" 
+                className="flex-1 relative group overflow-hidden rounded-r-full py-4 h-full
+                          data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-indigo-600
+                          data-[state=active]:text-white data-[state=inactive]:text-gray-500 dark:data-[state=inactive]:text-gray-400
+                          data-[state=active]:shadow-lg
+                          transition-all duration-300 ease-out"
+              >
+                <div className="relative flex items-center justify-center gap-3">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-md bg-white/20 shadow-sm">
+                    <Brain className="h-5 w-5" />
                   </div>
-                </TabsTrigger>
-                
-                {/* Test Knowledge Button */}
-                <TabsTrigger 
-                  value="quiz" 
-                  className="relative group overflow-hidden rounded-lg py-4 px-4
-                            data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-indigo-600
-                            data-[state=active]:text-white data-[state=active]:shadow-lg
-                            data-[state=active]:border-[1px] data-[state=active]:border-white/30
-                            transition-all duration-300 ease-out hover:scale-[1.02]"
-                >
-                  {/* Glow effect */}
-                  <div className="absolute inset-0 data-[state=active]:opacity-100 opacity-0 group-hover:opacity-50 
-                               bg-gradient-to-r from-purple-400/20 via-indigo-400/40 to-purple-400/20 
-                               transition-opacity duration-300 rounded-lg"></div>
-                  
-                  {/* Glass morphism effect */}
-                  <div className="absolute inset-0 data-[state=active]:opacity-20 opacity-0 group-hover:opacity-10
-                               bg-white backdrop-blur-md rounded-lg transition-opacity duration-300"></div>
-                  
-                  <div className="relative flex items-center justify-center gap-3">
-                    <div className="p-2 rounded-lg bg-white/20 shadow-sm">
-                      <Brain className="h-5 w-5 group-hover:scale-110 transition-transform duration-200" />
-                    </div>
-                    <span className="text-lg font-medium">Test Knowledge</span>
-                  </div>
-                </TabsTrigger>
-              </TabsList>
-            </div>
+                  <span className="text-lg font-medium">Test Knowledge</span>
+                </div>
+              </TabsTrigger>
+            </TabsList>
           </div>
 
           {/* Learn Content */}
