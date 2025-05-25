@@ -1,16 +1,17 @@
 /**
- * Learning Page - Full Tab Layout (Analytics Style)
- * This replaces the popup modal with a full page experience
- * Features:
- * - Full-screen layout like Analytics tab
- * - 150+ medicines with "Show More" functionality
- * - Tablet-sized centered cards for medicine details
- * - Purple gradient design with glassy effects
- * - Proper scrolling throughout
- * - No unnecessary difficulty levels
+ * Enhanced Learning Page - Updated with UI Improvements
+ * 
+ * Changes:
+ * - Centered and beautified "Learning Assistant" title
+ * - Removed "150 Medicines" text display
+ * - Added sticky search bar with glass effect that hides when scrolling down
+ * - Moved "Showing X medicines" text to bottom-right corner
+ * - Removed redundant "Start Quiz" button from Learn section
+ * - Maintained proper scrolling in medicine details popup
+ * - Kept "See More" button at bottom center for incremental loading
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -369,6 +370,11 @@ export default function LearningPage() {
   const [showAllMedicines, setShowAllMedicines] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   
+  // Scroll state for sticky search bar
+  const [searchBarVisible, setSearchBarVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  
   // Quiz state
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
@@ -376,9 +382,8 @@ export default function LearningPage() {
   const [score, setScore] = useState(0);
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([]);
-  const [searchBarVisible, setSearchBarVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-
+  const [quizStarted, setQuizStarted] = useState(false);
+  
   // Get unique categories for filtering
   const categories = Array.from(new Set(['all', ...ALL_MEDICINES.map(m => m.category)]));
   
