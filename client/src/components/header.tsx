@@ -4,11 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Sun, Moon, Brain, MessageCircle } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
 import AIHomeopathyChatbot from "@/components/ai-homeopathy-chatbot";
+import EnhancedLearningAssistant from "@/components/enhanced-learning-assistant";
 
 export default function Header() {
   const { theme, setTheme } = useTheme();
   const [location] = useLocation();
   const [showAIChatbot, setShowAIChatbot] = React.useState(false);
+  const [showLearningAssistant, setShowLearningAssistant] = React.useState(false);
 
   const toggleTheme = () => {
     // Simply toggle the theme - no animation needed
@@ -47,19 +49,16 @@ export default function Header() {
               <span className="hidden sm:inline font-medium">AI Helper</span>
             </Button>
 
-            {/* AI Learning Feature - Now as Tab Navigation */}
-            <Link href="/learning">
-              <Button 
-                variant="outline" 
-                size="sm"
-                className={`premium-gradient-button bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white border-0 flex items-center justify-center h-10 px-3 sm:px-4 rounded-lg premium-glow ${
-                  location === '/learning' ? 'ring-2 ring-white/50' : ''
-                }`}
-              >
-                <Brain className="h-4 w-4 sm:mr-1.5" />
-                <span className="hidden sm:inline font-medium">Learn</span>
-              </Button>
-            </Link>
+            {/* Enhanced Learning Assistant - Modal Based */}
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setShowLearningAssistant(true)}
+              className="premium-gradient-button bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white border-0 flex items-center justify-center h-10 px-3 sm:px-4 rounded-lg premium-glow"
+            >
+              <Brain className="h-4 w-4 sm:mr-1.5" />
+              <span className="hidden sm:inline font-medium">Learn</span>
+            </Button>
             
             <Button 
               variant="outline" 
@@ -84,6 +83,9 @@ export default function Header() {
 
       {/* AI Chatbot Modal */}
       <AIHomeopathyChatbot isOpen={showAIChatbot} onClose={() => setShowAIChatbot(false)} />
+      
+      {/* Enhanced Learning Assistant Modal */}
+      <EnhancedLearningAssistant isOpen={showLearningAssistant} onClose={() => setShowLearningAssistant(false)} />
     </header>
   );
 }
