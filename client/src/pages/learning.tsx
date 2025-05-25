@@ -572,20 +572,7 @@ export default function LearningPage() {
                     <span className="font-medium">{filteredMedicines.length}</span>
                     <span> medicines</span>
                   </div>
-                  {/* Start Quiz Button */}
-                  <Button
-                    onClick={startQuiz}
-                    className="ml-auto bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-lg"
-                  >
-                    <Award className="h-4 w-4 mr-2" />
-                    Start Quiz
-                  </Button>
-                </div>
-
-                {/* Status Info */}
-                <div className="text-sm text-gray-600">
-                  Showing {displayedMedicines.length} medicines
-                  {searchTerm || selectedCategory !== 'all' ? ` (filtered from ${filteredMedicines.length})` : ''}
+                  {/* Removed Start Quiz Button - redundant with Test Knowledge tab */}
                 </div>
               </div>
             </div>
@@ -646,11 +633,19 @@ export default function LearningPage() {
                           className="premium-pagination-button bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white px-6 py-2 rounded-full shadow-md hover:shadow-lg transform transition-all duration-300 hover:scale-105"
                         >
                           <ChevronDown className="h-4 w-4 mr-2" />
-                          See More Medicines
+                          See More
                           <ChevronDown className="h-4 w-4 ml-2" />
                         </Button>
                       </div>
                     )}
+
+                    {/* Medicine Count Status - Bottom Right */}
+                    <div className="flex justify-end py-2 pr-4">
+                      <div className="text-sm text-gray-500 dark:text-gray-400 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-full px-3 py-1 shadow-sm">
+                        Showing {displayedMedicines.length} medicines
+                        {searchTerm || selectedCategory !== 'all' ? ` (filtered from ${filteredMedicines.length})` : ''}
+                      </div>
+                    </div>
 
                     {displayedMedicines.length === 0 && (
                       <div className="text-center py-12">
