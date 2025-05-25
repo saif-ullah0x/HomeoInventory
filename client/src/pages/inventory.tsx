@@ -9,6 +9,7 @@ import DeleteModal from "@/components/delete-modal";
 import ImportModal from "@/components/import-modal";
 import ShareModal from "@/components/share-modal";
 import AIDoctorModal from "@/components/ai-doctor-modal";
+import { ScrollToTopButton } from "@/components/scroll-to-top-button";
 import { useStore } from "@/lib/store";
 import { useToast } from "@/hooks/use-toast";
 import * as XLSX from 'xlsx';
@@ -275,6 +276,9 @@ export default function Inventory() {
           </svg>
         </button>
       </div>
+
+      {/* Scroll to Top Button */}
+      <ScrollToTopButton />
     </>
   );
 }

@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent } from "@/components/ui/card";
+import { ScrollToTopButton } from "@/components/scroll-to-top-button";
 import { 
   Search, 
   BookOpen, 
@@ -871,34 +872,32 @@ export default function LearningPage() {
         <Dialog open={!!selectedMedicine} onOpenChange={() => setSelectedMedicine(null)}>
           <DialogContent className="sm:max-w-4xl max-h-[85vh] overflow-hidden [&>button]:hidden">
             <div className="flex flex-col h-full max-h-[85vh]">
-              {/* Medicine Header - More Compact */}
+              {/* Medicine Header - Optimized with Better Spacing */}
               <div className="py-4 px-5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white relative">
                 <div className="absolute inset-0 bg-black/10"></div>
-                <div className="relative">
+                <div className="relative pr-10">
                   <div className="flex justify-between items-start mb-2">
-                    <div>
+                    <div className="flex-1 pr-4">
                       <h2 className="text-xl font-bold mb-1">{selectedMedicine.name}</h2>
                       <p className="text-purple-100 text-sm">{selectedMedicine.commonName}</p>
                     </div>
-                    <div className="text-right">
-                      <Badge className="bg-white/20 text-white border-white/30 mb-1 text-xs">
-                        {selectedMedicine.category}
-                      </Badge>
-                      <div className="text-xs text-purple-100">
+                    <div className="text-right flex-shrink-0">
+                      <div className="text-xs text-purple-100 mb-1">
                         {selectedMedicine.potency} • {selectedMedicine.dosage}
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Pill className="h-4 w-4" />
-                    <span className="text-purple-100 text-xs">{selectedMedicine.category}</span>
+                    <Badge className="bg-white/20 text-white border-white/30 text-xs">
+                      {selectedMedicine.category}
+                    </Badge>
                   </div>
                 </div>
                 <Button
                   onClick={() => setSelectedMedicine(null)}
-                  className="absolute top-2 right-2 h-6 w-6 p-0 bg-white/20 hover:bg-white/30"
+                  className="absolute top-3 right-3 h-8 w-8 p-0 bg-white/20 hover:bg-white/30 rounded-full backdrop-blur-sm transition-all duration-200 hover:scale-110"
                 >
-                  ×
+                  <X className="h-4 w-4" />
                 </Button>
               </div>
 
@@ -1062,6 +1061,9 @@ export default function LearningPage() {
           </DialogContent>
         </Dialog>
       )}
+
+      {/* Scroll to Top Button */}
+      <ScrollToTopButton />
     </>
   );
 }
