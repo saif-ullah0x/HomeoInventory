@@ -29,7 +29,8 @@ import {
   Info,
   Trash2,
   TrendingUp,
-  MapPin
+  MapPin,
+  X
 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -181,7 +182,7 @@ export default function AIDoctorModal({ isOpen, onClose }: AIDoctorModalProps) {
   
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[450px] max-h-[90vh] h-[600px] flex flex-col p-0 rounded-xl overflow-hidden">
+      <DialogContent className="sm:max-w-[450px] max-h-[90vh] h-[600px] flex flex-col p-0 rounded-xl overflow-hidden [&>button]:hidden">
         <style dangerouslySetInnerHTML={{ __html: `
           @keyframes slideIn {
             from { transform: translateY(10px); opacity: 0; }
@@ -264,6 +265,14 @@ export default function AIDoctorModal({ isOpen, onClose }: AIDoctorModalProps) {
                 </AlertDialogAction>
               </AlertDialogContent>
             </AlertDialog>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClose}
+              className="text-white hover:bg-white/20 h-8 w-8 p-0"
+            >
+              <X className="h-4 w-4" />
+            </Button>
           </div>
         </div>
         
