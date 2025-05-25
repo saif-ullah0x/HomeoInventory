@@ -426,9 +426,7 @@ export default function ShareModal({ isOpen, onClose }: ShareModalProps) {
         </Tabs>
         
         <DialogFooter className="mt-4">
-          <Button variant="outline" onClick={onClose}>
-            Close
-          </Button>
+
         </DialogFooter>
       </DialogContent>
     </Dialog>

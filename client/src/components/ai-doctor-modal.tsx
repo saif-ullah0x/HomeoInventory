@@ -256,14 +256,6 @@ export default function AIDoctorModal({ isOpen, onClose }: AIDoctorModalProps) {
                 </AlertDialogAction>
               </AlertDialogContent>
             </AlertDialog>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={clearChat}
-              className="text-white hover:bg-white/20"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
           </div>
         </div>
         
@@ -423,15 +415,6 @@ export default function AIDoctorModal({ isOpen, onClose }: AIDoctorModalProps) {
         {/* Input Area */}
         <div className="p-4 bg-white dark:bg-gray-900 border-t border-purple-100 dark:border-purple-800">
           <div className="flex gap-2">
-            <Button
-              onClick={clearChat}
-              variant="outline"
-              size="icon"
-              className="rounded-full border-purple-200 dark:border-purple-700 hover:bg-purple-50 dark:hover:bg-purple-900/20 text-purple-500"
-              title="Clear conversation"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
             <Input
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
