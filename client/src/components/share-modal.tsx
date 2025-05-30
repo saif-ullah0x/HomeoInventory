@@ -67,66 +67,52 @@ export default function ShareModal({ isOpen, onClose }: ShareModalProps) {
     window.location.reload();
   };
   
-  // Generate a cloud-based share code
+  // Create a family-based shared inventory
   const generateShareCode = async () => {
     setIsLoading(true);
     setNetworkError(false);
     
     try {
-      // Create a cloud-based shared inventory
-      const response = await fetch('/api/shared-inventory', {
+      // Create a new family for sharing
+      const response = await fetch('/api/family/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          medicines: medicines,
-          name: inventoryName
+          memberName: inventoryName || 'Family Admin'
         }),
       });
       
       if (response.ok) {
         const data = await response.json();
-        const cloudCode = data.inventoryId;
+        const familyId = data.familyId;
         
-        // Use the store method to also save locally
-        shareMedicineDatabase();
-        
-        setShareCode(cloudCode);
+        setShareCode(familyId);
         setGenerateSuccess(true);
         
         toast({
-          title: "Share code generated",
-          description: `Share this code to give access to your ${medicines.length} medicines.`,
+          title: "Family ID created",
+          description: `Family ID: ${familyId}. Share this with family members for real-time access.`,
           duration: 5000
         });
       } else {
-        console.error('Failed to create cloud inventory:', await response.text());
+        console.error('Failed to create family inventory:', await response.text());
         setNetworkError(true);
         
-        // Fallback to local-only sharing
-        const localCode = shareMedicineDatabase();
-        setShareCode(localCode);
-        setGenerateSuccess(true);
-        
         toast({
-          title: "Local share code generated",
-          description: "Could not connect to cloud storage. Your inventory can only be shared on this device.",
+          title: "Failed to create family",
+          description: "Unable to create family inventory. Please try again.",
           variant: "destructive"
         });
       }
     } catch (error) {
-      console.error('Error creating shared inventory:', error);
+      console.error('Error creating family inventory:', error);
       setNetworkError(true);
       
-      // Fallback to local-only sharing
-      const localCode = shareMedicineDatabase();
-      setShareCode(localCode);
-      setGenerateSuccess(true);
-      
       toast({
-        title: "Local share code generated",
-        description: "Could not connect to cloud storage. Your inventory can only be shared on this device.",
+        title: "Connection error",
+        description: "Unable to create family inventory. Please check your connection and try again.",
         variant: "destructive"
       });
     } finally {
@@ -286,9 +272,9 @@ export default function ShareModal({ isOpen, onClose }: ShareModalProps) {
                       {isLoading ? (
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       ) : (
-                        <Cloud className="mr-2 h-4 w-4" />
+                        <Users className="mr-2 h-4 w-4" />
                       )}
-                      {isLoading ? "Creating Share Code..." : "Generate Share Code"}
+                      {isLoading ? "Creating Family ID..." : "Create Family ID"}
                     </Button>
                   </div>
                 </>
