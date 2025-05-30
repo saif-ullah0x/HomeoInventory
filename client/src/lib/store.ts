@@ -45,22 +45,15 @@ interface MedicineState {
   getUniqueCompanies: () => string[];
   exportData: () => { medicines: Medicine[], exportDate: string };
   
-  // Family inventory methods
-  setFamilyInfo: (familyId: string, memberName: string, memberId?: string) => void;
+  // Firebase Family Sharing Methods (Real-time sync only)
+  setFamilyId: (familyId: string) => void;
+  setMemberName: (memberName: string) => void;
   setMedicines: (medicines: Medicine[]) => void;
   clearFamily: () => void;
   initializeFamilySync: (familyId: string, memberName: string) => Promise<void>;
   loadFamilyInventory: (familyId: string) => Promise<void>;
-  
-  // Firebase real-time methods
-  enableFirebaseSync: () => void;
-  disableFirebaseSync: () => void;
   startFirebaseRealTimeSync: (familyId: string) => void;
   stopFirebaseRealTimeSync: () => void;
-  
-  // Legacy sharing methods (kept for compatibility)
-  shareMedicineDatabase: () => string;
-  loadSharedMedicineDatabase: (shareCode: string) => Promise<boolean>;
 }
 
 // Use Zustand with persist middleware for local storage
@@ -312,14 +305,16 @@ export const useStore = create<MedicineState>()(
         return false;
       },
 
-      // Family inventory methods
-      setFamilyInfo: (familyId, memberName, memberId) => {
-        // Generate memberId if not provided
-        const finalMemberId = memberId || Math.random().toString(36).substring(2, 10);
-        set({ familyId, memberName, memberId: finalMemberId });
+      // Firebase Family Sharing Methods
+      setFamilyId: (familyId: string) => {
+        set({ familyId });
       },
 
-      setMedicines: (medicines) => {
+      setMemberName: (memberName: string) => {
+        set({ memberName });
+      },
+
+      setMedicines: (medicines: Medicine[]) => {
         set({ 
           medicines, 
           lastUpdated: new Date().toISOString(),
@@ -328,119 +323,51 @@ export const useStore = create<MedicineState>()(
       },
 
       clearFamily: () => {
+        // Stop Firebase sync first
+        firebaseFamilyService.cleanup();
+        
         set({ 
           familyId: null, 
           memberName: null, 
           memberId: null,
+          isFirebaseEnabled: false,
           medicines: [] 
         });
       },
 
-      // Initialize WebSocket connection for real-time family sync
-      initializeFamilySync: async (familyId, memberName) => {
+      // Initialize Firebase real-time sync for family inventory
+      initializeFamilySync: async (familyId: string, memberName: string) => {
         try {
-          const memberId = Math.random().toString(36).substring(2, 10);
+          const memberId = `member-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
           
           // Update family info
-          get().setFamilyInfo(familyId, memberName, memberId);
+          set({ familyId, memberName, memberId, isFirebaseEnabled: true });
           
-          // Connect to WebSocket for real-time sync
-          const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-          const wsUrl = `${protocol}//${window.location.host}/ws`;
+          // Start Firebase real-time sync immediately
+          get().startFirebaseRealTimeSync(familyId);
           
-          const ws = new WebSocket(wsUrl);
-          
-          ws.onopen = () => {
-            console.log('Connected to family sync WebSocket');
-            // Join family for real-time updates
-            ws.send(JSON.stringify({
-              type: 'JOIN_FAMILY',
-              familyId,
-              memberId,
-              memberName
-            }));
-          };
-          
-          ws.onmessage = (event) => {
-            try {
-              const data = JSON.parse(event.data);
-              
-              switch (data.type) {
-                case 'FULL_INVENTORY':
-                  // Update local inventory with family data
-                  get().setMedicines(data.data.medicines || []);
-                  console.log('Family inventory synchronized');
-                  break;
-                  
-                case 'INVENTORY_UPDATE':
-                  // Handle real-time inventory updates
-                  console.log('Inventory update received:', data.data);
-                  // Reload family inventory to get latest data
-                  get().loadFamilyInventory(familyId);
-                  break;
-                  
-                case 'FAMILY_JOINED':
-                  console.log('Successfully joined family inventory');
-                  break;
-                  
-                default:
-                  console.log('Unknown WebSocket message:', data);
-              }
-            } catch (error) {
-              console.error('Error processing WebSocket message:', error);
-            }
-          };
-          
-          ws.onclose = () => {
-            console.log('Family sync WebSocket disconnected');
-            // Attempt to reconnect after 5 seconds
-            setTimeout(() => {
-              if (get().familyId) {
-                get().initializeFamilySync(get().familyId!, get().memberName!);
-              }
-            }, 5000);
-          };
-          
-          ws.onerror = (error) => {
-            console.error('WebSocket error:', error);
-          };
-          
+          console.log('Firebase family sync initialized for:', familyId);
         } catch (error) {
-          console.error('Error initializing family sync:', error);
+          console.error('Error initializing Firebase family sync:', error);
         }
       },
 
-      loadFamilyInventory: async (familyId) => {
+      loadFamilyInventory: async (familyId: string) => {
         try {
-          const response = await fetch(`/api/family/${familyId}/medicines`);
-          if (response.ok) {
-            const medicines = await response.json();
-            get().setMedicines(medicines);
-            console.log(`Loaded ${medicines.length} medicines from family inventory`);
-          } else {
-            console.error('Failed to load family inventory');
-          }
+          // Firebase real-time sync will automatically load the inventory
+          // This method is kept for compatibility but Firebase handles loading
+          console.log('Loading family inventory from Firebase:', familyId);
         } catch (error) {
           console.error('Error loading family inventory:', error);
         }
       },
 
-      // Firebase real-time sync methods
-      enableFirebaseSync: () => {
-        set({ isFirebaseEnabled: true });
-        console.log('Firebase real-time sync enabled');
-      },
-
-      disableFirebaseSync: () => {
-        get().stopFirebaseRealTimeSync();
-        set({ isFirebaseEnabled: false });
-        console.log('Firebase real-time sync disabled');
-      },
-
-      startFirebaseRealTimeSync: (familyId) => {
+      startFirebaseRealTimeSync: (familyId: string) => {
         const state = get();
-        if (!state.isFirebaseEnabled) {
-          console.log('Firebase sync not enabled, skipping real-time sync');
+        
+        // Check if Firebase is configured
+        if (!firebaseFamilyService.isConfigured()) {
+          console.warn('Firebase not configured, real-time sync disabled');
           return;
         }
 
