@@ -9,18 +9,22 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { useStore } from "@/lib/store";
 import { Users, Plus, UserPlus, Home } from "lucide-react";
 
 interface FamilySetupProps {
-  onFamilySetup: (familyId: string, memberName: string) => void;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-export default function FamilySetup({ onFamilySetup }: FamilySetupProps) {
+export default function FamilySetup({ isOpen, onClose }: FamilySetupProps) {
   const [memberName, setMemberName] = useState("");
   const [familyId, setFamilyId] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { setFamilyInfo, initializeFamilySync, loadFamilyInventory } = useStore();
 
   const createFamily = async () => {
     if (!memberName.trim()) {
@@ -46,12 +50,21 @@ export default function FamilySetup({ onFamilySetup }: FamilySetupProps) {
 
       const data = await response.json();
       
+      // Set family info in store for future sync
+      setFamilyInfo(data.familyId, memberName.trim());
+      
+      // Initialize real-time sync with family
+      await initializeFamilySync(data.familyId, memberName.trim());
+      
+      // Load family inventory (initially empty for new family)
+      await loadFamilyInventory(data.familyId);
+      
       toast({
         title: "Family Created!",
-        description: `Your family ID is: ${data.familyId}. Share this with family members.`,
+        description: `Your family ID is: ${data.familyId}. Share this with family members for inventory access.`,
       });
 
-      onFamilySetup(data.familyId, memberName.trim());
+      onClose();
     } catch (error) {
       console.error('Error creating family:', error);
       toast({
@@ -90,12 +103,21 @@ export default function FamilySetup({ onFamilySetup }: FamilySetupProps) {
         throw new Error(errorData.error || 'Failed to join family');
       }
 
+      // Set family info in store for future sync
+      setFamilyInfo(familyId.trim(), memberName.trim());
+      
+      // Initialize real-time sync with family
+      await initializeFamilySync(familyId.trim(), memberName.trim());
+      
+      // Load existing family inventory
+      await loadFamilyInventory(familyId.trim());
+
       toast({
         title: "Joined Family!",
-        description: "You have successfully joined the family inventory.",
+        description: "You have successfully joined the family inventory and can now see shared medicines.",
       });
 
-      onFamilySetup(familyId.trim(), memberName.trim());
+      onClose();
     } catch (error) {
       console.error('Error joining family:', error);
       toast({
@@ -109,8 +131,9 @@ export default function FamilySetup({ onFamilySetup }: FamilySetupProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 dark:from-purple-900/20 dark:to-indigo-900/20 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="sm:max-w-md">
+        <Card className="border-0 shadow-none">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center">
             <Users className="w-6 h-6 text-white" />

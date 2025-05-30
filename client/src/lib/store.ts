@@ -44,9 +44,11 @@ interface MedicineState {
   exportData: () => { medicines: Medicine[], exportDate: string };
   
   // Family inventory methods
-  setFamilyInfo: (familyId: string, memberName: string, memberId: string) => void;
+  setFamilyInfo: (familyId: string, memberName: string, memberId?: string) => void;
   setMedicines: (medicines: Medicine[]) => void;
   clearFamily: () => void;
+  initializeFamilySync: (familyId: string, memberName: string) => Promise<void>;
+  loadFamilyInventory: (familyId: string) => Promise<void>;
   
   // Legacy sharing methods (kept for compatibility)
   shareMedicineDatabase: () => string;
