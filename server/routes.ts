@@ -1,5 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import { WebSocketServer } from "ws";
 import { storage } from "./storage";
 import { 
   InsertMedicine, 
@@ -19,6 +20,8 @@ import {
 } from "./boericke-materia-medica";
 // DeepSeek R1 AI Service - Consolidated AI functionality
 import { deepSeekAI, type RemedySuggestion } from "./deepseek-ai-service";
+// Family Inventory Service for real-time sync
+import { familyInventoryService } from "./family-inventory-service";
 
 /**
  * AI Doctor (Dr. Harmony) - Now powered by DeepSeek R1 API
@@ -200,28 +203,213 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Add all your existing medicine CRUD endpoints here...
-  app.get("/api/medicines", async (req, res) => {
+  /**
+   * Family Management Endpoints
+   */
+  
+  // Create a new family
+  app.post("/api/family/create", async (req, res) => {
     try {
-      const allMedicines = await db.query.medicines.findMany({
-        orderBy: (medicines, { asc }) => [asc(medicines.name)]
-      });
-      res.json(allMedicines);
+      const { memberName } = req.body;
+      if (!memberName) {
+        return res.status(400).json({ error: "Member name is required" });
+      }
+
+      const familyId = await familyInventoryService.createFamily(memberName);
+      res.json({ familyId, message: "Family created successfully" });
     } catch (error) {
-      res.status(500).json({ error: "Failed to fetch medicines" });
+      console.error("Error creating family:", error);
+      res.status(500).json({ error: "Failed to create family" });
     }
   });
 
-  app.post("/api/medicines", async (req, res) => {
+  // Join existing family
+  app.post("/api/family/join", async (req, res) => {
     try {
-      const medicineData: InsertMedicine = req.body;
-      const [newMedicine] = await db.insert(medicines).values(medicineData).returning();
-      res.status(201).json(newMedicine);
+      const { familyId, memberName } = req.body;
+      if (!familyId || !memberName) {
+        return res.status(400).json({ error: "Family ID and member name are required" });
+      }
+
+      const success = await familyInventoryService.joinFamily(familyId, memberName);
+      if (success) {
+        res.json({ message: "Successfully joined family" });
+      } else {
+        res.status(404).json({ error: "Family not found" });
+      }
     } catch (error) {
-      res.status(500).json({ error: "Failed to create medicine" });
+      console.error("Error joining family:", error);
+      res.status(500).json({ error: "Failed to join family" });
+    }
+  });
+
+  /**
+   * Family Medicine Inventory Endpoints (Real-time synced)
+   */
+  
+  // Get family medicines
+  app.get("/api/family/:familyId/medicines", async (req, res) => {
+    try {
+      const { familyId } = req.params;
+      const medicines = await familyInventoryService.getFamilyInventory(familyId);
+      res.json(medicines);
+    } catch (error) {
+      console.error("Error fetching family medicines:", error);
+      res.status(500).json({ error: "Failed to fetch family medicines" });
+    }
+  });
+
+  // Add medicine to family inventory
+  app.post("/api/family/:familyId/medicines", async (req, res) => {
+    try {
+      const { familyId } = req.params;
+      const { updatedBy, ...medicineData } = req.body;
+      
+      if (!updatedBy) {
+        return res.status(400).json({ error: "updatedBy field is required" });
+      }
+
+      const newMedicine = await familyInventoryService.addMedicine(
+        familyId, 
+        medicineData, 
+        updatedBy
+      );
+
+      if (newMedicine) {
+        res.status(201).json(newMedicine);
+      } else {
+        res.status(500).json({ error: "Failed to add medicine" });
+      }
+    } catch (error) {
+      console.error("Error adding medicine to family:", error);
+      res.status(500).json({ error: "Failed to add medicine to family inventory" });
+    }
+  });
+
+  // Update medicine in family inventory
+  app.put("/api/family/:familyId/medicines/:medicineId", async (req, res) => {
+    try {
+      const { familyId, medicineId } = req.params;
+      const { updatedBy, ...updates } = req.body;
+      
+      if (!updatedBy) {
+        return res.status(400).json({ error: "updatedBy field is required" });
+      }
+
+      const updatedMedicine = await familyInventoryService.updateMedicine(
+        familyId, 
+        parseInt(medicineId), 
+        updates, 
+        updatedBy
+      );
+
+      if (updatedMedicine) {
+        res.json(updatedMedicine);
+      } else {
+        res.status(404).json({ error: "Medicine not found or access denied" });
+      }
+    } catch (error) {
+      console.error("Error updating family medicine:", error);
+      res.status(500).json({ error: "Failed to update medicine" });
+    }
+  });
+
+  // Delete medicine from family inventory
+  app.delete("/api/family/:familyId/medicines/:medicineId", async (req, res) => {
+    try {
+      const { familyId, medicineId } = req.params;
+      const { updatedBy } = req.body;
+      
+      if (!updatedBy) {
+        return res.status(400).json({ error: "updatedBy field is required" });
+      }
+
+      const success = await familyInventoryService.deleteMedicine(
+        familyId, 
+        parseInt(medicineId), 
+        updatedBy
+      );
+
+      if (success) {
+        res.json({ message: "Medicine deleted successfully" });
+      } else {
+        res.status(404).json({ error: "Medicine not found or access denied" });
+      }
+    } catch (error) {
+      console.error("Error deleting family medicine:", error);
+      res.status(500).json({ error: "Failed to delete medicine" });
+    }
+  });
+
+  // Get family members info
+  app.get("/api/family/:familyId/members", async (req, res) => {
+    try {
+      const { familyId } = req.params;
+      const members = familyInventoryService.getFamilyMembers(familyId);
+      const count = familyInventoryService.getFamilyMembersCount(familyId);
+      
+      res.json({ 
+        members, 
+        count,
+        familyId 
+      });
+    } catch (error) {
+      console.error("Error fetching family members:", error);
+      res.status(500).json({ error: "Failed to fetch family members" });
     }
   });
 
   const server = createServer(app);
+  
+  // Setup WebSocket server for real-time family inventory sync
+  const wss = new WebSocketServer({ server, path: '/ws' });
+  
+  wss.on('connection', (ws, req) => {
+    console.log('New WebSocket connection established');
+    
+    ws.on('message', async (message) => {
+      try {
+        const data = JSON.parse(message.toString());
+        
+        switch (data.type) {
+          case 'JOIN_FAMILY':
+            const { familyId, memberId, memberName } = data;
+            if (familyId && memberId) {
+              familyInventoryService.addFamilyMember(ws, familyId, memberId, memberName);
+              ws.send(JSON.stringify({
+                type: 'FAMILY_JOINED',
+                familyId,
+                message: 'Successfully joined family inventory sync'
+              }));
+            }
+            break;
+            
+          case 'PING':
+            ws.send(JSON.stringify({ type: 'PONG' }));
+            break;
+            
+          default:
+            console.log('Unknown WebSocket message type:', data.type);
+        }
+      } catch (error) {
+        console.error('Error processing WebSocket message:', error);
+        ws.send(JSON.stringify({
+          type: 'ERROR',
+          message: 'Failed to process message'
+        }));
+      }
+    });
+    
+    ws.on('close', () => {
+      familyInventoryService.removeFamilyMember(ws);
+      console.log('WebSocket connection closed');
+    });
+    
+    ws.on('error', (error) => {
+      console.error('WebSocket error:', error);
+      familyInventoryService.removeFamilyMember(ws);
+    });
+  });
+
   return server;
 }

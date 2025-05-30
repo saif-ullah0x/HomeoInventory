@@ -13,6 +13,9 @@ export const medicines = pgTable("medicines", {
   subLocation: text("sub_location"),
   quantity: integer("quantity").notNull().default(0),
   bottleSize: text("bottle_size"),
+  familyId: text("family_id").notNull(), // Links medicine to family
+  addedBy: text("added_by"), // Track who added the medicine
+  lastUpdated: timestamp("last_updated").defaultNow().notNull(),
 });
 
 // Schema for inserting and validating medicine data
@@ -22,6 +25,7 @@ export const insertMedicineSchema = createInsertSchema(medicines, {
   company: (schema) => schema.min(1, "Company is required"),
   location: (schema) => schema.min(1, "Location is required"),
   quantity: (schema) => schema.min(0, "Quantity cannot be negative"),
+  familyId: (schema) => schema.min(1, "Family ID is required"),
 });
 
 export const selectMedicineSchema = createSelectSchema(medicines);
