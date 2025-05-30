@@ -85,6 +85,41 @@ export const useStore = create<MedicineState>()(
           return { success: false, duplicate };
         }
         
+        const state = get();
+        
+        // If user is part of a family, sync to cloud database
+        if (state.familyId && state.memberName) {
+          try {
+            const response = await fetch(`/api/family/${state.familyId}/medicines`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                ...medicine,
+                addedBy: state.memberName
+              })
+            });
+            
+            if (response.ok) {
+              const newMedicine = await response.json();
+              
+              // Update local state with the medicine from server (includes proper ID)
+              set((currentState) => ({ 
+                medicines: [...currentState.medicines, newMedicine],
+                lastUpdated: new Date().toISOString(),
+                syncStatus: 'synced'
+              }));
+              
+              return { success: true };
+            } else {
+              throw new Error('Failed to add medicine to family inventory');
+            }
+          } catch (error) {
+            console.error('Error adding medicine to family:', error);
+            // Fall back to local storage if family sync fails
+          }
+        }
+        
+        // Local storage fallback (for non-family users or when sync fails)
         const newId = get().medicines.length > 0 
           ? Math.max(...get().medicines.map(m => m.id)) + 1 
           : 1;
@@ -100,7 +135,7 @@ export const useStore = create<MedicineState>()(
           syncStatus: 'unsaved'
         }));
         
-        // Save to IndexedDB
+        // Save to IndexedDB for local users
         await db.medicines.add(newMedicine);
         
         return { success: true };

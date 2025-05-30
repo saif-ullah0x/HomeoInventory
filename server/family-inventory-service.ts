@@ -254,15 +254,11 @@ class FamilyInventoryService {
     const familyId = nanoid(8); // Generate short family ID
     
     try {
-      // Create family record in database
-      await db.insert(sharedInventories).values({
-        inventory_id: familyId,
-        inventory_data: [],
-        name: `${memberName}'s Family`,
-        created_at: new Date(),
-        updated_at: new Date()
-      });
-
+      // For the new family system, we don't need to create a record in sharedInventories
+      // The family is identified by the familyId, and medicines are stored in the medicines table
+      // with the familyId as a foreign key
+      
+      console.log(`Created family ${familyId} for ${memberName}`);
       return familyId;
     } catch (error) {
       console.error('Error creating family:', error);
@@ -275,12 +271,14 @@ class FamilyInventoryService {
    */
   async joinFamily(familyId: string, memberName: string): Promise<boolean> {
     try {
-      // Check if family exists
-      const family = await db.query.sharedInventories.findFirst({
-        where: eq(sharedInventories.inventory_id, familyId)
-      });
-
-      return !!family;
+      // For the new family system, we validate the familyId format
+      // Any valid familyId (8 characters) can be joined, as families are created on-demand
+      if (familyId && familyId.length === 8) {
+        console.log(`${memberName} joined family ${familyId}`);
+        return true;
+      }
+      
+      return false;
     } catch (error) {
       console.error('Error joining family:', error);
       return false;
