@@ -28,6 +28,11 @@ interface MedicineState {
   syncStatus: 'synced' | 'unsaved' | 'error';
   lastUpdated: string;
   
+  // Family information
+  familyId: string | null;
+  memberName: string | null;
+  memberId: string | null;
+  
   // Actions
   addMedicine: (medicine: MedicineInput) => Promise<{ success: boolean; duplicate?: Medicine }>;
   updateMedicine: (id: number, medicine: MedicineInput) => void;
@@ -38,7 +43,12 @@ interface MedicineState {
   getUniqueCompanies: () => string[];
   exportData: () => { medicines: Medicine[], exportDate: string };
   
-  // Family sharing methods
+  // Family inventory methods
+  setFamilyInfo: (familyId: string, memberName: string, memberId: string) => void;
+  setMedicines: (medicines: Medicine[]) => void;
+  clearFamily: () => void;
+  
+  // Legacy sharing methods (kept for compatibility)
   shareMedicineDatabase: () => string;
   loadSharedMedicineDatabase: (shareCode: string) => Promise<boolean>;
 }
@@ -50,6 +60,11 @@ export const useStore = create<MedicineState>()(
       medicines: [],
       syncStatus: 'synced',
       lastUpdated: new Date().toISOString(),
+      
+      // Family information
+      familyId: null,
+      memberName: null,
+      memberId: null,
       
       findDuplicateMedicine: (medicine) => {
         // Check if there's a duplicate medicine (same name, potency, company)
@@ -180,6 +195,28 @@ export const useStore = create<MedicineState>()(
         }
         
         return false;
+      },
+
+      // Family inventory methods
+      setFamilyInfo: (familyId, memberName, memberId) => {
+        set({ familyId, memberName, memberId });
+      },
+
+      setMedicines: (medicines) => {
+        set({ 
+          medicines, 
+          lastUpdated: new Date().toISOString(),
+          syncStatus: 'synced'
+        });
+      },
+
+      clearFamily: () => {
+        set({ 
+          familyId: null, 
+          memberName: null, 
+          memberId: null,
+          medicines: [] 
+        });
       }
     }),
     {
