@@ -201,7 +201,9 @@ export const useStore = create<MedicineState>()(
 
       // Family inventory methods
       setFamilyInfo: (familyId, memberName, memberId) => {
-        set({ familyId, memberName, memberId });
+        // Generate memberId if not provided
+        const finalMemberId = memberId || Math.random().toString(36).substring(2, 10);
+        set({ familyId, memberName, memberId: finalMemberId });
       },
 
       setMedicines: (medicines) => {
@@ -219,6 +221,95 @@ export const useStore = create<MedicineState>()(
           memberId: null,
           medicines: [] 
         });
+      },
+
+      // Initialize WebSocket connection for real-time family sync
+      initializeFamilySync: async (familyId, memberName) => {
+        try {
+          const memberId = Math.random().toString(36).substring(2, 10);
+          
+          // Update family info
+          get().setFamilyInfo(familyId, memberName, memberId);
+          
+          // Connect to WebSocket for real-time sync
+          const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+          const wsUrl = `${protocol}//${window.location.host}/ws`;
+          
+          const ws = new WebSocket(wsUrl);
+          
+          ws.onopen = () => {
+            console.log('Connected to family sync WebSocket');
+            // Join family for real-time updates
+            ws.send(JSON.stringify({
+              type: 'JOIN_FAMILY',
+              familyId,
+              memberId,
+              memberName
+            }));
+          };
+          
+          ws.onmessage = (event) => {
+            try {
+              const data = JSON.parse(event.data);
+              
+              switch (data.type) {
+                case 'FULL_INVENTORY':
+                  // Update local inventory with family data
+                  get().setMedicines(data.data.medicines || []);
+                  console.log('Family inventory synchronized');
+                  break;
+                  
+                case 'INVENTORY_UPDATE':
+                  // Handle real-time inventory updates
+                  console.log('Inventory update received:', data.data);
+                  // Reload family inventory to get latest data
+                  get().loadFamilyInventory(familyId);
+                  break;
+                  
+                case 'FAMILY_JOINED':
+                  console.log('Successfully joined family inventory');
+                  break;
+                  
+                default:
+                  console.log('Unknown WebSocket message:', data);
+              }
+            } catch (error) {
+              console.error('Error processing WebSocket message:', error);
+            }
+          };
+          
+          ws.onclose = () => {
+            console.log('Family sync WebSocket disconnected');
+            // Attempt to reconnect after 5 seconds
+            setTimeout(() => {
+              if (get().familyId) {
+                get().initializeFamilySync(get().familyId!, get().memberName!);
+              }
+            }, 5000);
+          };
+          
+          ws.onerror = (error) => {
+            console.error('WebSocket error:', error);
+          };
+          
+        } catch (error) {
+          console.error('Error initializing family sync:', error);
+        }
+      },
+
+      loadFamilyInventory: async (familyId) => {
+        try {
+          const response = await fetch(`/api/family/${familyId}/medicines`);
+          if (response.ok) {
+            const medicines = await response.json();
+            get().setMedicines(medicines);
+            console.log(`Loaded ${medicines.length} medicines from family inventory`);
+          } else {
+            console.error('Failed to load family inventory');
+          }
+        } catch (error) {
+          console.error('Error loading family inventory:', error);
+        }
       }
     }),
     {
