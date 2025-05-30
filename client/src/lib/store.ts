@@ -35,8 +35,8 @@ interface MedicineState {
   
   // Actions
   addMedicine: (medicine: MedicineInput) => Promise<{ success: boolean; duplicate?: Medicine }>;
-  updateMedicine: (id: number, medicine: MedicineInput) => void;
-  deleteMedicine: (id: number) => void;
+  updateMedicine: (id: number, medicine: MedicineInput) => Promise<void>;
+  deleteMedicine: (id: number) => Promise<void>;
   getMedicineById: (id: number) => Medicine | undefined;
   findDuplicateMedicine: (medicine: MedicineInput) => Medicine | undefined;
   getUniqueLocations: () => string[];
@@ -141,7 +141,44 @@ export const useStore = create<MedicineState>()(
         return { success: true };
       },
       
-      updateMedicine: (id, medicine) => {
+      updateMedicine: async (id, medicine) => {
+        const state = get();
+        
+        // If user is part of a family, sync to family database
+        if (state.familyId && state.memberName) {
+          try {
+            const response = await fetch(`/api/family/${state.familyId}/medicines/${id}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                ...medicine,
+                updatedBy: state.memberName
+              })
+            });
+            
+            if (response.ok) {
+              const updatedMedicine = await response.json();
+              
+              // Update local state with the medicine from server
+              set((currentState) => ({
+                medicines: currentState.medicines.map(m => 
+                  m.id === id ? updatedMedicine : m
+                ),
+                lastUpdated: new Date().toISOString(),
+                syncStatus: 'synced'
+              }));
+              
+              return;
+            } else {
+              throw new Error('Failed to update medicine in family inventory');
+            }
+          } catch (error) {
+            console.error('Error updating medicine in family:', error);
+            // Fall back to local storage if family sync fails
+          }
+        }
+        
+        // Local storage fallback (for non-family users or when sync fails)
         set((state) => {
           const updatedMedicines = state.medicines.map(m => 
             m.id === id ? { ...m, ...medicine } : m
@@ -158,7 +195,39 @@ export const useStore = create<MedicineState>()(
         });
       },
       
-      deleteMedicine: (id) => {
+      deleteMedicine: async (id) => {
+        const state = get();
+        
+        // If user is part of a family, sync to family database
+        if (state.familyId && state.memberName) {
+          try {
+            const response = await fetch(`/api/family/${state.familyId}/medicines/${id}`, {
+              method: 'DELETE',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                updatedBy: state.memberName
+              })
+            });
+            
+            if (response.ok) {
+              // Update local state by removing the medicine
+              set((currentState) => ({
+                medicines: currentState.medicines.filter(m => m.id !== id),
+                lastUpdated: new Date().toISOString(),
+                syncStatus: 'synced'
+              }));
+              
+              return;
+            } else {
+              throw new Error('Failed to delete medicine from family inventory');
+            }
+          } catch (error) {
+            console.error('Error deleting medicine from family:', error);
+            // Fall back to local storage if family sync fails
+          }
+        }
+        
+        // Local storage fallback (for non-family users or when sync fails)
         set((state) => {
           // Delete from IndexedDB
           db.medicines.delete(id);
@@ -364,9 +433,20 @@ export const useStore = create<MedicineState>()(
               state.medicines = medicines;
             }
             
-            // Check for saved share code and load it if found
+            // Initialize family sync if user is already part of a family
+            if (state.familyId && state.memberName) {
+              console.log("Auto-initializing family sync for:", state.familyId);
+              try {
+                await state.initializeFamilySync(state.familyId, state.memberName);
+                await state.loadFamilyInventory(state.familyId);
+              } catch (err) {
+                console.error("Failed to auto-initialize family sync:", err);
+              }
+            }
+            
+            // Check for saved share code and load it if found (legacy support)
             const savedShareCode = localStorage.getItem('saved-share-code');
-            if (savedShareCode && state.loadSharedMedicineDatabase) {
+            if (savedShareCode && state.loadSharedMedicineDatabase && !state.familyId) {
               console.log("Auto-loading shared inventory with code:", savedShareCode);
               try {
                 // Attempt to load the saved shared inventory
