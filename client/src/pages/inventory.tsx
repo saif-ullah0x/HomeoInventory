@@ -21,8 +21,7 @@ export default function Inventory() {
   const [isEditMedicineModalOpen, setIsEditMedicineModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
-  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
-  const [isFamilySetupOpen, setIsFamilySetupOpen] = useState(false);
+  const [isFamilyModalOpen, setIsFamilyModalOpen] = useState(false);
   const [isAIDoctorModalOpen, setIsAIDoctorModalOpen] = useState(false);
   const [medicineToEdit, setMedicineToEdit] = useState<number | null>(null);
   const [medicineToDelete, setMedicineToDelete] = useState<number | null>(null);
@@ -180,7 +179,7 @@ export default function Inventory() {
           onImportClick={() => setIsImportModalOpen(true)}
           onExportToPDF={exportToPDF}
           onExportToExcel={exportToExcel}
-          onShareClick={() => setIsShareModalOpen(true)}
+          onShareClick={() => setIsFamilyModalOpen(true)}
           onSearchChange={setSearchTerm}
           onLocationFilterChange={setLocationFilter}
           onCompanyFilterChange={setCompanyFilter}
@@ -234,22 +233,9 @@ export default function Inventory() {
         onClose={() => setIsImportModalOpen(false)}
       />
       
-      <FamilyShareModal 
-        isOpen={isShareModalOpen}
-        onClose={() => setIsShareModalOpen(false)}
-        onCreateFamily={() => {
-          setIsShareModalOpen(false);
-          setIsFamilySetupOpen(true);
-        }}
-        onJoinFamily={() => {
-          setIsShareModalOpen(false);
-          setIsFamilySetupOpen(true);
-        }}
-      />
-      
-      <FamilySetup 
-        isOpen={isFamilySetupOpen}
-        onClose={() => setIsFamilySetupOpen(false)}
+      <FirebaseFamilyModal 
+        isOpen={isFamilyModalOpen}
+        onClose={() => setIsFamilyModalOpen(false)}
       />
       
       <AIDoctorModal 
@@ -278,7 +264,7 @@ export default function Inventory() {
       {/* Share Button - Bottom Left */}
       <div className="fixed left-6 bottom-6 z-10">
         <button 
-          onClick={() => setIsShareModalOpen(true)}
+          onClick={() => setIsFamilyModalOpen(true)}
           className="premium-gradient-button premium-float-button bg-gradient-to-r from-purple-700 to-purple-500 hover:from-purple-800 hover:to-purple-600 text-white rounded-full p-3 flex items-center justify-center w-14 h-14"
           aria-label="Family Access Sharing"
         >
