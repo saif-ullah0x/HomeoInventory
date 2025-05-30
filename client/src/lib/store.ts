@@ -89,35 +89,26 @@ export const useStore = create<MedicineState>()(
         
         const state = get();
         
-        // If user is part of a family, sync to cloud database
+        // If user is part of a family, sync to Firebase
         if (state.familyId && state.memberName) {
           try {
-            const response = await fetch(`/api/family/${state.familyId}/medicines`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                ...medicine,
-                updatedBy: state.memberName
-              })
-            });
+            // Add medicine to Firebase Firestore for real-time sync
+            const firebaseMedicine = await firebaseFamilyService.addMedicine(
+              medicine,
+              state.familyId,
+              state.memberName
+            );
             
-            if (response.ok) {
-              const newMedicine = await response.json();
-              
-              // Update local state with the medicine from server (includes proper ID)
-              set((currentState) => ({ 
-                medicines: [...currentState.medicines, newMedicine],
-                lastUpdated: new Date().toISOString(),
-                syncStatus: 'synced'
-              }));
-              
+            if (firebaseMedicine) {
+              // Firebase real-time listener will update the store automatically
+              // Just return success here
               return { success: true };
             } else {
-              throw new Error('Failed to add medicine to family inventory');
+              throw new Error('Failed to add medicine to Firebase family inventory');
             }
           } catch (error) {
-            console.error('Error adding medicine to family:', error);
-            // Fall back to local storage if family sync fails
+            console.error('Error adding medicine to Firebase family:', error);
+            // Fall back to local storage if Firebase sync fails
           }
         }
         
@@ -146,37 +137,26 @@ export const useStore = create<MedicineState>()(
       updateMedicine: async (id, medicine) => {
         const state = get();
         
-        // If user is part of a family, sync to family database
+        // If user is part of a family, sync to Firebase
         if (state.familyId && state.memberName) {
           try {
-            const response = await fetch(`/api/family/${state.familyId}/medicines/${id}`, {
-              method: 'PUT',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                ...medicine,
-                updatedBy: state.memberName
-              })
-            });
+            // Update medicine in Firebase Firestore for real-time sync
+            const success = await firebaseFamilyService.updateMedicine(
+              id.toString(),
+              medicine,
+              state.familyId,
+              state.memberName
+            );
             
-            if (response.ok) {
-              const updatedMedicine = await response.json();
-              
-              // Update local state with the medicine from server
-              set((currentState) => ({
-                medicines: currentState.medicines.map(m => 
-                  m.id === id ? updatedMedicine : m
-                ),
-                lastUpdated: new Date().toISOString(),
-                syncStatus: 'synced'
-              }));
-              
+            if (success) {
+              // Firebase real-time listener will update the store automatically
               return;
             } else {
-              throw new Error('Failed to update medicine in family inventory');
+              throw new Error('Failed to update medicine in Firebase family inventory');
             }
           } catch (error) {
-            console.error('Error updating medicine in family:', error);
-            // Fall back to local storage if family sync fails
+            console.error('Error updating medicine in Firebase family:', error);
+            // Fall back to local storage if Firebase sync fails
           }
         }
         
@@ -200,32 +180,25 @@ export const useStore = create<MedicineState>()(
       deleteMedicine: async (id) => {
         const state = get();
         
-        // If user is part of a family, sync to family database
+        // If user is part of a family, sync to Firebase
         if (state.familyId && state.memberName) {
           try {
-            const response = await fetch(`/api/family/${state.familyId}/medicines/${id}`, {
-              method: 'DELETE',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                updatedBy: state.memberName
-              })
-            });
+            // Delete medicine from Firebase Firestore for real-time sync
+            const success = await firebaseFamilyService.deleteMedicine(
+              id.toString(),
+              state.familyId,
+              state.memberName
+            );
             
-            if (response.ok) {
-              // Update local state by removing the medicine
-              set((currentState) => ({
-                medicines: currentState.medicines.filter(m => m.id !== id),
-                lastUpdated: new Date().toISOString(),
-                syncStatus: 'synced'
-              }));
-              
+            if (success) {
+              // Firebase real-time listener will update the store automatically
               return;
             } else {
-              throw new Error('Failed to delete medicine from family inventory');
+              throw new Error('Failed to delete medicine from Firebase family inventory');
             }
           } catch (error) {
-            console.error('Error deleting medicine from family:', error);
-            // Fall back to local storage if family sync fails
+            console.error('Error deleting medicine from Firebase family:', error);
+            // Fall back to local storage if Firebase sync fails
           }
         }
         
@@ -263,47 +236,7 @@ export const useStore = create<MedicineState>()(
         };
       },
       
-      // Sharing methods
-      shareMedicineDatabase: () => {
-        // Create a share code
-        const shareCode = Math.random().toString(36).substring(2, 10);
-        
-        // Get current medicines
-        const medicines = get().medicines;
-        
-        // Store the current medicine database with this share code in IndexedDB
-        createSharedInventory(shareCode, medicines);
-        
-        return shareCode;
-      },
-      
-      loadSharedMedicineDatabase: async (shareCode) => {
-        try {
-          // Use our shared inventory function to load data
-          const success = await importSharedInventory(shareCode);
-          
-          if (success) {
-            // Get the latest medicines from IndexedDB after importing
-            const medicines = await db.medicines.toArray();
-            
-            // Update the store state
-            set({
-              medicines,
-              lastUpdated: new Date().toISOString(),
-              syncStatus: 'synced'
-            });
-            
-            // Save the share code for persistent access
-            localStorage.setItem('saved-share-code', shareCode);
-            
-            return true;
-          }
-        } catch (error) {
-          console.error("Error loading shared inventory:", error);
-        }
-        
-        return false;
-      },
+
 
       // Firebase Family Sharing Methods
       setFamilyId: (familyId: string) => {
@@ -415,17 +348,8 @@ export const useStore = create<MedicineState>()(
               }
             }
             
-            // Check for saved share code and load it if found (legacy support)
-            const savedShareCode = localStorage.getItem('saved-share-code');
-            if (savedShareCode && state.loadSharedMedicineDatabase && !state.familyId) {
-              console.log("Auto-loading shared inventory with code:", savedShareCode);
-              try {
-                // Attempt to load the saved shared inventory
-                await state.loadSharedMedicineDatabase(savedShareCode);
-              } catch (err) {
-                console.error("Failed to auto-load shared inventory:", err);
-              }
-            }
+            // Clean up legacy sharing data (remove old local sharing)
+            localStorage.removeItem('saved-share-code');
           }).catch(error => {
             console.error("Failed to load medicines from IndexedDB:", error);
           });
