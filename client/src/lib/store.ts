@@ -95,7 +95,7 @@ export const useStore = create<MedicineState>()(
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 ...medicine,
-                addedBy: state.memberName
+                updatedBy: state.memberName
               })
             });
             
