@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { db, createSharedInventory, importSharedInventory } from '@/lib/db';
+import { firebaseFamilyService } from '@/lib/firebase-family-service';
 
 export interface Medicine {
   id: number;
@@ -32,6 +33,7 @@ interface MedicineState {
   familyId: string | null;
   memberName: string | null;
   memberId: string | null;
+  isFirebaseEnabled: boolean;
   
   // Actions
   addMedicine: (medicine: MedicineInput) => Promise<{ success: boolean; duplicate?: Medicine }>;
@@ -50,6 +52,12 @@ interface MedicineState {
   initializeFamilySync: (familyId: string, memberName: string) => Promise<void>;
   loadFamilyInventory: (familyId: string) => Promise<void>;
   
+  // Firebase real-time methods
+  enableFirebaseSync: () => void;
+  disableFirebaseSync: () => void;
+  startFirebaseRealTimeSync: (familyId: string) => void;
+  stopFirebaseRealTimeSync: () => void;
+  
   // Legacy sharing methods (kept for compatibility)
   shareMedicineDatabase: () => string;
   loadSharedMedicineDatabase: (shareCode: string) => Promise<boolean>;
@@ -67,6 +75,7 @@ export const useStore = create<MedicineState>()(
       familyId: null,
       memberName: null,
       memberId: null,
+      isFirebaseEnabled: false,
       
       findDuplicateMedicine: (medicine) => {
         // Check if there's a duplicate medicine (same name, potency, company)
@@ -414,6 +423,41 @@ export const useStore = create<MedicineState>()(
         } catch (error) {
           console.error('Error loading family inventory:', error);
         }
+      },
+
+      // Firebase real-time sync methods
+      enableFirebaseSync: () => {
+        set({ isFirebaseEnabled: true });
+        console.log('Firebase real-time sync enabled');
+      },
+
+      disableFirebaseSync: () => {
+        get().stopFirebaseRealTimeSync();
+        set({ isFirebaseEnabled: false });
+        console.log('Firebase real-time sync disabled');
+      },
+
+      startFirebaseRealTimeSync: (familyId) => {
+        const state = get();
+        if (!state.isFirebaseEnabled) {
+          console.log('Firebase sync not enabled, skipping real-time sync');
+          return;
+        }
+
+        // Start Firebase real-time listener for family inventory
+        firebaseFamilyService.startInventorySync(familyId, (medicines) => {
+          console.log(`Firebase real-time update: ${medicines.length} medicines received`);
+          set({
+            medicines,
+            lastUpdated: new Date().toISOString(),
+            syncStatus: 'synced'
+          });
+        });
+      },
+
+      stopFirebaseRealTimeSync: () => {
+        firebaseFamilyService.stopInventorySync();
+        console.log('Stopped Firebase real-time sync');
       }
     }),
     {
