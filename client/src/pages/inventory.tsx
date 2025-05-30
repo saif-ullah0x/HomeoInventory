@@ -7,7 +7,8 @@ import EmptyState from "@/components/empty-state";
 import MedicineModal from "@/components/medicine-modal";
 import DeleteModal from "@/components/delete-modal";
 import ImportModal from "@/components/import-modal";
-import ShareModal from "@/components/share-modal";
+import FamilyShareModal from "@/components/family-share-modal";
+import FamilySetup from "@/components/family-setup";
 import AIDoctorModal from "@/components/ai-doctor-modal";
 import { ScrollToTopButton } from "@/components/scroll-to-top-button";
 import { useStore } from "@/lib/store";
@@ -22,6 +23,7 @@ export default function Inventory() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isFamilySetupOpen, setIsFamilySetupOpen] = useState(false);
   const [isAIDoctorModalOpen, setIsAIDoctorModalOpen] = useState(false);
   const [medicineToEdit, setMedicineToEdit] = useState<number | null>(null);
   const [medicineToDelete, setMedicineToDelete] = useState<number | null>(null);
@@ -233,9 +235,22 @@ export default function Inventory() {
         onClose={() => setIsImportModalOpen(false)}
       />
       
-      <ShareModal 
+      <FamilyShareModal 
         isOpen={isShareModalOpen}
         onClose={() => setIsShareModalOpen(false)}
+        onCreateFamily={() => {
+          setIsShareModalOpen(false);
+          setIsFamilySetupOpen(true);
+        }}
+        onJoinFamily={() => {
+          setIsShareModalOpen(false);
+          setIsFamilySetupOpen(true);
+        }}
+      />
+      
+      <FamilySetup 
+        isOpen={isFamilySetupOpen}
+        onClose={() => setIsFamilySetupOpen(false)}
       />
       
       <AIDoctorModal 
