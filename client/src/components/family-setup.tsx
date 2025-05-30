@@ -13,6 +13,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useStore } from "@/lib/store";
 import { Users, Plus, UserPlus, Home } from "lucide-react";
+import FamilyIdDisplay from "@/components/family-id-display";
 
 interface FamilySetupProps {
   isOpen: boolean;
@@ -23,8 +24,11 @@ export default function FamilySetup({ isOpen, onClose }: FamilySetupProps) {
   const [memberName, setMemberName] = useState("");
   const [familyId, setFamilyId] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showFamilyIdDisplay, setShowFamilyIdDisplay] = useState(false);
+  const [createdFamilyId, setCreatedFamilyId] = useState("");
   const { toast } = useToast();
-  const { setFamilyInfo, initializeFamilySync, loadFamilyInventory } = useStore();
+  const store = useStore();
+  const { setFamilyInfo, initializeFamilySync, loadFamilyInventory } = store;
 
   const createFamily = async () => {
     if (!memberName.trim()) {
@@ -56,13 +60,47 @@ export default function FamilySetup({ isOpen, onClose }: FamilySetupProps) {
       // Initialize real-time sync with family
       await initializeFamilySync(data.familyId, memberName.trim());
       
-      // Load family inventory (initially empty for new family)
+      // Don't clear existing inventory - migrate current medicines to family
+      const currentMedicines = store.medicines;
+      if (currentMedicines.length > 0) {
+        // Migrate existing medicines to family inventory
+        for (const medicine of currentMedicines) {
+          try {
+            await fetch(`/api/family/${data.familyId}/medicines`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                name: medicine.name,
+                potency: medicine.potency,
+                company: medicine.company,
+                location: medicine.location,
+                subLocation: medicine.subLocation,
+                quantity: medicine.quantity,
+                bottleSize: medicine.bottleSize,
+                addedBy: memberName.trim()
+              })
+            });
+          } catch (error) {
+            console.error('Error migrating medicine:', error);
+          }
+        }
+      }
+      
+      // Load family inventory (includes migrated medicines)
       await loadFamilyInventory(data.familyId);
       
+      // Show success message with family ID
       toast({
-        title: "Family Created!",
-        description: `Your family ID is: ${data.familyId}. Share this with family members for inventory access.`,
+        title: "Family Created Successfully!",
+        description: `Family ID: ${data.familyId} - This has been copied to your clipboard. Share with family members.`,
       });
+
+      // Copy family ID to clipboard automatically
+      try {
+        await navigator.clipboard.writeText(data.familyId);
+      } catch (error) {
+        console.log('Clipboard not available');
+      }
 
       onClose();
     } catch (error) {

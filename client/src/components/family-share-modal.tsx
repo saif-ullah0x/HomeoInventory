@@ -51,14 +51,57 @@ export default function FamilyShareModal({
         <div className="space-y-4">
           <div className="grid grid-cols-1 gap-3">
             <Button 
-              onClick={() => {
+              onClick={async () => {
                 onClose();
-                onCreateFamily();
+                
+                // Simple one-click family creation with automatic name
+                const memberName = "Family Member";
+                
+                try {
+                  const response = await fetch('/api/family/create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ memberName })
+                  });
+
+                  if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Copy family ID to clipboard
+                    try {
+                      await navigator.clipboard.writeText(data.familyId);
+                    } catch (error) {
+                      console.log('Clipboard not available');
+                    }
+                    
+                    // Show success notification
+                    const event = new CustomEvent('show-toast', {
+                      detail: {
+                        title: "Family Created!",
+                        description: `Family ID: ${data.familyId} (copied to clipboard). Share this with family members to give them access to your shared inventory.`,
+                        type: "success"
+                      }
+                    });
+                    window.dispatchEvent(event);
+                  } else {
+                    throw new Error('Failed to create family');
+                  }
+                } catch (error) {
+                  console.error('Error creating family:', error);
+                  const event = new CustomEvent('show-toast', {
+                    detail: {
+                      title: "Error",
+                      description: "Failed to create family. Please try again.",
+                      type: "error"
+                    }
+                  });
+                  window.dispatchEvent(event);
+                }
               }}
               className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700"
             >
               <Plus className="h-4 w-4" />
-              Create New Family
+              Create New Family (One-Click)
             </Button>
             
             <Button 
