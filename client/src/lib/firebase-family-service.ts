@@ -164,13 +164,13 @@ class FirebaseFamilyService {
 
     try {
       const medicinesCollection = collection(db, 'medicines');
+      
+      // Use simplified query to avoid composite index requirements
       const familyQuery = query(
         medicinesCollection,
-        where('familyId', '==', familyId),
-        orderBy('name')
+        where('familyId', '==', familyId)
       );
 
-      // Set up real-time listener
       this.medicinesUnsubscribe = onSnapshot(familyQuery, (snapshot) => {
         const medicines: Medicine[] = [];
         
@@ -188,10 +188,15 @@ class FirebaseFamilyService {
           });
         });
 
+        // Sort medicines by name locally to avoid composite index requirement
+        medicines.sort((a, b) => a.name.localeCompare(b.name));
+
         console.log(`Firestore real-time update: ${medicines.length} medicines`);
         onUpdate(medicines);
       }, (error) => {
         console.error('Error in Firestore real-time listener:', error);
+        // Fallback to local data if Firebase fails
+        console.log('Firebase sync failed, using local IndexedDB data');
       });
 
       console.log('Started Firestore real-time sync for family:', familyId);

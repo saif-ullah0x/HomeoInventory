@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider, onAuthStateChanged, signOut, User } from "firebase/auth";
 import { useEffect, useState } from "react";
@@ -93,6 +95,7 @@ export function useAuth() {
           }
         );
       } else {
+        
         console.log("Auth not fully initialized, authentication disabled");
         setLoading(false);
       }

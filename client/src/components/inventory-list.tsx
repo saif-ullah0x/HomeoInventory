@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import { v4 as uuidv4 } from "uuid";
 import {
   Table,
   TableBody,
@@ -21,9 +22,14 @@ interface InventoryListProps {
 }
 
 export default function InventoryList({ medicines, onEdit, onDelete }: InventoryListProps) {
-  const [selectedMedicines, setSelectedMedicines] = useState<Medicine[]>([]);
+  const [selectedMedicines, setSelectedMedicines] = useState<(Medicine & { uid: string })[]>([]);
   const [selectMode, setSelectMode] = useState(false);
-  
+
+  const medicinesWithUid = medicines.map((med, index) => ({
+    ...med,
+    uid: `${med.name}-${med.company}-${index}`,
+  }));
+
   const getStatusBadge = (quantity: number) => {
     if (quantity === 0) {
       return <Badge variant="destructive">Out of Stock</Badge>;
@@ -31,43 +37,42 @@ export default function InventoryList({ medicines, onEdit, onDelete }: Inventory
       return <Badge variant="outline" className="bg-green-100 text-green-800 hover:bg-green-100">In Stock</Badge>;
     }
   };
-  
-  const toggleMedicineSelection = (medicine: Medicine) => {
-    if (selectedMedicines.some(m => m.id === medicine.id)) {
-      setSelectedMedicines(selectedMedicines.filter(m => m.id !== medicine.id));
+
+  const toggleMedicineSelection = (medicine: Medicine & { uid: string }) => {
+    if (selectedMedicines.some(m => m.uid === medicine.uid)) {
+      setSelectedMedicines(selectedMedicines.filter(m => m.uid !== medicine.uid));
     } else {
       setSelectedMedicines([...selectedMedicines, medicine]);
     }
-    
-    // If no medicines are selected anymore, exit select mode
+
     if (selectedMedicines.length === 1) {
       setSelectMode(false);
     }
   };
-  
-  const handleBulkSelectionChange = (selected: boolean, medicinesToSelect: Medicine[]) => {
-    // This function will be called from BulkActions component
+
+  const handleBulkSelectionChange = (selected: boolean) => {
     if (selected) {
-      // When "Select All" is clicked, select ALL medicines from the main list
-      setSelectedMedicines([...medicines]);
+      setSelectedMedicines(medicinesWithUid);
+    } else {
+      setSelectedMedicines([]);
+      setSelectMode(false);
     }
   };
-  
+
   const clearSelection = () => {
     setSelectedMedicines([]);
     setSelectMode(false);
   };
-  
-  // Long press detection to enter select mode on mobile
+
   const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
-  
-  const handleTouchStart = (medicine: Medicine) => {
+
+  const handleTouchStart = (medicine: Medicine & { uid: string }) => {
     longPressTimerRef.current = setTimeout(() => {
       setSelectMode(true);
       toggleMedicineSelection(medicine);
-    }, 600); // 600ms for long press
+    }, 600);
   };
-  
+
   const handleTouchEnd = () => {
     if (longPressTimerRef.current) {
       clearTimeout(longPressTimerRef.current);
@@ -82,13 +87,12 @@ export default function InventoryList({ medicines, onEdit, onDelete }: Inventory
           <TableHeader>
             <TableRow className="bg-gradient-to-r from-purple-50/40 to-indigo-50/40 dark:from-purple-900/10 dark:to-indigo-900/10">
               <TableHead className="w-[50px]">
-                {/* Always show checkbox header (Gmail-style) */}
                 <Checkbox
-                  checked={selectedMedicines.length === medicines.length && medicines.length > 0}
+                  checked={selectedMedicines.length === medicinesWithUid.length && medicinesWithUid.length > 0}
                   onCheckedChange={(checked) => {
                     setSelectMode(true);
                     if (checked) {
-                      setSelectedMedicines([...medicines]);
+                      setSelectedMedicines(medicinesWithUid);
                     } else {
                       setSelectedMedicines([]);
                     }
@@ -105,26 +109,26 @@ export default function InventoryList({ medicines, onEdit, onDelete }: Inventory
             </TableRow>
           </TableHeader>
           <TableBody>
-            {medicines.map((medicine) => (
-              <TableRow 
-                key={medicine.id}
+            {medicinesWithUid.map((medicine) => (
+              <TableRow
+                key={medicine.uid}
                 className={selectMode ? "cursor-pointer hover:bg-muted/50" : undefined}
                 onClick={selectMode ? () => toggleMedicineSelection(medicine) : undefined}
                 onTouchStart={() => handleTouchStart(medicine)}
                 onTouchEnd={handleTouchEnd}
                 onTouchMove={handleTouchEnd}
                 onTouchCancel={handleTouchEnd}
-                data-state={selectedMedicines.some(m => m.id === medicine.id) ? "selected" : ""}
+                data-state={selectedMedicines.some(m => m.uid === medicine.uid) ? "selected" : ""}
               >
                 <TableCell className="w-[50px]">
                   <Checkbox
-                    checked={selectedMedicines.some(m => m.id === medicine.id)}
+                    checked={selectedMedicines.some(m => m.uid === medicine.uid)}
                     onCheckedChange={(checked) => {
                       setSelectMode(true);
                       if (checked) {
                         setSelectedMedicines([...selectedMedicines, medicine]);
                       } else {
-                        setSelectedMedicines(selectedMedicines.filter(m => m.id !== medicine.id));
+                        setSelectedMedicines(selectedMedicines.filter(m => m.uid !== medicine.uid));
                       }
                     }}
                     onClick={(e) => e.stopPropagation()}
@@ -176,22 +180,18 @@ export default function InventoryList({ medicines, onEdit, onDelete }: Inventory
                       </Button>
                     </>
                   )}
-
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </div>
-      
-      {/* No floating button, checkboxes will be used instead */}
-      
-      {/* Bulk Actions component */}
+
       {selectedMedicines.length > 0 && (
         <BulkActions
           selectedMedicines={selectedMedicines}
           onClearSelection={clearSelection}
-          onSelectionChange={handleBulkSelectionChange}
+          onSelectionChange={(selected) => handleBulkSelectionChange(selected)}
         />
       )}
     </div>

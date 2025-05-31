@@ -1,11 +1,16 @@
 /**
- * DeepSeek R1 AI Service for HomeoInvent
+ * DeepSeek R1 AI Service for HomeoInvent via OpenRouter API
  * 
- * This service consolidates ALL AI functionality in the app to use only DeepSeek R1 API:
+ * This service consolidates ALL AI functionality in the app to use DeepSeek R1 via OpenRouter:
  * - AI Doctor (Dr. Harmony) - Symptom analysis and remedy suggestions
  * - AI Helper - Inventory management and trend analysis
  * - Learning Assistant - Quiz generation and educational content
  * - Chatbot responses - All conversational AI interactions
+ * 
+ * API Configuration:
+ * - Endpoint: https://openrouter.ai/api/v1/chat/completions
+ * - Model: deepseek-chat
+ * - Authorization: Bearer OPENROUTER_API_KEY
  * 
  * DeepSeek R1 is used for:
  * 1. Analyzing symptoms and suggesting homeopathic remedies
@@ -48,27 +53,39 @@ interface LearningContent {
 }
 
 /**
- * DeepSeek R1 API Configuration
- * The API key should be set in environment variables as DEEPSEEK_API_KEY
+ * OpenRouter API Configuration for DeepSeek R1
+ * The API key should be set in environment variables as OPENROUTER_API_KEY
+ * 
+ * Setup Instructions:
+ * 1. Get your API key from https://openrouter.ai/
+ * 2. Add OPENROUTER_API_KEY to your .env file
+ * 3. The service will automatically use DeepSeek via OpenRouter
  */
 class DeepSeekAIService {
   private apiKey: string;
-  private baseUrl: string = 'https://api.deepseek.com/v1/chat/completions';
+  private baseUrl: string = 'https://openrouter.ai/api/v1/chat/completions';
 
   constructor() {
-    this.apiKey = process.env.DEEPSEEK_API_KEY || '';
+    // Updated to use OPENROUTER_API_KEY instead of DEEPSEEK_API_KEY
+    this.apiKey = process.env.OPENROUTER_API_KEY || '';
     if (!this.apiKey) {
-      console.warn('⚠️ DEEPSEEK_API_KEY not found in environment variables. AI features will use fallback responses.');
+      console.warn('⚠️ OPENROUTER_API_KEY not found in environment variables. AI features will use fallback responses.');
+      console.log('📋 Setup: Add OPENROUTER_API_KEY to your .env file to enable DeepSeek R1 AI features');
     }
   }
 
   /**
-   * Core method to call DeepSeek R1 API
+   * Core method to call DeepSeek R1 API via OpenRouter
    * Used by all AI functionality in the app
+   * 
+   * API Configuration:
+   * - Uses OpenRouter endpoint: https://openrouter.ai/api/v1/chat/completions
+   * - Model: deepseek-chat (DeepSeek R1 via OpenRouter)
+   * - Requires OPENROUTER_API_KEY in environment variables
    */
   private async callDeepSeekAPI(messages: Array<{role: string, content: string}>, temperature: number = 0.7): Promise<string> {
     if (!this.apiKey) {
-      throw new Error('DeepSeek API key not configured');
+      throw new Error('OpenRouter API key not configured for DeepSeek access');
     }
 
     try {
@@ -77,9 +94,11 @@ class DeepSeekAIService {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${this.apiKey}`,
+          'HTTP-Referer': 'https://homeoinvent.replit.app', // For OpenRouter analytics
+          'X-Title': 'HomeoInvent - Homeopathic Medicine Manager' // App identification
         },
         body: JSON.stringify({
-          model: 'deepseek-reasoner',
+          model: 'deepseek/deepseek-r1', // Updated to use deepseek-chat model via OpenRouter
           messages: messages,
           temperature: temperature,
           max_tokens: 2000,
@@ -88,13 +107,14 @@ class DeepSeekAIService {
       });
 
       if (!response.ok) {
-        throw new Error(`DeepSeek API error: ${response.status} ${response.statusText}`);
+        const errorText = await response.text();
+        throw new Error(`OpenRouter API error: ${response.status} ${response.statusText} - ${errorText}`);
       }
 
       const data: DeepSeekResponse = await response.json();
       return data.choices[0]?.message?.content || 'No response from AI service';
     } catch (error) {
-      console.error('DeepSeek API call failed:', error);
+      console.error('OpenRouter DeepSeek API call failed:', error);
       throw error;
     }
   }
@@ -147,7 +167,7 @@ Provide:
 
 Format as clear, practical advice for educational purposes.`;
 
-      const messages = [
+    /*  const messages = [
         {
           role: 'system',
           content: 'You are Dr. Harmony, an expert homeopathic AI assistant. Provide evidence-based remedy suggestions using classical homeopathy principles. Always emphasize educational purpose and recommend professional consultation for serious conditions.'
@@ -156,7 +176,23 @@ Format as clear, practical advice for educational purposes.`;
           role: 'user',
           content: prompt
         }
-      ];
+      ];*/
+
+      const messages = [
+  {
+    role: 'system',
+    content: `You are an expert Homeopathic AI Doctor. Your job is to analyze symptoms provided by the user and suggest 2-3 best homeopathic remedies.
+Each remedy should include:
+1. Name
+2. Potency (e.g., 30C or 200C)
+3. Key reason for choosing it
+4. Short advice or note
+
+Only answer in this format. Don’t add extra text. Always be clear and structured.`
+  },
+  { role: 'user', content: prompt }
+];
+
 
       const aiResponse = await this.callDeepSeekAPI(messages, 0.7);
       
@@ -170,7 +206,7 @@ Format as clear, practical advice for educational purposes.`;
       };
 
     } catch (error) {
-      console.error('DeepSeek symptom analysis failed, using local fallback:', error);
+      console.error('OpenRouter DeepSeek symptom analysis failed, using local fallback:', error);
       
       // Fallback to local knowledge when API fails
       const fallbackRemedies = [...localMatches, ...boerickeMatches].slice(0, 3).map(remedy => ({
@@ -186,7 +222,7 @@ Format as clear, practical advice for educational purposes.`;
       return {
         response: `Based on the symptoms "${symptoms}", here are some traditional homeopathic remedies to consider. Please consult with a qualified practitioner for proper evaluation.`,
         remedies: fallbackRemedies,
-        disclaimer: "🔸 This response uses local knowledge base. For comprehensive analysis, please ensure DeepSeek API is properly configured."
+        disclaimer: "🔸 This response uses local knowledge base. For enhanced AI analysis, please ensure OPENROUTER_API_KEY is properly configured."
       };
     }
   }
@@ -228,7 +264,13 @@ Be practical and actionable in your response.`;
       const messages = [
         {
           role: 'system',
-          content: 'You are an AI Helper for homeopathic inventory management. Provide practical, actionable advice for organizing and optimizing medicine collections. Focus on inventory management, not medical advice.'
+          content: `You are a helpful AI assistant specializing in homeopathy.
+Your responsibilities include:
+1. Suggesting alternative homeopathic remedies when asked.
+2. Providing general dosage guidance for common homeopathic medicines (while clearly stating that users should consult a certified practitioner for personalized doses).
+3. Offering general support and answering user questions about homeopathic use, remedy types, storage, and inventory — but never diagnosing or prescribing.
+
+Be clear, professional, and informative. If the question is outside your scope, gently redirect the user to consult a qualified homeopathic doctor. `
         },
         {
           role: 'user',
@@ -251,10 +293,10 @@ Be practical and actionable in your response.`;
       };
 
     } catch (error) {
-      console.error('DeepSeek inventory help failed, using fallback:', error);
+      console.error('OpenRouter DeepSeek inventory help failed, using fallback:', error);
       
       return {
-        response: `I can help you with your inventory! You currently have ${context.medicines.length} medicines. For detailed analysis and recommendations, please ensure the AI service is properly configured.`,
+        response: `I can help you with your inventory! You currently have ${context.medicines.length} medicines. For enhanced AI-powered insights and recommendations, please ensure OPENROUTER_API_KEY is properly configured.`,
         suggestions: [
           'Organize medicines by location',
           'Track expiry dates',
@@ -303,7 +345,11 @@ Include related topics for further learning.`;
       const messages = [
         {
           role: 'system',
-          content: 'You are an expert homeopathy educator creating engaging learning content. Use classical homeopathy principles and authentic sources. Make content educational and clinically relevant.'
+          content: `You are an expert homeopathy educator and content creator. Your goal is to produce accurate, engaging, and clinically relevant learning materials based on the principles of classical homeopathy.
+
+Use authentic sources and standard references such as the Organon of Medicine, Materia Medica, and Repertory. Your content should be clear, educational, and practical for students, practitioners, or those interested in homeopathy.
+
+Avoid giving direct medical advice or personalized prescriptions. Focus on knowledge-building, remedy understanding, case analysis, and foundational theory rooted in classical homeopathy.`
         },
         {
           role: 'user',
@@ -324,11 +370,11 @@ Include related topics for further learning.`;
       };
 
     } catch (error) {
-      console.error('DeepSeek learning content generation failed:', error);
+      console.error('OpenRouter DeepSeek learning content generation failed:', error);
       
       return {
         content: null,
-        explanation: `Learning content for "${topic}" is being prepared. Please ensure the AI service is properly configured for enhanced educational features.`,
+        explanation: `Learning content for "${topic}" is being prepared. Please ensure OPENROUTER_API_KEY is properly configured for enhanced educational features.`,
         relatedTopics: ['Basic homeopathy principles', 'Remedy selection', 'Potency guidelines']
       };
     }
@@ -380,10 +426,10 @@ Include related topics for further learning.`;
       };
 
     } catch (error) {
-      console.error('DeepSeek chat failed, using fallback:', error);
+      console.error('OpenRouter DeepSeek chat failed, using fallback:', error);
       
       return {
-        response: "I'm here to help with your homeopathic medicine management and learning! While my AI features are being configured, I can still assist with basic inventory management and direct you to the right features.",
+        response: "I'm here to help with your homeopathic medicine management and learning! For enhanced AI-powered conversations and insights, please ensure OPENROUTER_API_KEY is properly configured.",
         suggestions: [
           'Ask about medicine inventory',
           'Learn about homeopathic remedies',
@@ -411,7 +457,7 @@ Include related topics for further learning.`;
           name: remedy,
           potency: '30C',
           indication: 'As mentioned in AI analysis',
-          source: 'DeepSeek R1 Analysis',
+          source: 'AI Analysis',
           reasoning: 'Identified in comprehensive symptom analysis',
           confidence: 0.8,
           inInventory: userInventory.some(inv => inv.toLowerCase().includes(remedy.toLowerCase()))

@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid'; // Add this to the top of your file if not already there
 import {
   Dialog,
   DialogContent,
@@ -110,6 +111,7 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
   const [globalDuplicateStrategy, setGlobalDuplicateStrategy] = useState<DuplicateHandlingStrategy>('merge');
   
   const addMedicine = useStore((state) => state.addMedicine);
+  const updateMedicine = useStore((state) => state.updateMedicine);
   const getMedicineById = useStore((state) => state.getMedicineById);
   const findDuplicateMedicine = useStore((state) => state.findDuplicateMedicine);
   const medicines = useStore((state) => state.medicines);
@@ -236,28 +238,44 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
           }
         }
         
-        // Extract headers (first row)
-        const headerRow = data[0];
-        const fileHeaders = Object.values(headerRow || {}).map(h => h?.toString() || '');
-        
-        // If no valid headers found, try to use the first row as data instead
-        if (fileHeaders.length === 0 || fileHeaders.every(h => !h)) {
-          setError("Could not detect column headers in your file. Please make sure the first row contains column names.");
-          return;
-        }
-        
-        // Remove header row from data
-        const rowData = data.slice(1);
-        
-        // Show warning but allow proceeding if there's no data rows
-        if (rowData.length === 0) {
-          console.warn("The file appears to only contain headers without data rows");
-          // We'll still proceed to mapping screen, but without preview data
-        }
-        
-        setHeaders(fileHeaders);
-        setJsonData(rowData);
-        
+// Extract headers (first row)
+const headerRow = data[0];
+const fileHeaders = Object.values(headerRow || {}).map(h => h?.toString() || '');
+
+// If no valid headers found, throw error
+if (fileHeaders.length === 0 || fileHeaders.every(h => !h)) {
+  setError("Could not detect column headers in your file. Please make sure the first row contains column names.");
+  return;
+}
+
+// Remove header row from data
+const rawRows = data.slice(1);
+
+// Convert each row (array) to object using headers
+const rowData = rawRows.map((row: any[]) => {
+  const obj: Record<string, any> = {};
+  fileHeaders.forEach((header, i) => {
+    obj[header] = row[i] || '';
+  });
+  return obj;
+});
+
+// Attach ID to each row
+const rowDataWithId = rowData.map((row: any) => ({
+  id: crypto.randomUUID?.() || Math.random().toString(36).substr(2, 9),
+  ...row
+}));
+
+// Update state
+setHeaders(fileHeaders);
+setJsonData(rowDataWithId);
+
+     /*   
+        // ✅ Only this part is added below — generate unique `id` per row
+        const rowDataWithId = rowData.map((row: any) => ({
+         id: crypto.randomUUID?.() || Math.random().toString(36).substr(2, 9), // fallback if crypto not supported
+         ...row
+}));*/
         // Auto-detect column mappings
         const possibleNameKeys = ['medicine name', 'name', 'medicinename', 'medicine', 'drug name', 'drug'];
         const possiblePotencyKeys = ['potency', 'potencies', 'strength', 'dilution'];
@@ -549,7 +567,7 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
     }
   };
 
-  const importMedicines = () => {
+  const importMedicines = async () => {
     // Count valid items
     const validCount = previewItems.filter(item => item.valid).length;
     
@@ -575,7 +593,7 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
         }))
       : [];
     
-    jsonData.forEach(row => {
+    for (const row of jsonData) {
       try {
         const item: PreviewItem = {
           name: '',
@@ -633,7 +651,7 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
         // Only medicine name is absolutely required
         if (!item.name) {
           errorCount++;
-          return; // Skip this row
+          continue; // Skip this row
         }
         
         // Set default values for optional fields
@@ -670,7 +688,7 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
           if (existingMedicine) {
             // This is a duplicate by default, set strategy to skip
             skippedDuplicateCount++;
-            return; // Skip this item
+            continue; // Skip this item
           }
         }
         
@@ -679,20 +697,21 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
           switch (duplicate.strategy) {
             case 'merge':
               // Update existing medicine with combined quantity
-              // We'll need to update the medicine with the given ID
-              const existingMedicine = getMedicineById(duplicate.existingItemId);
-              if (existingMedicine) {
-                addMedicine({
-                  ...existingMedicine,
-                  quantity: duplicate.totalQty
-                });
-                duplicateCount++;
-              }
+              await updateMedicine(duplicate.existingItemId, {
+                name: item.name,
+                potency: item.potency,
+                company: item.company || "Unknown",
+                location: item.location || "Unknown",
+                subLocation: item.subLocation || "",
+                bottleSize: item.bottleSize || "",
+                quantity: duplicate.totalQty
+              });
+              duplicateCount++;
               break;
               
             case 'keep-both':
               // Add as a new item, even though it's a duplicate
-              addMedicine({
+              const keepBothResult = await addMedicine({
                 name: item.name,
                 potency: item.potency,
                 company: item.company || "Unknown",
@@ -701,7 +720,12 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
                 bottleSize: item.bottleSize || "",
                 quantity: item.quantity
               });
-              importCount++;
+              
+              if (keepBothResult.success) {
+                importCount++;
+              } else {
+                errorCount++;
+              }
               break;
               
             case 'skip':
@@ -711,7 +735,7 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
           }
         } else {
           // Not a duplicate, add normally
-          addMedicine({
+          const result = await addMedicine({
             name: item.name,
             potency: item.potency,
             company: item.company,
@@ -721,13 +745,17 @@ export default function ImportModal({ isOpen, onClose }: ImportModalProps) {
             quantity: item.quantity
           });
           
-          importCount++;
+          if (result.success) {
+            importCount++;
+          } else {
+            errorCount++;
+          }
         }
       } catch (err) {
         console.error("Error processing row:", err);
         errorCount++;
       }
-    });
+    }
     
     // Show result toast
     if (importCount > 0 || duplicateCount > 0) {
